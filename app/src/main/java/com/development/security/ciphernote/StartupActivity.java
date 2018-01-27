@@ -23,7 +23,7 @@ public class StartupActivity extends AppCompatActivity {
             prefs = getSharedPreferences("com.security.test", MODE_PRIVATE);
             applicationContext = getApplicationContext();
 
-            SecurityManager securityManager = new SecurityManager();
+            SecurityManager securityManager = SecurityManager.getInstance();
             DataStructures dataStructures = new DataStructures();
             FileManager fileManager = new FileManager();
 
@@ -45,7 +45,7 @@ public class StartupActivity extends AppCompatActivity {
 //                Log.d("help", "Test: " + Base64.encodeToString(testHash, Base64.DEFAULT));
 //            }
 
-            Log.d("help", "StartupActivity hash: " + Base64.encodeToString(newHash, Base64.DEFAULT));
+//            Log.d("help", "StartupActivity hash: " + Base64.encodeToString(newHash, Base64.DEFAULT));
 
             Log.d("help", "Startup ran");
 

@@ -30,14 +30,12 @@ public class LoginActivity extends AppCompatActivity {
 
         applicationContext = getApplicationContext();
 
-        final SecurityManager securityManager = new SecurityManager();
+        final SecurityManager securityManager = SecurityManager.getInstance();
         DataStructures dataStructures = new DataStructures();
         final FileManager fileManager = new FileManager();
 
 
         try{
-            securityManager.generateKey("password");
-
             String password = "password";
 
 
@@ -48,14 +46,15 @@ public class LoginActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Code here executes on main thread after user presses button
                     try {
-                        String userPassword = passwordField.getText().toString();
-
+//                        String userPassword = passwordField.getText().toString();
+                        String userPassword = "password";
                         Boolean authentication = null;
 
                             authentication = securityManager.authenticateUser(userPassword, applicationContext, fileManager);
 
                         if(authentication){
                             Log.d("help", "Successful authentication!");
+                            securityManager.generateKey(userPassword);
                             Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
                             startActivity(landingIntent);
                         }else{

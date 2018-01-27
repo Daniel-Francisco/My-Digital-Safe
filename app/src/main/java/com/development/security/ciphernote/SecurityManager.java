@@ -6,14 +6,14 @@ import android.util.Log;
 
 import org.json.JSONException;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.security.AlgorithmParameters;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.KeySpec;
 import java.util.Random;
 
@@ -28,25 +28,27 @@ import javax.crypto.spec.SecretKeySpec;
  * Created by dfrancisco on 11/2/2016.
  */
 public class SecurityManager {
+    private static SecurityManager singletonInstance = new SecurityManager();
+    public static SecurityManager getInstance(){
+        return singletonInstance;
+    }
+
     private static final String ALGO = "AES";
-    private Key generatedKey = null;
     String salt = "test";
     SecretKey secret = null;
-    byte[] iv = null;
-    AlgorithmParameterSpec ivParameterSpec = null;
-    AlgorithmParameters params;
-    byte[] testCipherText = null;
 
     int hashingIterations = 5000;
 
 
 
-    public void createIV() {
-        final byte[] iv = new byte[256];
-        final SecureRandom theRNG = new SecureRandom();
-        theRNG.nextBytes(iv);
-        ivParameterSpec = new IvParameterSpec(iv);
-    }
+//    public byte[] createIV() throws InvalidParameterSpecException {
+//        byte[] iv = new byte[256];
+//        final SecureRandom theRNG = new SecureRandom();
+//        theRNG.nextBytes(iv);
+//        AlgorithmParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+//        iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+//        return iv;
+//    }
 
 
     /**
@@ -55,40 +57,64 @@ public class SecurityManager {
      * @param data is a string
      * @return the encrypted string
      */
-    public String encrypt(String data){
+    public byte[] encrypt(String data){
         try{
+
+            Log.d("help", "Data: " + data);
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secret);
-            params = cipher.getParameters();
-            ivParameterSpec = params.getParameterSpec(IvParameterSpec.class);
-            byte[] ciphertext = cipher.doFinal(data.getBytes("UTF-8"));
-            testCipherText = ciphertext;
+            AlgorithmParameters params = cipher.getParameters();
 
-            return Base64.encodeToString(ciphertext, 0);
+            byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+            byte[] ciphertext = cipher.doFinal(data.getBytes("UTF-8"));
+
+            byte[] finalMessage = new byte[ciphertext.length + iv.length];
+            for(int i = 0; i<iv.length; i++){
+                finalMessage[i] = iv[i];
+            }
+            for(int i = 0; i < ciphertext.length; i++){
+                finalMessage[i + iv.length] = ciphertext[i];
+            }
+
+            return finalMessage;
         }catch(Exception e){
             e.printStackTrace();
-            Log.d("Error", "Error in Encrypt");
+            Log.d("help", "Error in Encrypt");
         }
-        return "";
+        return null;
     }
 
     /**
      * Decrypt a string with AES algorithm.
      *
-     * @param encryptedData is a string
+     *  is a string
      * @return the decrypted string
      */
-    public String decrypt(String encryptedData){
+    public String decrypt(byte[] data){
         try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, secret, params.getParameterSpec(IvParameterSpec.class));
-            String plaintext = new String(cipher.doFinal(testCipherText), "UTF-8");
+            byte[] iv = new byte[16];
+            byte[] cipherText = new byte[data.length - iv.length];
 
-            return plaintext;
+            for(int i = 0; i < 16;  i++){
+                iv[i] = data[i];
+            }
+            for(int i = 0; i < cipherText.length; i++){
+                cipherText[i] = data[i + iv.length];
+            }
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+            cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
+            byte[] decryptedText = cipher.doFinal(cipherText);
+
+            String plainText = new String(decryptedText);
+
+            Log.d("help", plainText);
+
+            return plainText;
         }catch(Exception e){
             e.printStackTrace();
-            Log.d("Error", "Error in decrypt");
+            Log.d("help", "Error in decrypt");
         }
         return "";
     }
@@ -117,13 +143,13 @@ public class SecurityManager {
 
         userSaltBytes = userSalt.getBytes();
 
-        Log.d("help", "Authenticate salt: " + userSalt);
+//        Log.d("help", "Authenticate salt: " + userSalt);
         byte[] hash = hashPassword(password, userSaltBytes);
         String hashInFile = fileManager.readHash(context);
         String userHashEncoded  = Base64.encodeToString(hash, Base64.DEFAULT);
-        Log.d("help", "Authenticate hashed password: " + userHashEncoded);
-        Log.d("help", "Authenticate hashInFile: " + hashInFile);
-        Log.d("help", "Authenticate calculated hash: " + hash);
+//        Log.d("help", "Authenticate hashed password: " + userHashEncoded);
+//        Log.d("help", "Authenticate hashInFile: " + hashInFile);
+//        Log.d("help", "Authenticate calculated hash: " + hash);
 
         if(userHashEncoded.equals(hashInFile)){
             return true;
@@ -148,7 +174,7 @@ public class SecurityManager {
 
     public String generateSalt(){
         Random randomValue = new SecureRandom();
-        byte[] salt = new byte[8];
+        byte[] salt = new byte[32];
         randomValue.nextBytes(salt);
         return Base64.encodeToString(salt, Base64.DEFAULT);
     }
