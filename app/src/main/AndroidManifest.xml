@@ -17,7 +17,15 @@
         </activity>
         <activity android:name=".LandingActivity" />
         <activity android:name=".StartupActivity" />
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity
+            android:name=".Main2Activity"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ListActivity"></activity>
+
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
 </manifest>

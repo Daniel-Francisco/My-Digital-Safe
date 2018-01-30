@@ -1,9 +1,12 @@
 package com.development.security.ciphernote;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by danie on 1/18/2018.
@@ -25,25 +31,15 @@ import java.io.OutputStreamWriter;
 public class FileManager {
     private DataStructures.UserConfiguration userConfiguration = null;
 
-    public void writeDataFile(String filename, byte[] data) throws JSONException {
+    public void writeDataFile(Context context, String filename, byte[] data) throws JSONException {
 //        JSONObject fileObject = new JSONObject();
 //        fileObject.put("lastModified", "");
 //        fileObject.put("data", data);
-        writeToDataFile(data, filename);
+        writeToDataFile(context, data, filename);
     }
-    public byte[] readDataFile(String filename) throws JSONException {
-        byte[] jsonBytes = readFromDataFile(filename);
+    public byte[] readDataFile(Context context, String filename) throws JSONException {
+        byte[] jsonBytes = readFromDataFile(context, filename);
         return jsonBytes;
-//        String json = Base64.encodeToString(jsonBytes, Base64.DEFAULT);
-//        if(isJSONValid(json)){
-//            JSONObject object = new JSONObject(json);
-//            return object;
-//        }else{
-//            JSONObject object = new JSONObject();
-//            object.put("lastModified", "");
-//            object.put("data", "");
-//            return object;
-//        }
     }
     private boolean isJSONValid(String test){
         try {
@@ -51,7 +47,11 @@ public class FileManager {
         } catch (JSONException ex) {
             // edited, to include @Arthur's comment
             // e.g. in case JSONArray is valid as well...
-            return false;
+            try{
+                new JSONArray(test);
+            }catch(Exception e){
+                return false;
+            }
         }
         return true;
     }
@@ -153,11 +153,10 @@ public class FileManager {
     }
 
 
-    private void writeToDataFile(byte[] data, String fileName) {
+    private void writeToDataFile(Context context, byte[] data, String fileName) {
         try {
-//            Log.d("fileLocation", "Path: "+NotebookEdit.this.getFilesDir().getAbsolutePath());
             if(data != null){
-                FileOutputStream fos = new FileOutputStream("/data/data/security.ca.CipherNote/files/" + fileName + ".txt");//openFileOutput(fileName+".txt", Context.MODE_PRIVATE);
+                FileOutputStream fos = new FileOutputStream("/data/data/com.development.security.ciphernote/files/" + fileName + ".txt");//openFileOutput(fileName+".txt", Context.MODE_PRIVATE);
                 fos.write(data);
                 fos.close();
             }
@@ -167,8 +166,8 @@ public class FileManager {
             Log.e("Exception", "File write failed: " + e.toString());
         }
     }
-    private byte[] readFromDataFile(String fileName) {
-        File file = new File("/data/data/security.ca.CipherNote/files/"+fileName+".txt");
+    private byte[] readFromDataFile(Context context, String fileName) {
+        File file = new File("/data/data/com.development.security.ciphernote/files/"+fileName+".txt");
         int size = (int) file.length();
         byte[] bytes = new byte[size];
         try {
@@ -183,6 +182,49 @@ public class FileManager {
             e.printStackTrace();
         }
         return bytes;
+    }
+
+    public ArrayList<DataStructures.FileManagmentObject> readFileManagmentData(Context context) throws JSONException {
+        ArrayList<DataStructures.FileManagmentObject> filesArray = new ArrayList<>();
+        String spData = readFromSP(context, "filesData");
+
+        if(spData == null){
+            spData = "";
+        }
+
+        if(isJSONValid(spData)){
+            JSONArray jsonArray = new JSONArray(spData);
+            for(int i = 0; i<jsonArray.length(); i++){
+                DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
+                fileManagmentObject.userDefinedFileName = jsonArray.getJSONObject(i).getString("userDefinedFileName");
+                filesArray.add(fileManagmentObject);
+            }
+        }
+        return filesArray;
+    }
+    public void writeFileManagmentData(Context context, ArrayList<DataStructures.FileManagmentObject> files) throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for(int i = 0; i<files.size(); i++){
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userDefinedFileName", files.get(i).userDefinedFileName);
+            jsonArray.put(jsonObject);
+        }
+        String jsonString = jsonArray.toString();
+        Log.d("help", "JSON String: " + jsonString);
+        writeToSP(context, "filesData", jsonString);
+    }
+
+
+    private void writeToSP(Context context, String label, String data){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(label, data);
+        editor.apply();
+    }
+    private String readFromSP(Context context, String label){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String name = preferences.getString(label, null);
+        return name;
     }
 
 }

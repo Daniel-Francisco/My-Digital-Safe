@@ -40,13 +40,6 @@ public class StartupActivity extends AppCompatActivity {
 
             byte[] newHash = securityManager.hashPassword(userPassword, saltFromFile.getBytes());
 
-//            for(int i=0; i<10; i++){
-//                byte[] testHash = securityManager.hashPassword(userPassword, salt.getBytes());
-//                Log.d("help", "Test: " + Base64.encodeToString(testHash, Base64.DEFAULT));
-//            }
-
-//            Log.d("help", "StartupActivity hash: " + Base64.encodeToString(newHash, Base64.DEFAULT));
-
             Log.d("help", "Startup ran");
 
             fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), 5000);

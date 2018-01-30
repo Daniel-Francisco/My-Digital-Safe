@@ -7,48 +7,17 @@
     tools:context="com.development.security.ciphernote.LandingActivity">
 
 
-    <RelativeLayout
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:padding="15dp"
         android:layout_height="match_parent">
-        <EditText
-            android:id="@+id/userInput"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true"
-            android:inputType="textMultiLine"
-            tools:layout_editor_absoluteX="45dp"
-            tools:layout_editor_absoluteY="134dp" />
-        <Button
-            android:id="@+id/encrypt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Encrypt!"
-            android:layout_below="@id/userInput"
-            android:layout_centerHorizontal="true"
-            tools:layout_editor_absoluteX="117dp"
-            tools:layout_editor_absoluteY="311dp" />
-        <TextView
-            android:id="@+id/cipher"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:layout_below="@id/encrypt"
-            android:layout_centerHorizontal="true"
-            tools:layout_editor_absoluteX="150dp"
-            tools:layout_editor_absoluteY="354dp" />
-        <TextView
-            android:id="@+id/plain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:layout_below="@id/cipher"
-            android:layout_centerHorizontal="true"
-            tools:layout_editor_absoluteX="150dp"
-            tools:layout_editor_absoluteY="354dp" />
-    </RelativeLayout>
+
+        <WebView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/webkit"/>
+
+    </ScrollView>
 
 
 

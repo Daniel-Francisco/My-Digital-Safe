@@ -179,4 +179,18 @@ public class SecurityManager {
         return Base64.encodeToString(salt, Base64.DEFAULT);
     }
 
+    /*
+        Validates the users passwords against the decided password entropy rules for the app.
+        User's password must:
+            1. Be a minimum of 6 characters
+            2. Contain an upper case and a lower case character
+            3. At least one number
+     */
+    public boolean validatePassword(String userPassword){
+
+        return true;
+    }
+
+
+
 }

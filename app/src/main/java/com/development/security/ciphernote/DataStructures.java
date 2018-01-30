@@ -1,5 +1,7 @@
 package com.development.security.ciphernote;
 
+import java.util.Date;
+
 /**
  * Created by danie on 1/19/2018.
  */
@@ -32,6 +34,15 @@ public class DataStructures {
         }
 
     }
+
+    static class FileManagmentObject{
+        public FileManagmentObject(){
+
+        }
+        public String userDefinedFileName;
+        public Date lastAccessed;
+    }
+
     class notePage {
 
     }
