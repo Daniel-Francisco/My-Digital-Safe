@@ -143,13 +143,10 @@ public class SecurityManager {
 
         userSaltBytes = userSalt.getBytes();
 
-//        Log.d("help", "Authenticate salt: " + userSalt);
         byte[] hash = hashPassword(password, userSaltBytes);
         String hashInFile = fileManager.readHash(context);
         String userHashEncoded  = Base64.encodeToString(hash, Base64.DEFAULT);
-//        Log.d("help", "Authenticate hashed password: " + userHashEncoded);
-//        Log.d("help", "Authenticate hashInFile: " + hashInFile);
-//        Log.d("help", "Authenticate calculated hash: " + hash);
+
 
         if(userHashEncoded.equals(hashInFile)){
             return true;

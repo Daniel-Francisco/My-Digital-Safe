@@ -30,6 +30,18 @@ import java.util.HashMap;
 
 public class FileManager {
     private DataStructures.UserConfiguration userConfiguration = null;
+    public Boolean checkForFirstRunFile(Context context) throws JSONException {
+        byte[] data = readFromDataFile(context, "startup");
+        if((new String(data)).equals("started")){
+            return false;
+        }
+        return true;
+    }
+    public void writeToFirstRunFile(Context context){
+        writeToDataFile(context, "started".getBytes(), "startup");
+    }
+
+
 
     public void writeDataFile(Context context, String filename, byte[] data) throws JSONException {
 //        JSONObject fileObject = new JSONObject();
@@ -156,7 +168,7 @@ public class FileManager {
     private void writeToDataFile(Context context, byte[] data, String fileName) {
         try {
             if(data != null){
-                FileOutputStream fos = new FileOutputStream("/data/data/com.development.security.ciphernote/files/" + fileName + ".txt");//openFileOutput(fileName+".txt", Context.MODE_PRIVATE);
+                FileOutputStream fos = new FileOutputStream(context.getFilesDir() + fileName + ".txt");//openFileOutput(fileName+".txt", Context.MODE_PRIVATE);
                 fos.write(data);
                 fos.close();
             }
@@ -167,7 +179,7 @@ public class FileManager {
         }
     }
     private byte[] readFromDataFile(Context context, String fileName) {
-        File file = new File("/data/data/com.development.security.ciphernote/files/"+fileName+".txt");
+        File file = new File(context.getFilesDir()+fileName+".txt");
         int size = (int) file.length();
         byte[] bytes = new byte[size];
         try {

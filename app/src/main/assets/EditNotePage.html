@@ -2,7 +2,7 @@
 <html>
 
 	<div id="page">
-		<textarea id="noteArea" rows="30"></textarea>
+		<textarea id="noteArea" oninput="updateJavaString()" rows="30"></textarea>
 		<!--<input id="saveButton" value="Save" class="login" onclick="save();" type="button">-->
 	</div>
 
@@ -33,7 +33,14 @@
 
 <script>
 	console.log("Test");
-	
+	var initialText = Android.fetchContents();
+	var editText = document.getElementById("noteArea");
+	editText.value = initialText;
+
+	function updateJavaString(){
+		Android.updateNoteValue(editText.value);
+	}
+
 	document.getElementById("noteArea").addEventListener("keyup", function(event) {
 		event.preventDefault();
 		if (event.keyCode === 13) {

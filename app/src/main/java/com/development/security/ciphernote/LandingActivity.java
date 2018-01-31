@@ -27,6 +27,8 @@ public class LandingActivity extends AppCompatActivity {
     SecurityManager securityManager;
     String fileName;
 
+    String noteValue = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,7 @@ public class LandingActivity extends AppCompatActivity {
         super.onPause();
 
         try {
-            String plain = userInput.getText().toString();
+            String plain = noteValue;
             byte[] userCipher = securityManager.encrypt(plain);
 
             Log.d("help", "Cipher: " + Base64.encodeToString(userCipher, Base64.DEFAULT));
@@ -73,8 +75,8 @@ public class LandingActivity extends AppCompatActivity {
     private String fetchFileString(){
         try {
             byte[] fileJson = fileManager.readDataFile(applicationContext, fileName);
-            String decrypted = securityManager.decrypt(fileJson);
-            return decrypted;
+            noteValue = securityManager.decrypt(fileJson);
+            return noteValue;
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -90,5 +92,12 @@ public class LandingActivity extends AppCompatActivity {
         public String fetchContents() {
             return fetchFileString();
         }
+
+        @JavascriptInterface
+        public void updateNoteValue(String value){
+            noteValue = value;
+        }
     }
+
+
 }

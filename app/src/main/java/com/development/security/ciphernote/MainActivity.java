@@ -23,25 +23,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        prefs = getSharedPreferences("com.security.test", MODE_PRIVATE);
+        FileManager fileManager = new FileManager();
 
-        Log.d("help", "Startup");
+        try{
+            if(fileManager.checkForFirstRunFile(this.getApplicationContext())){
+                fileManager.writeToFirstRunFile(this.getApplicationContext());
+                Log.d("help", "FirstRun again");
 
-        if(prefs.getBoolean("firstRun", true)){
+                Intent startupIntent = new Intent(this, StartupActivity.class);
+                startActivity(startupIntent);
+            }else{
+                Log.d("help", "Going to call landingActivity");
 
-            Log.d("help", "FirstRun again");
-
-            Intent startupIntent = new Intent(this, StartupActivity.class);
-            startActivity(startupIntent);
-
-        }else{
-
-            Log.d("help", "Going to call landingActivity");
-
-            Intent loginActivity = new Intent(this, LoginActivity.class);
-            startActivity(loginActivity);
-
+                Intent loginActivity = new Intent(this, LoginActivity.class);
+                startActivity(loginActivity);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
     }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();  // Always call the superclass method first
+//
+//        Log.d("help", "Going to call landingActivity");
+//
+//        Intent loginActivity = new Intent(this, LoginActivity.class);
+//        startActivity(loginActivity);
+//    }
 }

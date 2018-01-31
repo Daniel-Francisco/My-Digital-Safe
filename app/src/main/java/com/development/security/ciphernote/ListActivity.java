@@ -5,19 +5,23 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class ListActivity extends android.app.ListActivity {
     ArrayList<DataStructures.FileManagmentObject> list;
     Context applicationContext;
+    FileManager fileManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +33,7 @@ public class ListActivity extends android.app.ListActivity {
 
         try{
 
-            final FileManager fileManager = new FileManager();
+            fileManager = new FileManager();
             list = fileManager.readFileManagmentData(applicationContext);
 
             listViewRefresh();
@@ -42,18 +46,31 @@ public class ListActivity extends android.app.ListActivity {
                     // Code here executes on main thread after user presses button
                     try {
                         String name = noteNameEditText.getText().toString();
-                        DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
-                        fileManagmentObject.userDefinedFileName = name;
-                        list.add(fileManagmentObject);
-                        fileManager.writeFileManagmentData(applicationContext, list);
-                        listViewRefresh();
 
-                        noteNameEditText.setText("");
+                        if(findIndex(name) == -1){
+                            DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
+                            fileManagmentObject.userDefinedFileName = name;
+                            list.add(fileManagmentObject);
+                            fileManager.writeFileManagmentData(applicationContext, list);
+                            listViewRefresh();
+
+                            noteNameEditText.setText("");
 
 
-                        Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
-                        landingIntent.putExtra("fileName", name);
-                        startActivity(landingIntent);
+                            Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
+                            landingIntent.putExtra("fileName", name);
+                            startActivity(landingIntent);
+                        }else{
+
+                            CharSequence failedAuthenticationString = getString(R.string.noteAlreadyExists);
+
+                            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                            toast.show();
+
+                        }
+
+
+
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -86,8 +103,58 @@ public class ListActivity extends android.app.ListActivity {
 
         String  itemValue = (String) l.getItemAtPosition(position);
 
+        int index = findIndex(itemValue);
+        if(index != -1){
+            try{
+                DataStructures.FileManagmentObject object = list.get(index);
+                list.remove(index);
+                list.add(object);
+
+                fileManager.writeFileManagmentData(applicationContext, list);
+                listViewRefresh();
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
         Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
         landingIntent.putExtra("fileName", itemValue);
         startActivity(landingIntent);
     }
+
+    private int findIndex(String filename){
+        for(int i = 0; i < list.size(); i++){
+            if(list.get(i).userDefinedFileName.equals(filename)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    protected String androidGetData(){
+        return "data wooo";
+    }
+    protected void androidListClickOccurred(String value){
+        Log.d("help", "List click on value: " + value);
+    }
+
+
+
+    public class WebAppInterface {
+        Context mContext;
+        WebAppInterface(Context c) {
+            mContext = c;
+        }
+        @JavascriptInterface
+        public String getData() {
+            return androidGetData();
+        }
+
+        @JavascriptInterface
+        public void listClickOccurred(String value){
+            androidListClickOccurred(value);
+        }
+    }
+
 }

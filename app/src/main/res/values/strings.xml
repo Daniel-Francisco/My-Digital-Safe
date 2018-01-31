@@ -9,4 +9,8 @@
 
     <string name="failed_login_toast">Incorrect password!</string>
 
+    <string name="noteAlreadyExists">Note already exists!</string>
+
+    <string name="passwordsDoNotMatch">Passwords do not match!</string>
+
 </resources>
