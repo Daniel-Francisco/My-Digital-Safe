@@ -2,12 +2,9 @@
 	<html>
 		<head>
 			<html lang="en">
-			  <head>
 			    <meta charset="utf-8"> 
 			    <meta name="viewport" content="width=device-width, initial-scale=1">
-			  </head>
 			</html>
-			<link rel="stylesheet" href="../assets/css/main.css">
 			<!-- Latest compiled and minified CSS -->
 			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
@@ -16,23 +13,28 @@
 
 			<!-- Latest compiled JavaScript -->
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+			<link rel="stylesheet" href="./css/style.css">
+
 		</head>
 	<body>
 		<div class="container">
 			<div id="loginForm">
 				<input name="password" id="password" value="" class="input" placeholder="Password" type="password">
-				<input id="signIn" value="Sign In" class="login" onclick="validate();" type="button">
+				<input id="signIn" value="Sign In" class="login" type="button">
 			</div>
 		</div>
 
 
 		<script>
 			$(document).ready(function() {
-				function validate(){
-			        var password = $("#password");
-					console.log(password.value);
-					Android.authenticateUser(password.value);
-				}
+
+				$("#signIn").on("click", function(event) {
+					event.preventDefault();
+			        var password = $("#password").val();
+					console.log(password);
+					Android.authenticateUser(password);
+				});
 			
 				$("#password")[0].addEventListener("keyup", function(event) {
 					event.preventDefault();
@@ -45,5 +47,7 @@
 
 			
 		</script>
+
 	</body>
+
 </html>
