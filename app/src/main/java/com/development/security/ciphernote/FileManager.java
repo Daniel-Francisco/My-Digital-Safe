@@ -168,7 +168,7 @@ public class FileManager {
     private void writeToDataFile(Context context, byte[] data, String fileName) {
         try {
             if(data != null){
-                FileOutputStream fos = new FileOutputStream(context.getFilesDir() + fileName + ".txt");//openFileOutput(fileName+".txt", Context.MODE_PRIVATE);
+                FileOutputStream fos = new FileOutputStream(context.getFilesDir() +  "/" + fileName + ".txt");//openFileOutput(fileName+".txt", Context.MODE_PRIVATE);
                 fos.write(data);
                 fos.close();
             }
@@ -179,7 +179,7 @@ public class FileManager {
         }
     }
     private byte[] readFromDataFile(Context context, String fileName) {
-        File file = new File(context.getFilesDir()+fileName+".txt");
+        File file = new File(context.getFilesDir() + "/" + fileName+".txt");
         int size = (int) file.length();
         byte[] bytes = new byte[size];
         try {
@@ -196,9 +196,12 @@ public class FileManager {
         return bytes;
     }
 
-    public ArrayList<DataStructures.FileManagmentObject> readFileManagmentData(Context context) throws JSONException {
+    public ArrayList<DataStructures.FileManagmentObject> readFileManagmentData(SecurityManager securityManager, Context context) throws JSONException {
         ArrayList<DataStructures.FileManagmentObject> filesArray = new ArrayList<>();
-        String spData = readFromSP(context, "filesData");
+        byte[] spDataBytes = readFromSP(context);
+
+        String spData = securityManager.decrypt(spDataBytes);
+
 
         if(spData == null){
             spData = "";
@@ -214,7 +217,7 @@ public class FileManager {
         }
         return filesArray;
     }
-    public void writeFileManagmentData(Context context, ArrayList<DataStructures.FileManagmentObject> files) throws JSONException {
+    public void writeFileManagmentData(SecurityManager securityManager, Context context, ArrayList<DataStructures.FileManagmentObject> files) throws JSONException {
         JSONArray jsonArray = new JSONArray();
         for(int i = 0; i<files.size(); i++){
             JSONObject jsonObject = new JSONObject();
@@ -223,20 +226,29 @@ public class FileManager {
         }
         String jsonString = jsonArray.toString();
         Log.d("help", "JSON String: " + jsonString);
-        writeToSP(context, "filesData", jsonString);
+
+        byte[] cipher = securityManager.encrypt(jsonString);
+
+        writeToSP(context, cipher);
     }
 
 
-    private void writeToSP(Context context, String label, String data){
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(label, data);
-        editor.apply();
+    private void writeToSP(Context context, byte[] data){
+        String label = "filesData";
+
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+//        SharedPreferences.Editor editor = preferences.edit();
+//        editor.putString(label, data);
+//        editor.apply();
+        writeToDataFile(context, data, label);
+
     }
-    private String readFromSP(Context context, String label){
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String name = preferences.getString(label, null);
-        return name;
+    private byte[] readFromSP(Context context) throws JSONException {
+        String label = "filesData";
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+//        String name = preferences.getString(label, null);
+//        return name;
+        return readDataFile(context, label);
     }
 
 }

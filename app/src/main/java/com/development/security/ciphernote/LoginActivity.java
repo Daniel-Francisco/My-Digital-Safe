@@ -2,24 +2,17 @@ package com.development.security.ciphernote;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 import android.webkit.JavascriptInterface;
 
 import org.json.JSONException;
-
-import java.util.EventListener;
 
 public class LoginActivity extends Activity {
     Context applicationContext;
@@ -29,6 +22,8 @@ public class LoginActivity extends Activity {
     final SecurityManager securityManager = SecurityManager.getInstance();
     DataStructures dataStructures = new DataStructures();
     final FileManager fileManager = new FileManager();
+    WebView browser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +34,7 @@ public class LoginActivity extends Activity {
         prefs = getSharedPreferences("com.security.test", MODE_PRIVATE);
         applicationContext = getApplicationContext();
 
-        WebView browser;
+
         browser=(WebView)findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
@@ -47,34 +42,66 @@ public class LoginActivity extends Activity {
     }
 
     public void androidAuthenticateUser(String password){
-        try {
-            if(password == null){
-                password = "";
+       //Call ASYNC task
+
+        browser.post(new Runnable() {
+            @Override
+            public void run() {
+                browser.loadUrl("javascript:spinnerToggle(true)");
             }
+        });
+        new AsyncLogin().execute(password);
+    }
 
-            Boolean authentication = null;
 
-            authentication = securityManager.authenticateUser(password, applicationContext, fileManager);
+    private class AsyncLogin extends AsyncTask<String, String, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try{
+                Boolean authentication = null;
+                String password = strings[0];
 
-            if(authentication){
-                Log.d("help", "Successful authentication!");
-                securityManager.generateKey(password);
-                Intent landingIntent = new Intent(applicationContext, ListActivity.class);
-                startActivity(landingIntent);
-            }else{
-                Log.d("help", "Failed authentication");
+                authentication = securityManager.authenticateUser(password, applicationContext, fileManager);
+
+                if(authentication){
+                    Log.d("help", "Successful authentication!");
+                    securityManager.generateKey(password);
+                    Intent landingIntent = new Intent(applicationContext, ListActivity.class);
+                    startActivity(landingIntent);
+                }else{
+                    Log.d("help", "Failed authentication");
 //                passwordField.setText("");
+                    return false;
+                }
+                return true;
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return false;
 
+        }
 
+        protected void onProgressUpdate(Integer... progress) {
+        }
+
+        protected void onPostExecute(Boolean status) {
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:spinnerToggle(false)");
+                }
+            });
+
+            if(!status){
                 CharSequence failedAuthenticationString = getString(R.string.failed_login_toast);
 
                 Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
                 toast.show();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+
         }
     }
+
 
     public class WebAppInterface {
         Context mContext;

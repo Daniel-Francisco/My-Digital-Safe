@@ -34,7 +34,7 @@ public class ListActivity extends android.app.ListActivity {
         try{
 
             fileManager = new FileManager();
-            list = fileManager.readFileManagmentData(applicationContext);
+            list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
 
             listViewRefresh();
 
@@ -51,15 +51,23 @@ public class ListActivity extends android.app.ListActivity {
                             DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
                             fileManagmentObject.userDefinedFileName = name;
                             list.add(fileManagmentObject);
-                            fileManager.writeFileManagmentData(applicationContext, list);
+                            fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
                             listViewRefresh();
 
                             noteNameEditText.setText("");
 
 
-                            Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
-                            landingIntent.putExtra("fileName", name);
-                            startActivity(landingIntent);
+                            try{
+                                Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
+
+                                String realFilename = SecurityManager.getInstance().SHA256Hash(name);
+
+                                landingIntent.putExtra("fileName", name);
+                                startActivity(landingIntent);
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
+
                         }else{
 
                             CharSequence failedAuthenticationString = getString(R.string.noteAlreadyExists);
@@ -110,7 +118,7 @@ public class ListActivity extends android.app.ListActivity {
                 list.remove(index);
                 list.add(object);
 
-                fileManager.writeFileManagmentData(applicationContext, list);
+                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
                 listViewRefresh();
 
             }catch (Exception e){
@@ -118,9 +126,16 @@ public class ListActivity extends android.app.ListActivity {
             }
         }
 
-        Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
-        landingIntent.putExtra("fileName", itemValue);
-        startActivity(landingIntent);
+        try{
+            Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
+
+            String realFilename = SecurityManager.getInstance().SHA256Hash(itemValue);
+
+            landingIntent.putExtra("fileName", itemValue);
+            startActivity(landingIntent);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private int findIndex(String filename){

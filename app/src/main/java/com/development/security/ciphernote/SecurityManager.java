@@ -6,8 +6,10 @@ import android.util.Log;
 
 import org.json.JSONException;
 
+import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
@@ -49,6 +51,12 @@ public class SecurityManager {
 //        iv = params.getParameterSpec(IvParameterSpec.class).getIV();
 //        return iv;
 //    }
+
+    public String SHA256Hash(String clearText) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] encodedhash = digest.digest(clearText.getBytes());
+        return Base64.encodeToString(encodedhash, Base64.DEFAULT);
+    }
 
 
     /**
@@ -118,6 +126,7 @@ public class SecurityManager {
         }
         return "";
     }
+
 
     /**
      * Generate a new encryption key.
