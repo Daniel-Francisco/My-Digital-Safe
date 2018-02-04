@@ -280,4 +280,24 @@ public class FileManager {
         }
     }
 
+    public Boolean deleteFile(Context context, String fileName, Boolean configFlag) {
+        File file;
+        Boolean status;
+        if (configFlag) {
+            file = new File(context.getFilesDir() + "/config/" + fileName+".txt");
+        } else {
+            file = new File(context.getFilesDir() + fileName+".txt");
+        }
+
+        return true;
+
+//        if (file.delete()) {
+//            System.out.println("File deleted successfully");
+//            return true;
+//        } else {
+//            System.out.println("Failed to delete the file");
+//            return false;
+//        }
+    }
+
 }

@@ -30,7 +30,7 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        Log.d("help", "LandingActivity ran");
+        Log.d("help", "EditNoteActivity ran");
         prefs = getSharedPreferences("com.security.test", MODE_PRIVATE);
         applicationContext = getApplicationContext();
 

@@ -17,7 +17,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LandingActivity" />
+        <activity android:name=".EditNoteActivity" />
         <activity android:name=".StartupActivity" />
         <activity android:name=".LoginActivity" />
         <activity

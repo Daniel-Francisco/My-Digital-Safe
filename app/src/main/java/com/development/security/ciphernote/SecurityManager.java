@@ -207,13 +207,41 @@ public class SecurityManager {
     /*
         Validates the users passwords against the decided password entropy rules for the app.
         User's password must:
-            1. Be a minimum of 6 characters
-            2. Contain an upper case and a lower case character
-            3. At least one number
-     */
-    public boolean validatePassword(String userPassword){
+           1. Cannot be null or empty
+	       2. 7+ characters in length
+	       3. Upper and lower case
 
-        return true;
+	       Return cases:
+	       0 = Good
+	       1 = Bad
+	       2 = Comment on lack of number
+	       3 = Comment on the number being 50 - 99 (easy to predict)
+     */
+    public Boolean validatePassword(String userPassword){
+        Boolean nullEmptyFlag = false;
+        Boolean lengthFlag = false;
+        Boolean caseFlag = false;
+
+        if(!(userPassword.length() > 6)){
+            lengthFlag = true;
+        }
+        if(userPassword.isEmpty() || userPassword.equals(null) || userPassword.equals("")){
+            nullEmptyFlag = true;
+        }
+        if(userPassword.toLowerCase().equals(userPassword) || userPassword.toUpperCase().equals(userPassword)){
+            caseFlag = true;
+        }
+
+        if((nullEmptyFlag || lengthFlag || caseFlag)){
+            return true;
+        }
+
+//        String numberlessString = userPassword.replaceAll("[*0-9]", "");
+//        if((userPassword.length() - numberlessString.length()) == 0){
+//            return 2;
+//        }
+
+        return false;
     }
 
     public byte[] encryptWithAlternatePassword(String password, byte[] data, Boolean encryptOrDecryptFlag){

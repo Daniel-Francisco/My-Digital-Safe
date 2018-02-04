@@ -9,6 +9,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -17,6 +18,9 @@ import org.json.JSONException;
 
 public class StartupActivity extends AppCompatActivity {
     Context applicationContext;
+    WebView browser;
+    final SecurityManager securityManager = SecurityManager.getInstance();
+    final FileManager fileManager = new FileManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,64 +29,55 @@ public class StartupActivity extends AppCompatActivity {
 
         applicationContext = getApplicationContext();
 
-        final SecurityManager securityManager = SecurityManager.getInstance();
-        final FileManager fileManager = new FileManager();
 
-        final EditText passwordOne = (EditText) findViewById(R.id.passwordOne);
-        final EditText passwordTwo = (EditText) findViewById(R.id.passwordTwo);
-        Button createPasswordButton = (Button) findViewById(R.id.creatPassword);
+        browser=(WebView)findViewById(R.id.webkit);
+        browser.getSettings().setJavaScriptEnabled(true);
+        browser.addJavascriptInterface(new StartupActivity.WebAppInterface(this), "Android");
+        browser.loadUrl("file:///android_asset/StartupPage.html");
 
-        createPasswordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try{
-                    String passwordOneValue = passwordOne.getText().toString();
-                    String passwordTwoValue = passwordTwo.getText().toString();
 
-                    //Boolean passwordVaidate = validatePassword(passwordOneValue);
-                    if(passwordOneValue.equals(passwordTwoValue)){
-                        String salt = securityManager.generateSalt();
-                        Log.d("help", "StartupActivity salt: " + salt);
-                        fileManager.saveHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), 5000);
 
-                        String saltFromFile = fileManager.getSalt(applicationContext);
 
-                        byte[] newHash = securityManager.hashPassword(passwordOneValue, saltFromFile.getBytes());
+    }
 
-                        Log.d("help", "Startup ran");
+    protected void androidCreatePassword(String passwordOne, String passwordTwo){
+        try {
+            //Boolean passwordVaidate = validatePassword(passwordOneValue);
+            if (passwordOne.equals(passwordTwo)) {
+                String salt = securityManager.generateSalt();
+                Log.d("help", "StartupActivity salt: " + salt);
+                fileManager.saveHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), 5000);
 
-                        fileManager.writeToFirstRunFile(applicationContext);
+                String saltFromFile = fileManager.getSalt(applicationContext);
 
-                        fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), 5000);
-                        Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
-                        startActivity(loginIntent);
-                        finish();
-                    }else{
-                        passwordOne.setText("");
-                        passwordTwo.setText("");
+                byte[] newHash = securityManager.hashPassword(passwordOne, saltFromFile.getBytes());
 
-                        CharSequence failedAuthenticationString = getString(R.string.passwordsDoNotMatch);
+                Log.d("help", "Startup ran");
 
-                        Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-                        toast.show();
+                fileManager.writeToFirstRunFile(applicationContext);
+
+                fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), 5000);
+                Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
+                startActivity(loginIntent);
+                finish();
+            } else {
+                browser.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        browser.loadUrl("javascript:clearFields()");
                     }
+                });
 
+                CharSequence failedAuthenticationString = getString(R.string.passwordsDoNotMatch);
 
-                }catch (Exception e){
-                        e.printStackTrace();
-                }
+                Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                toast.show();
             }
-        });
-
-
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
-    protected void androidCreatePassword(String password){
-        Log.d("help", "Android create password called!");
-    }
-    protected Boolean androidValidatePassword(){
-        return true;
-    }
 
     public class WebAppInterface {
         Context mContext;
@@ -90,13 +85,8 @@ public class StartupActivity extends AppCompatActivity {
             mContext = c;
         }
         @JavascriptInterface
-        public void createPassword(String password) {
-            androidValidatePassword();
-        }
-
-        @JavascriptInterface
-        public Boolean validatePassword(String value){
-            return androidValidatePassword();
+        public void createPassword(String passwordOne, String passwordTwo) {
+            androidCreatePassword(passwordOne, passwordTwo);
         }
     }
 }

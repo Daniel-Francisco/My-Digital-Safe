@@ -14,13 +14,15 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 
-public class LandingActivity extends AppCompatActivity {
+public class EditNoteActivity extends AppCompatActivity {
     Context applicationContext;
     EditText userInput = null;
     FileManager fileManager;
@@ -83,6 +85,40 @@ public class LandingActivity extends AppCompatActivity {
         return "";
     }
 
+    private void androidDelete(){
+        try {
+            noteValue = "";
+            byte[] deleteData = noteValue.getBytes();
+            fileManager.writeDataFile(applicationContext, fileName, deleteData);
+
+            if(fileManager.deleteFile(applicationContext, fileName, false)){
+                CharSequence failedAuthenticationString = getString(R.string.deleteFileSuccess);
+                Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                toast.show();
+
+
+                ArrayList<DataStructures.FileManagmentObject> list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
+
+                int index = findIndex(list, fileName);
+                list.remove(index);
+
+                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
+
+                Intent landingIntent = new Intent(applicationContext, ListActivity.class);
+                startActivity(landingIntent);
+                finish();
+
+            }else{
+                CharSequence failedAuthenticationString = getString(R.string.deleteFileFailed);
+                Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                toast.show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public class WebAppInterface {
         Context mContext;
         WebAppInterface(Context c) {
@@ -97,6 +133,20 @@ public class LandingActivity extends AppCompatActivity {
         public void updateNoteValue(String value){
             noteValue = value;
         }
+
+        @JavascriptInterface
+        public void deleteNote(){
+            androidDelete();
+        }
+    }
+
+    private int findIndex(ArrayList<DataStructures.FileManagmentObject> list, String filename){
+        for(int i = 0; i < list.size(); i++){
+            if(list.get(i).userDefinedFileName.equals(filename)){
+                return i;
+            }
+        }
+        return -1;
     }
 
 

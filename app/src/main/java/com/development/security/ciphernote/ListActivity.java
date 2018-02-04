@@ -2,9 +2,7 @@ package com.development.security.ciphernote;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -13,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -58,7 +55,7 @@ public class ListActivity extends android.app.ListActivity {
 
 
                             try{
-                                Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
+                                Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
 
                                 String realFilename = SecurityManager.getInstance().SHA256Hash(name);
 
@@ -135,7 +132,7 @@ public class ListActivity extends android.app.ListActivity {
         }
 
         try{
-            Intent landingIntent = new Intent(applicationContext, LandingActivity.class);
+            Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
 
             String realFilename = SecurityManager.getInstance().SHA256Hash(itemValue);
 
