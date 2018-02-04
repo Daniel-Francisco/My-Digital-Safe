@@ -31,26 +31,24 @@ import java.util.HashMap;
 public class FileManager {
     private DataStructures.UserConfiguration userConfiguration = null;
     public Boolean checkForFirstRunFile(Context context) throws JSONException {
-        byte[] data = readFromDataFile(context, "startup");
+        byte[] data = readFromDataFile(context, "startup", true);
         if((new String(data)).equals("started")){
             return false;
         }
         return true;
     }
     public void writeToFirstRunFile(Context context){
-        writeToDataFile(context, "started".getBytes(), "startup");
+        checkConfigDirectory(context);
+        writeToDataFile(context, "started".getBytes(), "startup", true);
     }
 
 
 
     public void writeDataFile(Context context, String filename, byte[] data) throws JSONException {
-//        JSONObject fileObject = new JSONObject();
-//        fileObject.put("lastModified", "");
-//        fileObject.put("data", data);
-        writeToDataFile(context, data, filename);
+        writeToDataFile(context, data, filename, false);
     }
     public byte[] readDataFile(Context context, String filename) throws JSONException {
-        byte[] jsonBytes = readFromDataFile(context, filename);
+        byte[] jsonBytes = readFromDataFile(context, filename, false);
         return jsonBytes;
     }
     private boolean isJSONValid(String test){
@@ -165,10 +163,16 @@ public class FileManager {
     }
 
 
-    private void writeToDataFile(Context context, byte[] data, String fileName) {
+    private void writeToDataFile(Context context, byte[] data, String fileName, Boolean configFlag) {
         try {
             if(data != null){
-                FileOutputStream fos = new FileOutputStream(context.getFilesDir() +  "/" + fileName + ".txt");//openFileOutput(fileName+".txt", Context.MODE_PRIVATE);
+                FileOutputStream fos = null;
+                if(configFlag){
+                    fos = new FileOutputStream(context.getFilesDir() +  "/config/" + fileName + ".txt");
+                }else{
+                    fos = new FileOutputStream(context.getFilesDir() +  "/" + fileName + ".txt");
+                }
+
                 fos.write(data);
                 fos.close();
             }
@@ -178,8 +182,13 @@ public class FileManager {
             Log.e("Exception", "File write failed: " + e.toString());
         }
     }
-    private byte[] readFromDataFile(Context context, String fileName) {
-        File file = new File(context.getFilesDir() + "/" + fileName+".txt");
+    private byte[] readFromDataFile(Context context, String fileName, Boolean configFlag) {
+        File file = null;
+        if(configFlag){
+            file = new File(context.getFilesDir() + "/config/" + fileName+".txt");
+        }else{
+            file = new File(context.getFilesDir() + "/" + fileName+".txt");
+        }
         int size = (int) file.length();
         byte[] bytes = new byte[size];
         try {
@@ -240,7 +249,7 @@ public class FileManager {
 //        SharedPreferences.Editor editor = preferences.edit();
 //        editor.putString(label, data);
 //        editor.apply();
-        writeToDataFile(context, data, label);
+        writeToDataFile(context, data, label, true);
 
     }
     private byte[] readFromSP(Context context) throws JSONException {
@@ -248,7 +257,27 @@ public class FileManager {
 //        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 //        String name = preferences.getString(label, null);
 //        return name;
-        return readDataFile(context, label);
+        return readFromDataFile(context, label, true);
+    }
+
+
+    public void writeToPasswordFile(Context context, byte[] data){
+        String label = "devicePassword";
+        writeToDataFile(context, data, label, true);
+    }
+
+    public byte[] readFromPasswordFile(Context context) throws JSONException {
+        String label = "devicePassword";
+        return readFromDataFile(context, label, true);
+    }
+
+
+    private void checkConfigDirectory(Context context){
+        File direct = new File(context.getFilesDir() +  "/config");
+
+        if(!direct.exists()) {
+            if(direct.mkdir()); //directory is created;
+        }
     }
 
 }

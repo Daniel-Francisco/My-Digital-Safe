@@ -51,9 +51,12 @@ public class StartupActivity extends AppCompatActivity {
 
                         Log.d("help", "Startup ran");
 
+                        fileManager.writeToFirstRunFile(applicationContext);
+
                         fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), 5000);
                         Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
                         startActivity(loginIntent);
+                        finish();
                     }else{
                         passwordOne.setText("");
                         passwordTwo.setText("");

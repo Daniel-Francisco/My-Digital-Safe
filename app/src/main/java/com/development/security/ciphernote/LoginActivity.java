@@ -65,9 +65,10 @@ public class LoginActivity extends Activity {
 
                 if(authentication){
                     Log.d("help", "Successful authentication!");
-                    securityManager.generateKey(password);
+                    securityManager.generateKey(applicationContext, password);
                     Intent landingIntent = new Intent(applicationContext, ListActivity.class);
                     startActivity(landingIntent);
+                    finish();
                 }else{
                     Log.d("help", "Failed authentication");
 //                passwordField.setText("");

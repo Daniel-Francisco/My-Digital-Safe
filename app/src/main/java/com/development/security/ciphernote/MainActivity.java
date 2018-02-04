@@ -27,16 +27,17 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             if(fileManager.checkForFirstRunFile(this.getApplicationContext())){
-                fileManager.writeToFirstRunFile(this.getApplicationContext());
                 Log.d("help", "FirstRun again");
 
                 Intent startupIntent = new Intent(this, StartupActivity.class);
                 startActivity(startupIntent);
+                finish();
             }else{
                 Log.d("help", "Going to call landingActivity");
 
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
+                finish();
             }
         }catch(Exception e){
             e.printStackTrace();

@@ -131,14 +131,33 @@ public class SecurityManager {
     /**
      * Generate a new encryption key.
      */
-    public void generateKey(String password){
+    public void generateKey(Context context, String password){
         try{
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             char[] passwordChars = password.toCharArray();
-            KeySpec spec = new PBEKeySpec(passwordChars, salt.getBytes(), 65536, 256);
+            KeySpec spec = new PBEKeySpec(passwordChars, salt.getBytes(), 1, 256);
             SecretKey tmp = factory.generateSecret(spec);
+
             secret = new SecretKeySpec(tmp.getEncoded(), "AES");
-//        byte[] passwordBytes = password.getBytes();
+
+            FileManager fileManager = new FileManager();
+            byte[] passwordBytes = fileManager.readFromPasswordFile(context);
+            String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
+            if(dataString.isEmpty() || dataString == null || dataString.equals("")){
+                String newPassword = generateSalt();
+                byte[] encryptedNewPassword = encrypt(newPassword);
+                fileManager.writeToPasswordFile(context, encryptedNewPassword);
+                passwordBytes = encryptedNewPassword;
+            }
+
+            String passwordString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
+
+            KeySpec spec2 = new PBEKeySpec(passwordString.toCharArray(), salt.getBytes(), 1, 256);
+            SecretKey tmp2 = factory.generateSecret(spec2);
+
+            secret = new SecretKeySpec(tmp2.getEncoded(), "AES");
+
+            //        byte[] passwordBytes = password.getBytes();
 //        return new SecretKeySpec(passwordBytes, ALGO);
         }catch(Exception e){
             e.printStackTrace();
@@ -197,6 +216,26 @@ public class SecurityManager {
         return true;
     }
 
+    public byte[] encryptWithAlternatePassword(String password, byte[] data, Boolean encryptOrDecryptFlag){
+        try{
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 1, 256);
+            SecretKey tmp = factory.generateSecret(spec);
+            SecretKey secretBackup = secret;
+            secret = new SecretKeySpec(tmp.getEncoded(), "AES");
+            byte[] cryptoData = null;
+            if(encryptOrDecryptFlag){
+                cryptoData = encrypt(Base64.encodeToString(data, Base64.DEFAULT));
+            }else{
+                cryptoData = decrypt(data).getBytes();
+            }
+            secret = secretBackup;
+            return cryptoData;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
 }

@@ -86,6 +86,14 @@ public class ListActivity extends android.app.ListActivity {
                 }
             });
 
+            Button passwordResetButton = (Button) findViewById(R.id.passwordResetLink);
+            passwordResetButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent landingIntent = new Intent(applicationContext, ChangePasswordActivity.class);
+                    startActivity(landingIntent);
+                }
+            });
+
 
 
         }catch (Exception e){
