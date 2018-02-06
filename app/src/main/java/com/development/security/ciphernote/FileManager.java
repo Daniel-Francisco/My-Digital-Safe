@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,7 +33,7 @@ import java.util.HashMap;
 
 public class FileManager {
     private DataStructures.UserConfiguration userConfiguration = null;
-    public Boolean checkForFirstRunFile(Context context) throws JSONException {
+    public Boolean checkForFirstRunFile(Context context) throws JSONException, IOException {
         byte[] data = readFromDataFile(context, "startup", true);
         if((new String(data)).equals("started")){
             return false;
@@ -47,7 +50,7 @@ public class FileManager {
     public void writeDataFile(Context context, String filename, byte[] data) throws JSONException {
         writeToDataFile(context, data, filename, false);
     }
-    public byte[] readDataFile(Context context, String filename) throws JSONException {
+    public byte[] readDataFile(Context context, String filename) throws JSONException, IOException {
         byte[] jsonBytes = readFromDataFile(context, filename, false);
         return jsonBytes;
     }
@@ -120,6 +123,11 @@ public class FileManager {
         return userConfiguration.getSalt();
     }
 
+    public int getHashingIterations(Context context) throws JSONException {
+        checkUserConfiguration(context);
+        return userConfiguration.getIterations();
+    }
+
 
     private void writeToFile(String data, String filename, Context context) {
         try {
@@ -133,7 +141,6 @@ public class FileManager {
     }
 
     private String readFromFile(String filename, Context context) {
-
         String ret = "";
 
         try {
@@ -165,13 +172,17 @@ public class FileManager {
 
     private void writeToDataFile(Context context, byte[] data, String fileName, Boolean configFlag) {
         try {
+            File file = null;
+            if(configFlag){
+                file = new File(context.getFilesDir() + "/config/" + fileName+".txt");
+            }else{
+                file = new File(context.getFilesDir() + "/" + fileName+".txt");
+            }
+
+            file.createNewFile();
+
             if(data != null){
-                FileOutputStream fos = null;
-                if(configFlag){
-                    fos = new FileOutputStream(context.getFilesDir() +  "/config/" + fileName + ".txt");
-                }else{
-                    fos = new FileOutputStream(context.getFilesDir() +  "/" + fileName + ".txt");
-                }
+                FileOutputStream fos = new FileOutputStream(file);
 
                 fos.write(data);
                 fos.close();
@@ -182,13 +193,14 @@ public class FileManager {
             Log.e("Exception", "File write failed: " + e.toString());
         }
     }
-    private byte[] readFromDataFile(Context context, String fileName, Boolean configFlag) {
+    private byte[] readFromDataFile(Context context, String fileName, Boolean configFlag) throws IOException {
         File file = null;
         if(configFlag){
             file = new File(context.getFilesDir() + "/config/" + fileName+".txt");
         }else{
             file = new File(context.getFilesDir() + "/" + fileName+".txt");
         }
+        file.createNewFile();
         int size = (int) file.length();
         byte[] bytes = new byte[size];
         try {
@@ -205,7 +217,7 @@ public class FileManager {
         return bytes;
     }
 
-    public ArrayList<DataStructures.FileManagmentObject> readFileManagmentData(SecurityManager securityManager, Context context) throws JSONException {
+    public ArrayList<DataStructures.FileManagmentObject> readFileManagmentData(SecurityManager securityManager, Context context) throws JSONException, ParseException, IOException {
         ArrayList<DataStructures.FileManagmentObject> filesArray = new ArrayList<>();
         byte[] spDataBytes = readFromSP(context);
 
@@ -221,6 +233,14 @@ public class FileManager {
             for(int i = 0; i<jsonArray.length(); i++){
                 DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
                 fileManagmentObject.userDefinedFileName = jsonArray.getJSONObject(i).getString("userDefinedFileName");
+                if(!jsonArray.getJSONObject(i).isNull("lastAccessed")){
+
+
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                    Date parsedDate = formatter.parse(jsonArray.getJSONObject(i).getString("lastAccessed"));
+
+                    fileManagmentObject.lastAccessed = parsedDate;
+                }
                 filesArray.add(fileManagmentObject);
             }
         }
@@ -231,6 +251,11 @@ public class FileManager {
         for(int i = 0; i<files.size(); i++){
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("userDefinedFileName", files.get(i).userDefinedFileName);
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+            String strDate = dateFormat.format(files.get(i).lastAccessed);
+
+            jsonObject.put("lastAccessed", strDate);
             jsonArray.put(jsonObject);
         }
         String jsonString = jsonArray.toString();
@@ -252,7 +277,7 @@ public class FileManager {
         writeToDataFile(context, data, label, true);
 
     }
-    private byte[] readFromSP(Context context) throws JSONException {
+    private byte[] readFromSP(Context context) throws JSONException, IOException {
         String label = "filesData";
 //        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 //        String name = preferences.getString(label, null);
@@ -266,7 +291,7 @@ public class FileManager {
         writeToDataFile(context, data, label, true);
     }
 
-    public byte[] readFromPasswordFile(Context context) throws JSONException {
+    public byte[] readFromPasswordFile(Context context) throws JSONException, IOException {
         String label = "devicePassword";
         return readFromDataFile(context, label, true);
     }

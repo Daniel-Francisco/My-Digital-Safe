@@ -39,9 +39,6 @@ public class SecurityManager {
     String salt = "test";
     SecretKey secret = null;
 
-    int hashingIterations = 5000;
-
-
 
 //    public byte[] createIV() throws InvalidParameterSpecException {
 //        byte[] iv = new byte[256];
@@ -127,28 +124,24 @@ public class SecurityManager {
         return "";
     }
 
-
-    /**
-     * Generate a new encryption key.
-     */
-    public void generateKey(Context context, String password){
+    public void generateNewKey(Context context, String userPassword, String devicePassword){
         try{
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            char[] passwordChars = password.toCharArray();
+            char[] passwordChars = userPassword.toCharArray();
             KeySpec spec = new PBEKeySpec(passwordChars, salt.getBytes(), 1, 256);
             SecretKey tmp = factory.generateSecret(spec);
 
             secret = new SecretKeySpec(tmp.getEncoded(), "AES");
 
             FileManager fileManager = new FileManager();
-            byte[] passwordBytes = fileManager.readFromPasswordFile(context);
-            String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
-            if(dataString.isEmpty() || dataString == null || dataString.equals("")){
-                String newPassword = generateSalt();
-                byte[] encryptedNewPassword = encrypt(newPassword);
-                fileManager.writeToPasswordFile(context, encryptedNewPassword);
-                passwordBytes = encryptedNewPassword;
-            }
+//            byte[] passwordBytes = fileManager.readFromPasswordFile(context);
+//            String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
+//            if(dataString.isEmpty() || dataString == null || dataString.equals("")){
+            String newPassword = devicePassword;
+            byte[] encryptedNewPassword = encrypt(newPassword);
+            fileManager.writeToPasswordFile(context, encryptedNewPassword);
+            byte[] passwordBytes = encryptedNewPassword;
+//            }
 
             String passwordString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
 
@@ -165,32 +158,89 @@ public class SecurityManager {
         }
     }
 
+
+    /**
+     * Generate a new encryption key.
+     */
+    public void generateKey(Context context){
+        try{
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+//            char[] passwordChars = password.toCharArray();
+//            KeySpec spec = new PBEKeySpec(passwordChars, salt.getBytes(), 1, 256);
+//            SecretKey tmp = factory.generateSecret(spec);
+
+            secret = new SecretKeySpec(userKey.getEncoded(), "AES");
+
+            FileManager fileManager = new FileManager();
+            byte[] passwordBytes = fileManager.readFromPasswordFile(context);
+            String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
+            String passwordValue;
+            if(dataString.isEmpty() || dataString == null || dataString.equals("")){
+                passwordValue = generateSalt();
+                byte[] encryptedNewPassword = encrypt(passwordValue);
+                fileManager.writeToPasswordFile(context, encryptedNewPassword);
+            }else{
+                passwordValue = decrypt(passwordBytes);
+//                passwordValue = "hello";
+            }
+
+
+            KeySpec spec2 = new PBEKeySpec(passwordValue.toCharArray(), salt.getBytes(), 1, 256);
+            SecretKey tmp2 = factory.generateSecret(spec2);
+
+            secret = new SecretKeySpec(tmp2.getEncoded(), "AES");
+
+            //        byte[] passwordBytes = password.getBytes();
+//        return new SecretKeySpec(passwordBytes, ALGO);
+        }catch(Exception e){
+            e.printStackTrace();
+            Log.d("Error", "Error in generateKey");
+        }
+    }
+
     public Boolean authenticateUser(String password, Context context, FileManager fileManager) throws JSONException {
         String userSalt = fileManager.getSalt(context);
+        int iterations = fileManager.getHashingIterations(context);
         byte[] userSaltBytes;
 
         userSaltBytes = userSalt.getBytes();
 
-        byte[] hash = hashPassword(password, userSaltBytes);
+
+        long startTime = System.nanoTime();
+
+        byte[] hash = hashPassword(password, userSaltBytes, iterations);
+
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        Log.d("help", "Hash duration: " + duration);
+
         String hashInFile = fileManager.readHash(context);
         String userHashEncoded  = Base64.encodeToString(hash, Base64.DEFAULT);
 
 
         if(userHashEncoded.equals(hashInFile)){
+
+            generateKey(context);
+
             return true;
         }
         return false;
     }
 
-    public byte[] hashPassword(String password, byte[] salt) {
+    private SecretKey userKey = null;
+    public byte[] hashPassword(String password, byte[] salt, int hashingIterations) {
         int keyLength = 512;
         try {
 //            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
-            SecretKey key = skf.generateSecret(spec);
-            byte[] res = key.getEncoded();
-            return res;
+            userKey = skf.generateSecret(spec);
+            byte[] res = userKey.getEncoded();
+
+            String hash = Base64.encodeToString(res, Base64.DEFAULT);
+            String finalHash = SHA256Hash(hash);
+
+            return finalHash.getBytes();
 
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
@@ -204,45 +254,44 @@ public class SecurityManager {
         return Base64.encodeToString(salt, Base64.DEFAULT);
     }
 
-    /*
-        Validates the users passwords against the decided password entropy rules for the app.
-        User's password must:
-           1. Cannot be null or empty
-	       2. 7+ characters in length
-	       3. Upper and lower case
+    public int calculatePasswordStrength(String password){
 
-	       Return cases:
-	       0 = Good
-	       1 = Bad
-	       2 = Comment on lack of number
-	       3 = Comment on the number being 50 - 99 (easy to predict)
-     */
-    public Boolean validatePassword(String userPassword){
-        Boolean nullEmptyFlag = false;
-        Boolean lengthFlag = false;
-        Boolean caseFlag = false;
+        //total score of password
+        int iPasswordScore = 0;
 
-        if(!(userPassword.length() > 6)){
-            lengthFlag = true;
-        }
-        if(userPassword.isEmpty() || userPassword.equals(null) || userPassword.equals("")){
-            nullEmptyFlag = true;
-        }
-        if(userPassword.toLowerCase().equals(userPassword) || userPassword.toUpperCase().equals(userPassword)){
-            caseFlag = true;
+        if( password.length() < 6 )
+            return -1;
+        else if( password.length() >= 10 )
+            iPasswordScore += 2;
+
+        //if it contains one digit, add 2 to total score
+        if( password.matches("(?=.*[0-9]).*") )
+            iPasswordScore += 2;
+
+        //if it contains one lower case letter, add 2 to total score
+        if( password.matches("(?=.*[a-z]).*") )
+            iPasswordScore += 2;
+
+        //if it contains one upper case letter, add 2 to total score
+        if( password.matches("(?=.*[A-Z]).*") )
+            iPasswordScore += 2;
+
+        //if it contains one special character, add 2 to total score
+        if( password.matches("(?=.*[~!@#$%^&*()_-]).*") )
+            iPasswordScore += 2;
+
+        if(iPasswordScore < 3){
+            iPasswordScore = -2;
         }
 
-        if((nullEmptyFlag || lengthFlag || caseFlag)){
-            return true;
-        }
+        return iPasswordScore;
+
+    }
 
 //        String numberlessString = userPassword.replaceAll("[*0-9]", "");
 //        if((userPassword.length() - numberlessString.length()) == 0){
 //            return 2;
 //        }
-
-        return false;
-    }
 
     public byte[] encryptWithAlternatePassword(String password, byte[] data, Boolean encryptOrDecryptFlag){
         try{
@@ -264,6 +313,7 @@ public class SecurityManager {
         }
         return null;
     }
+
 
 
 }

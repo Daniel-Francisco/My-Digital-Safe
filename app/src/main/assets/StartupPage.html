@@ -22,9 +22,27 @@
 <body>
     <div class="container">
         <div id="loginForm">
+            <div>Password Strength:</div>
+            <br>
+            <progress id="passwordStrengthBar" value="0" max="10"></progress> <br>
+            <div id="userPasswordPrompt"></div> <br>
+
             <div>Please create your password!</div>
             <input name="passwordOne" id="passwordOne" value="" class="input" placeholder="New Password" type="password">
-            <input name="passwordTwo" id="passwordTwo" value="" class="input" placeholder="Confirm New Password" type="password">
+            <input name="passwordTwo" id="passwordTwo" value="" class="input" placeholder="Confirm New Password" type="password"><br>
+
+            <select id="dropDown">
+                <option value="high">High level security</option>
+                <option value="medium" selected="selected">Medium level security</option>
+                <option value="low">Low level security</option>
+            </select>
+
+            <br>
+
+
+
+            <br>
+
             <input id="createPassword" value="Create Password!" class="login" type="button">
         </div>
     </div>
@@ -39,9 +57,43 @@
 			    var passwordOne = $("#passwordOne").val();
 			    var passwordTwo = $("#passwordTwo").val();
 
-				Android.createPassword(passwordOne, passwordTwo);
+			    var dropDownValue = $('#dropDown').val();
+
+				Android.createPassword(passwordOne, passwordTwo, dropDownValue);
 			});
+
+
+            $('#passwordOne').on('input', function() {
+                console.log("Hello World!");
+                var passwordOne = $("#passwordOne").val();
+                console.log("Password value: " + passwordOne);
+                var strength = Android.checkPasswordStrength(passwordOne);
+
+                if (strength == -1) {
+                    document.getElementById("userPasswordPrompt").innerHTML = "Password must be at least 6 characters!";
+                }
+                if(strength == -2){
+                    document.getElementById("userPasswordPrompt").innerHTML = "Password is not complicated enough! Try adding upper and lower case values, as well as numbers and symbols!";
+                }
+                if(strength > 0) {
+                    document.getElementById("userPasswordPrompt").innerHTML = "";
+                }
+
+
+                if(strength < 0){
+                    strength = 0;
+                }
+
+
+                console.log("Password Strength: " + strength);
+                $("#passwordStrengthBar").val(strength);
+
+
+
+            });
         });
+
+
 
         function clearFields(){
             $("#passwordOne").val("");

@@ -65,7 +65,7 @@ public class LoginActivity extends Activity {
 
                 if(authentication){
                     Log.d("help", "Successful authentication!");
-                    securityManager.generateKey(applicationContext, password);
+//                    securityManager.generateKey(applicationContext, password);
                     Intent landingIntent = new Intent(applicationContext, ListActivity.class);
                     startActivity(landingIntent);
                     finish();

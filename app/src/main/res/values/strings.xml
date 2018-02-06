@@ -13,6 +13,8 @@
 
     <string name="passwordsDoNotMatch">Passwords do not match!</string>
 
+    <string name="passwordTooShort">Password is too short!</string>
+
     <string name="deleteFileFailed">Failed to delete file!</string>
 
     <string name="deleteFileSuccess">Succeeded to delete file!</string>

@@ -40,27 +40,50 @@ public class StartupActivity extends AppCompatActivity {
 
     }
 
-    protected void androidCreatePassword(String passwordOne, String passwordTwo){
+    protected void androidCreatePassword(String passwordOne, String passwordTwo, String levelValue){
         try {
             //Boolean passwordVaidate = validatePassword(passwordOneValue);
-            if (passwordOne.equals(passwordTwo)) {
+            int score = securityManager.calculatePasswordStrength(passwordOne);
+
+            if (passwordOne.equals(passwordTwo) && score > 0) {
+                int iterations;
+                if(levelValue.equals("high")){
+                    iterations = 250000;
+                }else if(levelValue.equals("medium")){
+                    iterations = 75000;
+                }else{
+                    iterations = 10000;
+                }
+
+
                 String salt = securityManager.generateSalt();
                 Log.d("help", "StartupActivity salt: " + salt);
-                fileManager.saveHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), 5000);
+                fileManager.saveHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
 
                 String saltFromFile = fileManager.getSalt(applicationContext);
 
-                byte[] newHash = securityManager.hashPassword(passwordOne, saltFromFile.getBytes());
+                byte[] newHash = securityManager.hashPassword(passwordOne, saltFromFile.getBytes(), iterations);
 
                 Log.d("help", "Startup ran");
 
                 fileManager.writeToFirstRunFile(applicationContext);
 
-                fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), 5000);
+                fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
                 Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
                 startActivity(loginIntent);
                 finish();
             } else {
+                if(passwordOne.equals(passwordTwo)){
+                    CharSequence failedAuthenticationString = getString(R.string.passwordsDoNotMatch);
+
+                    Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                    toast.show();
+                }else{
+                    CharSequence failedAuthenticationString = getString(R.string.passwordTooShort);
+
+                    Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                    toast.show();
+                }
                 browser.post(new Runnable() {
                     @Override
                     public void run() {
@@ -68,14 +91,15 @@ public class StartupActivity extends AppCompatActivity {
                     }
                 });
 
-                CharSequence failedAuthenticationString = getString(R.string.passwordsDoNotMatch);
 
-                Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-                toast.show();
             }
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    private int androidCheckPasswordStrength(String password){
+        return securityManager.calculatePasswordStrength(password);
     }
 
 
@@ -85,8 +109,13 @@ public class StartupActivity extends AppCompatActivity {
             mContext = c;
         }
         @JavascriptInterface
-        public void createPassword(String passwordOne, String passwordTwo) {
-            androidCreatePassword(passwordOne, passwordTwo);
+        public void createPassword(String passwordOne, String passwordTwo, String levelValue) {
+            androidCreatePassword(passwordOne, passwordTwo, levelValue);
+        }
+
+        @JavascriptInterface
+        public int checkPasswordStrength(String password){
+            return androidCheckPasswordStrength(password);
         }
     }
 }

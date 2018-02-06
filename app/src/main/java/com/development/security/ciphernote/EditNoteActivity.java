@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class EditNoteActivity extends AppCompatActivity {
@@ -28,6 +29,7 @@ public class EditNoteActivity extends AppCompatActivity {
     FileManager fileManager;
     SecurityManager securityManager;
     String fileName;
+    String hashedFilename = "";
 
     String noteValue = "";
 
@@ -41,13 +43,25 @@ public class EditNoteActivity extends AppCompatActivity {
         Intent intent = getIntent();
         fileName = intent.getStringExtra("fileName");
 
-        setContentView(R.layout.activity_landing);
-
         fileManager = new FileManager();
         securityManager = SecurityManager.getInstance();
         applicationContext = this.getBaseContext();
 
+//        try {
+//            hashedFilename = securityManager.SHA256Hash(fileName);
+//            hashedFilename.replaceAll("/", "");
+//            hashedFilename.replaceAll("\n", "");
+//            hashedFilename.replaceAll("\\\\\\\\", "");
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+        hashedFilename = fileName;
 
+        Log.d("help", "Filename: " + fileName + " hash: " + hashedFilename);
+
+        setTitle(fileName);
+
+        setContentView(R.layout.activity_landing);
 
         WebView browser;
         browser=(WebView)findViewById(R.id.webkit);
@@ -68,7 +82,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
             Log.d("help", "Cipher: " + Base64.encodeToString(userCipher, Base64.DEFAULT));
 
-            fileManager.writeDataFile(applicationContext, fileName, userCipher);
+            fileManager.writeDataFile(applicationContext, hashedFilename, userCipher);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,7 +90,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
     private String fetchFileString(){
         try {
-            byte[] fileJson = fileManager.readDataFile(applicationContext, fileName);
+            byte[] fileJson = fileManager.readDataFile(applicationContext, hashedFilename);
             noteValue = securityManager.decrypt(fileJson);
             return noteValue;
         }catch(Exception e){

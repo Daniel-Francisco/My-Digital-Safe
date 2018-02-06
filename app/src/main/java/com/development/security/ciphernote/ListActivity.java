@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ListActivity extends android.app.ListActivity {
     ArrayList<DataStructures.FileManagmentObject> list;
@@ -27,6 +28,7 @@ public class ListActivity extends android.app.ListActivity {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         applicationContext = this.getBaseContext();
+
 
         try{
 
@@ -46,7 +48,9 @@ public class ListActivity extends android.app.ListActivity {
 
                         if(findIndex(name) == -1){
                             DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
+                            Date date = new Date();
                             fileManagmentObject.userDefinedFileName = name;
+                            fileManagmentObject.lastAccessed = date;
                             list.add(fileManagmentObject);
                             fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
                             listViewRefresh();
