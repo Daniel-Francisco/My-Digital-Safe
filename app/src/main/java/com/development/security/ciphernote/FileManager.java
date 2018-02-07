@@ -142,6 +142,7 @@ public class FileManager {
 
     private String readFromFile(String filename, Context context) {
         String ret = "";
+        //testCommit
 
         try {
             InputStream inputStream = context.openFileInput(filename + ".txt");
