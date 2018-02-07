@@ -179,7 +179,6 @@ public class FileManager {
                 file = new File(context.getFilesDir() + "/" + fileName+".txt");
             }
 
-            file.createNewFile();
 
             if(data != null){
                 FileOutputStream fos = new FileOutputStream(file);
@@ -200,7 +199,6 @@ public class FileManager {
         }else{
             file = new File(context.getFilesDir() + "/" + fileName+".txt");
         }
-        file.createNewFile();
         int size = (int) file.length();
         byte[] bytes = new byte[size];
         try {
