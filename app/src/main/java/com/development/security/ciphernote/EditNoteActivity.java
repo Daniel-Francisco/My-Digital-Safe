@@ -16,12 +16,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.development.security.ciphernote.model.DatabaseManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class EditNoteActivity extends AppCompatActivity {
     Context applicationContext;
@@ -30,8 +33,11 @@ public class EditNoteActivity extends AppCompatActivity {
     SecurityManager securityManager;
     String fileName;
     String hashedFilename = "";
+    DatabaseManager databaseManager;
 
     String noteValue = "";
+
+    com.development.security.ciphernote.model.File file;
 
 
     @Override
@@ -46,6 +52,11 @@ public class EditNoteActivity extends AppCompatActivity {
         fileManager = new FileManager();
         securityManager = SecurityManager.getInstance();
         applicationContext = this.getBaseContext();
+        databaseManager = new DatabaseManager(applicationContext);
+
+        List<com.development.security.ciphernote.model.File> files = databaseManager.getAllFiles();
+
+        file = databaseManager.getFileByName(fileName);
 
 //        try {
 //            hashedFilename = securityManager.SHA256Hash(fileName);
@@ -79,10 +90,19 @@ public class EditNoteActivity extends AppCompatActivity {
         try {
             String plain = noteValue;
             byte[] userCipher = securityManager.encrypt(plain);
+//            String stuff = Base64.encodeToString(userCipher, Base64.DEFAULT);
+
+            String cipherString = Base64.encodeToString(userCipher, Base64.DEFAULT);
+            file.setData(cipherString);
+
+//            String test = securityManager.decrypt(Base64.decode(stuff, Base64.DEFAULT));
+
+            databaseManager.updateFile(file);
+
 
             Log.d("help", "Cipher: " + Base64.encodeToString(userCipher, Base64.DEFAULT));
 
-            fileManager.writeDataFile(applicationContext, hashedFilename, userCipher);
+//            fileManager.writeDataFile(applicationContext, hashedFilename, userCipher);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -90,8 +110,12 @@ public class EditNoteActivity extends AppCompatActivity {
 
     private String fetchFileString(){
         try {
-            byte[] fileJson = fileManager.readDataFile(applicationContext, hashedFilename);
-            noteValue = securityManager.decrypt(fileJson);
+//            byte[] fileJson = fileManager.readDataFile(applicationContext, hashedFilename);
+//            noteValue = securityManager.decrypt(fileJson);
+            String encryptedData = file.getData();
+
+            noteValue = securityManager.decrypt(Base64.decode(encryptedData, Base64.DEFAULT));
+
             return noteValue;
         }catch(Exception e){
             e.printStackTrace();
@@ -116,7 +140,7 @@ public class EditNoteActivity extends AppCompatActivity {
                 int index = findIndex(list, fileName);
                 list.remove(index);
 
-                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
+                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list, false);
 
                 Intent landingIntent = new Intent(applicationContext, ListActivity.class);
                 startActivity(landingIntent);

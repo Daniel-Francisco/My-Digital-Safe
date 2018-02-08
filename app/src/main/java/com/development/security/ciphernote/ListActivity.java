@@ -33,8 +33,12 @@ public class ListActivity extends android.app.ListActivity {
         try{
 
             fileManager = new FileManager();
-            list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
-
+            try {
+                list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
+            }catch(Exception e){
+                e.printStackTrace();
+                list = new ArrayList<>();
+            }
             listViewRefresh();
 
 
@@ -52,7 +56,7 @@ public class ListActivity extends android.app.ListActivity {
                             fileManagmentObject.userDefinedFileName = name;
                             fileManagmentObject.lastAccessed = date;
                             list.add(fileManagmentObject);
-                            fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
+                            fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list, true);
                             listViewRefresh();
 
                             noteNameEditText.setText("");
@@ -124,10 +128,10 @@ public class ListActivity extends android.app.ListActivity {
         if(index != -1){
             try{
                 DataStructures.FileManagmentObject object = list.get(index);
-                list.remove(index);
-                list.add(object);
-
-                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
+//                list.remove(index);
+//                list.add(object);
+//
+//                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list, false);
                 listViewRefresh();
 
             }catch (Exception e){

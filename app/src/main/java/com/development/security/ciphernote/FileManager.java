@@ -6,6 +6,9 @@ import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 
+import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.model.UserConfiguration;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by danie on 1/18/2018.
@@ -70,27 +74,45 @@ public class FileManager {
     }
 
     public void writeUserConfig(Context context) throws JSONException {
-        JSONObject fileObject = new JSONObject();
-        fileObject.put("passwordHash", userConfiguration.getPasswordHash());
-        fileObject.put("salt", userConfiguration.getSalt());
-        fileObject.put("iterations", userConfiguration.getIterations());
-        writeToFile(fileObject.toString(), "configurationFile", context);
+        DatabaseManager databaseManager = new DatabaseManager(context);
+        databaseManager.addUserConfiguration(new UserConfiguration(userConfiguration.getIterations(), userConfiguration.getPasswordHash(), userConfiguration.getSalt()));
     }
     private void readUserConfig(Context context) throws JSONException {
-        String json = readFromFile("configurationFile", context);
-        JSONObject object = null;
-        if(json.equals("")){
+        DatabaseManager databaseManager = new DatabaseManager(context);
+
+        List<UserConfiguration> list = databaseManager.getAllUserConfigurations();
+
+        if(userConfiguration == null){
             userConfiguration = new DataStructures.UserConfiguration();
-            userConfiguration.setIterations(250000);
-            userConfiguration.setPasswordHash("");
-            userConfiguration.setSalt("");
-        }else{
-            object = new JSONObject(json);
-            userConfiguration = new DataStructures.UserConfiguration();
-            userConfiguration.setIterations(object.getInt("iterations"));
-            userConfiguration.setPasswordHash(object.getString("passwordHash"));
-            userConfiguration.setSalt(object.getString("salt"));
         }
+        if(list.size() == 0){
+            userConfiguration.setIterations(250000);
+            userConfiguration.setSalt("");
+            userConfiguration.setPasswordHash("");
+        }else{
+            UserConfiguration userConfig = databaseManager.getUserConfiguration(list.get(1).getID());
+
+            userConfiguration.setIterations(userConfig.getIterations());
+            userConfiguration.setPasswordHash(userConfig.getPassword_hash());
+            userConfiguration.setSalt(userConfig.getSalt());
+        }
+
+
+
+//        String json = readFromFile("configurationFile", context);
+//        JSONObject object = null;
+//        if(json.equals("")){
+//            userConfiguration = new DataStructures.UserConfiguration();
+//            userConfiguration.setIterations(250000);
+//            userConfiguration.setPasswordHash("");
+//            userConfiguration.setSalt("");
+//        }else{
+//            object = new JSONObject(json);
+//            userConfiguration = new DataStructures.UserConfiguration();
+//            userConfiguration.setIterations(object.getInt("iterations"));
+//            userConfiguration.setPasswordHash(object.getString("passwordHash"));
+//            userConfiguration.setSalt(object.getString("salt"));
+//        }
     }
     private void checkUserConfiguration(Context context) throws JSONException {
         if(userConfiguration == null) {
@@ -218,51 +240,47 @@ public class FileManager {
 
     public ArrayList<DataStructures.FileManagmentObject> readFileManagmentData(SecurityManager securityManager, Context context) throws JSONException, ParseException, IOException {
         ArrayList<DataStructures.FileManagmentObject> filesArray = new ArrayList<>();
-        byte[] spDataBytes = readFromSP(context);
 
-        String spData = securityManager.decrypt(spDataBytes);
-
-
-        if(spData == null){
-            spData = "";
-        }
-
-        if(isJSONValid(spData)){
-            JSONArray jsonArray = new JSONArray(spData);
-            for(int i = 0; i<jsonArray.length(); i++){
-                DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
-                fileManagmentObject.userDefinedFileName = jsonArray.getJSONObject(i).getString("userDefinedFileName");
-                if(!jsonArray.getJSONObject(i).isNull("lastAccessed")){
+        DatabaseManager databaseManager = new DatabaseManager(context);
+        List<com.development.security.ciphernote.model.File> list = databaseManager.getAllFiles();
 
 
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-                    Date parsedDate = formatter.parse(jsonArray.getJSONObject(i).getString("lastAccessed"));
+        for(int i = 0; i<list.size(); i++){
+            DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
+            fileManagmentObject.userDefinedFileName = list.get(i).getFileName();
 
-                    fileManagmentObject.lastAccessed = parsedDate;
-                }
-                filesArray.add(fileManagmentObject);
+            Date parsedDate;
+            try{
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                parsedDate = formatter.parse(list.get(i).getAccessDate());
+            }catch (Exception e){
+                e.printStackTrace();
+                parsedDate = new Date();
             }
+
+
+            fileManagmentObject.lastAccessed = parsedDate;
+
+            filesArray.add(fileManagmentObject);
         }
+
         return filesArray;
     }
-    public void writeFileManagmentData(SecurityManager securityManager, Context context, ArrayList<DataStructures.FileManagmentObject> files) throws JSONException {
-        JSONArray jsonArray = new JSONArray();
+    public void writeFileManagmentData(SecurityManager securityManager, Context context, ArrayList<DataStructures.FileManagmentObject> files, Boolean newFlag) throws JSONException {
+        DatabaseManager databaseManager = new DatabaseManager(context);
         for(int i = 0; i<files.size(); i++){
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("userDefinedFileName", files.get(i).userDefinedFileName);
-
+            com.development.security.ciphernote.model.File file = new com.development.security.ciphernote.model.File();
+            file.setData("");
             DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-            String strDate = dateFormat.format(files.get(i).lastAccessed);
+            file.setFileName(files.get(i).userDefinedFileName);
+            file.setAccessDate(dateFormat.format(files.get(i).lastAccessed));
+            if(newFlag){
+                databaseManager.addFile(file);
+            }else{
+                databaseManager.updateFile(file);
+            }
 
-            jsonObject.put("lastAccessed", strDate);
-            jsonArray.put(jsonObject);
         }
-        String jsonString = jsonArray.toString();
-        Log.d("help", "JSON String: " + jsonString);
-
-        byte[] cipher = securityManager.encrypt(jsonString);
-
-        writeToSP(context, cipher);
     }
 
 
