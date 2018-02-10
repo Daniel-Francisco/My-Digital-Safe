@@ -217,9 +217,9 @@ public class FileManager {
 
     public ArrayList<DataStructures.FileManagmentObject> readFileManagmentData(SecurityManager securityManager, Context context) throws JSONException, ParseException, IOException {
         ArrayList<DataStructures.FileManagmentObject> filesArray = new ArrayList<>();
-        byte[] spDataBytes = readFromSP(context);
+        String spData = readFromSP(context);
 
-        String spData = securityManager.decrypt(spDataBytes);
+//        String spData = Base64.encodeToString(spDataBytes, Base64.DEFAULT);//securityManager.decrypt(spDataBytes);
 
 
         if(spData == null){
@@ -259,28 +259,28 @@ public class FileManager {
         String jsonString = jsonArray.toString();
         Log.d("help", "JSON String: " + jsonString);
 
-        byte[] cipher = securityManager.encrypt(jsonString);
+//        byte[] cipher = securityManager.encrypt(jsonString);
 
-        writeToSP(context, cipher);
+        writeToSP(context, jsonString);
     }
 
 
-    private void writeToSP(Context context, byte[] data){
+    private void writeToSP(Context context, String data){
         String label = "filesData";
 
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-//        SharedPreferences.Editor editor = preferences.edit();
-//        editor.putString(label, data);
-//        editor.apply();
-        writeToDataFile(context, data, label, true);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(label, data);
+        editor.apply();
+//        writeToDataFile(context, data, label, true);
 
     }
-    private byte[] readFromSP(Context context) throws JSONException, IOException {
+    private String readFromSP(Context context) throws JSONException, IOException {
         String label = "filesData";
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-//        String name = preferences.getString(label, null);
-//        return name;
-        return readFromDataFile(context, label, true);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String name = preferences.getString(label, null);
+        return name;
+//        return readFromDataFile(context, label, true);
     }
 
 

@@ -6,44 +6,56 @@
     android:layout_height="match_parent"
     tools:context="com.development.security.ciphernote.ListActivity">
 
-    <RelativeLayout
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+
+        <!--<ListView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentTop="true"-->
+            <!--android:layout_above="@id/newNoteName"-->
+            <!--android:id="@android:id/list">-->
+
+        <!--</ListView>-->
+        <!--<EditText-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="45dp"-->
+            <!--android:layout_above="@id/createNewNoteButton"-->
+            <!--android:id="@+id/newNoteName" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/createNewNoteButton"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_alignParentLeft="true"-->
+            <!--android:layout_alignParentStart="true"-->
+            <!--android:layout_marginLeft="18dp"-->
+            <!--android:layout_marginStart="18dp"-->
+            <!--android:text="Create New Note" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/passwordResetLink"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:text="Reset Password" />-->
+
+    <!--</RelativeLayout>-->
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ListView
+        <WebView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_above="@id/newNoteName"
-            android:id="@android:id/list">
+            android:layout_height="match_parent"
+            android:id="@+id/webkit"/>
 
-        </ListView>
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_above="@id/createNewNoteButton"
-            android:id="@+id/newNoteName" />
+    </ScrollView>
 
-        <Button
-            android:id="@+id/createNewNoteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="18dp"
-            android:layout_marginStart="18dp"
-            android:text="Create New Note" />
-
-        <Button
-            android:id="@+id/passwordResetLink"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:text="Reset Password" />
-
-    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

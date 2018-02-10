@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <html lang="en">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </html>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="./css/style.css">
+
+</head>
+
+<div id="page">
+    <div>Hello World!</div>
+</div>
+
+<style>
+	#page{
+		width: 100%;
+		height: 100%;
+		display: block;
+		margin: auto;
+	}
+	#noteArea{
+		width:100%;
+		rows:100;
+	}
+	#deleteNote{
+		display: block;
+		position:relative;
+		margin: 10px auto;
+		float:none;
+		color:red;
+	}
+</style>
+
+<script>
+//Example of JSON backend will send
+//[{"lastAccessed":"Jan 10, 2018 12:38:58 AM","userDefinedFileName":"newNote"},
+//{"lastAccessed":"Jan 10, 2018 12:39:55 AM","userDefinedFileName":"newerNote"},
+//{"lastAccessed":"Jan 10, 2018 12:40:02 AM","userDefinedFileName":"newestStill"}]
+
+
+    $(document).ready(function() {
+        //add something
+        //Android.addNote("myNewNote");
+
+        //sample json for mynewnote
+		var json = Android.getData();
+		console.log("value: " + json);
+
+		//go to note
+		Android.listClickOccurred("myNewNote");
+
+	});
+
+</script>
+
+</html>

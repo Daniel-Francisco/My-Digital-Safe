@@ -1,5 +1,6 @@
 package com.development.security.ciphernote;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,16 +8,19 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Date;
-
-public class ListActivity extends android.app.ListActivity {
+//android.app.ListActivity
+public class ListActivity extends Activity {
     ArrayList<DataStructures.FileManagmentObject> list;
     Context applicationContext;
     FileManager fileManager;
@@ -29,77 +33,54 @@ public class ListActivity extends android.app.ListActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         applicationContext = this.getBaseContext();
 
+        list = new ArrayList<>();
+        fileManager = new FileManager();
 
-        try{
-
-            fileManager = new FileManager();
-            list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
-
-            listViewRefresh();
-
-
-            Button newNoteButton = (Button) findViewById(R.id.createNewNoteButton);
-            final EditText noteNameEditText = (EditText) findViewById(R.id.newNoteName);
-            newNoteButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    // Code here executes on main thread after user presses button
-                    try {
-                        String name = noteNameEditText.getText().toString();
-
-                        if(findIndex(name) == -1){
-                            DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
-                            Date date = new Date();
-                            fileManagmentObject.userDefinedFileName = name;
-                            fileManagmentObject.lastAccessed = date;
-                            list.add(fileManagmentObject);
-                            fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
-                            listViewRefresh();
-
-                            noteNameEditText.setText("");
+        WebView browser;
+        browser=(WebView)findViewById(R.id.webkit);
+        browser.getSettings().setJavaScriptEnabled(true);
+        browser.addJavascriptInterface(new ListActivity.WebAppInterface(this), "Android");
+        browser.loadUrl("file:///android_asset/ListPage.html");
 
 
-                            try{
-                                Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
-
-                                String realFilename = SecurityManager.getInstance().SHA256Hash(name);
-
-                                landingIntent.putExtra("fileName", name);
-                                startActivity(landingIntent);
-                            }catch(Exception e){
-                                e.printStackTrace();
-                            }
-
-                        }else{
-
-                            CharSequence failedAuthenticationString = getString(R.string.noteAlreadyExists);
-
-                            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-                            toast.show();
-
-                        }
-
-
-
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            Button passwordResetButton = (Button) findViewById(R.id.passwordResetLink);
-            passwordResetButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    Intent landingIntent = new Intent(applicationContext, ChangePasswordActivity.class);
-                    startActivity(landingIntent);
-                }
-            });
-
-
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        try{
+//
+//            fileManager = new FileManager();
+//
+//            String json = androidGetData();
+//
+//            listViewRefresh();
+//
+//
+//            Button newNoteButton = (Button) findViewById(R.id.createNewNoteButton);
+//            final EditText noteNameEditText = (EditText) findViewById(R.id.newNoteName);
+//            newNoteButton.setOnClickListener(new View.OnClickListener() {
+//                public void onClick(View v) {
+//                    // Code here executes on main thread after user presses button
+//                    try {
+//                        String name = noteNameEditText.getText().toString();
+//
+//                        androidListClickOccurred(name);
+//
+//                        noteNameEditText.setText("");
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//
+//            Button passwordResetButton = (Button) findViewById(R.id.passwordResetLink);
+//            passwordResetButton.setOnClickListener(new View.OnClickListener() {
+//                public void onClick(View v) {
+//                    androidChangePassword();
+//                }
+//            });
+//
+//
+//
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -111,41 +92,41 @@ public class ListActivity extends android.app.ListActivity {
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(applicationContext, android.R.layout.simple_list_item_1, entities);
-        setListAdapter(adapter);
+//        setListAdapter(adapter);
     }
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        String  itemValue = (String) l.getItemAtPosition(position);
-
-        int index = findIndex(itemValue);
-        if(index != -1){
-            try{
-                DataStructures.FileManagmentObject object = list.get(index);
-                list.remove(index);
-                list.add(object);
-
-                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
-                listViewRefresh();
-
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        try{
-            Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
-
-            String realFilename = SecurityManager.getInstance().SHA256Hash(itemValue);
-
-            landingIntent.putExtra("fileName", itemValue);
-            startActivity(landingIntent);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    protected void onListItemClick(ListView l, View v, int position, long id) {
+//        super.onListItemClick(l, v, position, id);
+//
+//        String  itemValue = (String) l.getItemAtPosition(position);
+//
+//        int index = findIndex(itemValue);
+//        if(index != -1){
+//            try{
+//                DataStructures.FileManagmentObject object = list.get(index);
+//                list.remove(index);
+//                list.add(object);
+//
+//                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
+//                listViewRefresh();
+//
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        try{
+//            Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
+//
+//            String realFilename = SecurityManager.getInstance().SHA256Hash(itemValue);
+//
+//            landingIntent.putExtra("fileName", itemValue);
+//            startActivity(landingIntent);
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
     private int findIndex(String filename){
         for(int i = 0; i < list.size(); i++){
@@ -156,13 +137,71 @@ public class ListActivity extends android.app.ListActivity {
         return -1;
     }
 
+
+
+
+
+
+
+
+
+
     protected String androidGetData(){
-        return "data wooo";
+        try{
+            list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
+            Gson gson = new Gson();
+            return gson.toJson(list);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return "error";
     }
-    protected void androidListClickOccurred(String value){
-        Log.d("help", "List click on value: " + value);
+    protected void androidListClickOccurred(String name){
+        Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
+
+        landingIntent.putExtra("fileName", name);
+        startActivity(landingIntent);
+    }
+    protected void androidChangePassword(){
+        Intent landingIntent = new Intent(applicationContext, ChangePasswordActivity.class);
+        startActivity(landingIntent);
     }
 
+    protected  void androidAddNote(String name){
+        try {
+            if (findIndex(name) == -1) {
+                DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
+                Date date = new Date();
+                fileManagmentObject.userDefinedFileName = name;
+                fileManagmentObject.lastAccessed = date;
+                list.add(fileManagmentObject);
+                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
+//                listViewRefresh();
+
+                try {
+                    Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
+
+                    String realFilename = SecurityManager.getInstance().SHA256Hash(name);
+
+                    landingIntent.putExtra("fileName", name);
+                    startActivity(landingIntent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+
+                CharSequence failedAuthenticationString = getString(R.string.noteAlreadyExists);
+
+                Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                toast.show();
+
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
 
     public class WebAppInterface {
@@ -178,6 +217,16 @@ public class ListActivity extends android.app.ListActivity {
         @JavascriptInterface
         public void listClickOccurred(String value){
             androidListClickOccurred(value);
+        }
+
+        @JavascriptInterface
+        public void addNote(String noteName){
+            androidAddNote(noteName);
+        }
+
+        @JavascriptInterface
+        public void androidChangePassword(){
+            androidChangePassword();
         }
     }
 
