@@ -4,6 +4,9 @@ import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
+import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.model.UserConfiguration;
+
 import org.json.JSONException;
 
 import java.nio.charset.StandardCharsets;
@@ -169,18 +172,31 @@ public class SecurityManager {
 //            KeySpec spec = new PBEKeySpec(passwordChars, salt.getBytes(), 1, 256);
 //            SecretKey tmp = factory.generateSecret(spec);
 
+
+//            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+//            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
+//            userKey = skf.generateSecret(spec);
+
             secret = new SecretKeySpec(userKey.getEncoded(), "AES");
 
-            FileManager fileManager = new FileManager();
-            byte[] passwordBytes = fileManager.readFromPasswordFile(context);
+            DatabaseManager databaseManager = new DatabaseManager(context);
+            UserConfiguration config = databaseManager.getUserConfiguration(1);
+
+
+            byte[] passwordBytes = config.getDevicePassword();
+            if(passwordBytes == null){
+                passwordBytes = new byte[0];
+            }
             String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
             String passwordValue;
             if(dataString.isEmpty() || dataString == null || dataString.equals("")){
                 passwordValue = generateSalt();
                 byte[] encryptedNewPassword = encrypt(passwordValue);
-                fileManager.writeToPasswordFile(context, encryptedNewPassword);
+                config.setDevicePassword(encryptedNewPassword);
+                databaseManager.addUserConfiguration(config);
             }else{
                 passwordValue = decrypt(passwordBytes);
+                Log.d("help", "tet");
 //                passwordValue = "hello";
             }
 
@@ -229,11 +245,11 @@ public class SecurityManager {
 
     private SecretKey userKey = null;
     public byte[] hashPassword(String password, byte[] salt, int hashingIterations) {
-        int keyLength = 512;
+        int keyLength = 256;
         try {
 //            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
             userKey = skf.generateSecret(spec);
             byte[] res = userKey.getEncoded();
 

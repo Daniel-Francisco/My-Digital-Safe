@@ -16,12 +16,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.development.security.ciphernote.model.DatabaseManager;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class EditNoteActivity extends AppCompatActivity {
     Context applicationContext;
@@ -30,8 +36,11 @@ public class EditNoteActivity extends AppCompatActivity {
     SecurityManager securityManager;
     String fileName;
     String hashedFilename = "";
+    DatabaseManager databaseManager;
 
     String noteValue = "";
+
+    com.development.security.ciphernote.model.File file;
 
 
     @Override
@@ -42,19 +51,23 @@ public class EditNoteActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         fileName = intent.getStringExtra("fileName");
+        String jsonForFile = intent.getStringExtra("fileObject");
+
+        Gson gson = new Gson();
+
+        Type type = new TypeToken<com.development.security.ciphernote.model.File>() {}.getType();
+        file = gson.fromJson(jsonForFile, type);
+
+//        file = new com.development.security.ciphernote.model.File();
 
         fileManager = new FileManager();
         securityManager = SecurityManager.getInstance();
         applicationContext = this.getBaseContext();
+        databaseManager = new DatabaseManager(applicationContext);
 
-//        try {
-//            hashedFilename = securityManager.SHA256Hash(fileName);
-//            hashedFilename.replaceAll("/", "");
-//            hashedFilename.replaceAll("\n", "");
-//            hashedFilename.replaceAll("\\\\\\\\", "");
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
+
+//        file = databaseManager.getFileByName(fileName);
+
         hashedFilename = fileName;
 
         Log.d("help", "Filename: " + fileName + " hash: " + hashedFilename);
@@ -78,11 +91,20 @@ public class EditNoteActivity extends AppCompatActivity {
 
         try {
             String plain = noteValue;
-            byte[] userCipher = securityManager.encrypt(plain);
+//            byte[] userCipher = securityManager.encrypt(plain);
+//            String stuff = Base64.encodeToString(userCipher, Base64.DEFAULT);
+//
+//            String cipherString = Base64.encodeToString(userCipher, Base64.DEFAULT);
+            file.setData(plain);
 
-            Log.d("help", "Cipher: " + Base64.encodeToString(userCipher, Base64.DEFAULT));
+//            String test = securityManager.decrypt(Base64.decode(stuff, Base64.DEFAULT));
 
-            fileManager.writeDataFile(applicationContext, hashedFilename, userCipher);
+            long id = databaseManager.updateFile(file);
+            Log.d("help", "Id: " + id);
+
+//            Log.d("help", "Cipher: " + Base64.encodeToString(userCipher, Base64.DEFAULT));
+
+//            fileManager.writeDataFile(applicationContext, hashedFilename, userCipher);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -90,8 +112,10 @@ public class EditNoteActivity extends AppCompatActivity {
 
     private String fetchFileString(){
         try {
-            byte[] fileJson = fileManager.readDataFile(applicationContext, hashedFilename);
-            noteValue = securityManager.decrypt(fileJson);
+//            byte[] fileJson = fileManager.readDataFile(applicationContext, hashedFilename);
+//            noteValue = securityManager.decrypt(fileJson);
+
+            noteValue = file.getData();
             return noteValue;
         }catch(Exception e){
             e.printStackTrace();
@@ -105,31 +129,27 @@ public class EditNoteActivity extends AppCompatActivity {
             byte[] deleteData = noteValue.getBytes();
             fileManager.writeDataFile(applicationContext, fileName, deleteData);
 
-            if(fileManager.deleteFile(applicationContext, fileName, false)){
-                CharSequence failedAuthenticationString = getString(R.string.deleteFileSuccess);
-                Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-                toast.show();
+            file.setFileName("redacted");
+            file.setAccessDate("redacted");
+            file.setData("redacted");
+            databaseManager.updateFile(file);
 
+            databaseManager.deleteFile(file);
 
-                ArrayList<DataStructures.FileManagmentObject> list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
+            CharSequence failedAuthenticationString = getString(R.string.deleteFileSuccess);
+            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+            toast.show();
 
-                int index = findIndex(list, fileName);
-                list.remove(index);
-
-                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
-
-                Intent landingIntent = new Intent(applicationContext, ListActivity.class);
-                startActivity(landingIntent);
-                finish();
-
-            }else{
-                CharSequence failedAuthenticationString = getString(R.string.deleteFileFailed);
-                Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-                toast.show();
-            }
+            Intent landingIntent = new Intent(applicationContext, ListActivity.class);
+            startActivity(landingIntent);
+            finish();
 
         } catch (Exception e) {
             e.printStackTrace();
+
+            CharSequence failedAuthenticationString = getString(R.string.deleteFileFailed);
+            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+            toast.show();
         }
     }
 

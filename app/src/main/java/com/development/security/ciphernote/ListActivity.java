@@ -15,15 +15,24 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.development.security.ciphernote.DataStructures;
+import com.development.security.ciphernote.FileManager;
+import com.development.security.ciphernote.R;
+import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.model.File;
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 //android.app.ListActivity
 public class ListActivity extends Activity {
-    ArrayList<DataStructures.FileManagmentObject> list;
+    ArrayList<File> list;
     Context applicationContext;
     FileManager fileManager;
+
+    File selectedFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,100 +46,18 @@ public class ListActivity extends Activity {
         fileManager = new FileManager();
 
         WebView browser;
-        browser=(WebView)findViewById(R.id.webkit);
+        browser = (WebView) findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new ListActivity.WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/ListPage.html");
 
-
-//        try{
-//
-//            fileManager = new FileManager();
-//
-//            String json = androidGetData();
-//
-//            listViewRefresh();
-//
-//
-//            Button newNoteButton = (Button) findViewById(R.id.createNewNoteButton);
-//            final EditText noteNameEditText = (EditText) findViewById(R.id.newNoteName);
-//            newNoteButton.setOnClickListener(new View.OnClickListener() {
-//                public void onClick(View v) {
-//                    // Code here executes on main thread after user presses button
-//                    try {
-//                        String name = noteNameEditText.getText().toString();
-//
-//                        androidListClickOccurred(name);
-//
-//                        noteNameEditText.setText("");
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            });
-//
-//            Button passwordResetButton = (Button) findViewById(R.id.passwordResetLink);
-//            passwordResetButton.setOnClickListener(new View.OnClickListener() {
-//                public void onClick(View v) {
-//                    androidChangePassword();
-//                }
-//            });
-//
-//
-//
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-
     }
 
-    private void listViewRefresh(){
-        String[] entities = new String[list.size()];
 
-        for(int i = 0; i < list.size(); i++){
-            entities[i] = list.get(i).userDefinedFileName;
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(applicationContext, android.R.layout.simple_list_item_1, entities);
-//        setListAdapter(adapter);
-    }
-
-//    @Override
-//    protected void onListItemClick(ListView l, View v, int position, long id) {
-//        super.onListItemClick(l, v, position, id);
-//
-//        String  itemValue = (String) l.getItemAtPosition(position);
-//
-//        int index = findIndex(itemValue);
-//        if(index != -1){
-//            try{
-//                DataStructures.FileManagmentObject object = list.get(index);
-//                list.remove(index);
-//                list.add(object);
-//
-//                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
-//                listViewRefresh();
-//
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        try{
-//            Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
-//
-//            String realFilename = SecurityManager.getInstance().SHA256Hash(itemValue);
-//
-//            landingIntent.putExtra("fileName", itemValue);
-//            startActivity(landingIntent);
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
-//    }
 
     private int findIndex(String filename){
         for(int i = 0; i < list.size(); i++){
-            if(list.get(i).userDefinedFileName.equals(filename)){
+            if(list.get(i).getFileName().equals(filename)){
                 return i;
             }
         }
@@ -158,10 +85,30 @@ public class ListActivity extends Activity {
         return "error";
     }
     protected void androidListClickOccurred(String name){
-        Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
+        int index = findIndex(name);
+        if(index != -1){
+            try{
+                selectedFile = list.get(index);
 
-        landingIntent.putExtra("fileName", name);
-        startActivity(landingIntent);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        try{
+            Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
+
+            landingIntent.putExtra("fileName", name);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(selectedFile);
+
+            landingIntent.putExtra("fileObject", json);
+
+            startActivity(landingIntent);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
     protected void androidChangePassword(){
         Intent landingIntent = new Intent(applicationContext, ChangePasswordActivity.class);
@@ -170,14 +117,19 @@ public class ListActivity extends Activity {
 
     protected  void androidAddNote(String name){
         try {
-            if (findIndex(name) == -1) {
-                DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
+            if(findIndex(name) == -1){
+                File newFile = new File();
                 Date date = new Date();
-                fileManagmentObject.userDefinedFileName = name;
-                fileManagmentObject.lastAccessed = date;
-                list.add(fileManagmentObject);
-                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
-//                listViewRefresh();
+                newFile.setFileName(name);
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                newFile.setAccessDate(dateFormat.format(date));
+                newFile.setData("");
+                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+
+
+                long id = databaseManager.addFile(newFile);
+                newFile.setID(id);
+                list.add(newFile);
 
                 try {
                     Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
@@ -185,6 +137,12 @@ public class ListActivity extends Activity {
                     String realFilename = SecurityManager.getInstance().SHA256Hash(name);
 
                     landingIntent.putExtra("fileName", name);
+
+                    Gson gson = new Gson();
+                    String json = gson.toJson(newFile);
+
+                    landingIntent.putExtra("fileObject", json);
+
                     startActivity(landingIntent);
                 } catch (Exception e) {
                     e.printStackTrace();
