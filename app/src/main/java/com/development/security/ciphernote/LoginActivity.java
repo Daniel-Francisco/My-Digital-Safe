@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -54,6 +55,35 @@ public class LoginActivity extends Activity {
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/loginPage.html");
 
+//        DatabaseManager databaseManager = new DatabaseManager(this.getApplicationContext());
+//        File file = new File();
+//        file.setAccessDate("");
+//        byte[] dataBytes = "data".getBytes();
+//        String dataString = Base64.encodeToString(dataBytes, Base64.DEFAULT);
+//        String dataString2 = new String(dataBytes);
+//        file.setData("data".getBytes());
+//        file.setFileName("file");
+//
+//        File file2 = new File();
+//        file2.setAccessDate("");
+//        byte[] dataBytes2 = "data2".getBytes();
+//        String dataString3 = Base64.encodeToString(dataBytes, Base64.DEFAULT);
+//        String dataString4 = new String(dataBytes);
+//        file2.setData("data".getBytes());
+//        file2.setFileName("file");
+//
+//        long id = databaseManager.addFile(file);
+//        file.setID(id);
+//        long id2 = databaseManager.addFile(file2);
+//        file.setID(id2);
+//
+//        ArrayList<File> list1 = databaseManager.getAllFiles();
+//
+//        databaseManager.deleteFile(file);
+//
+//        ArrayList<File> list2 = databaseManager.getAllFiles();
+
+        Log.d("help", "thing");
 
 //        DatabaseHandler db = new DatabaseHandler(this);
 //

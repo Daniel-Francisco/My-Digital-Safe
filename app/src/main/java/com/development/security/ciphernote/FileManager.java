@@ -136,18 +136,29 @@ public class FileManager {
     }
 
     public String readHash(Context context) throws JSONException {
-        checkUserConfiguration(context);
-        return userConfiguration.getPasswordHash();
+//        checkUserConfiguration(context);
+//        return userConfiguration.getPasswordHash();
+        DatabaseManager databaseManager = new DatabaseManager(context);
+        String hash = databaseManager.getUserConfiguration(7).getPassword_hash();
+        return hash;
     }
 
     public String getSalt(Context context) throws JSONException {
-        checkUserConfiguration(context);
-        return userConfiguration.getSalt();
+//        checkUserConfiguration(context);
+//        if(userConfiguration.getSalt() == null){
+        DatabaseManager databaseManager = new DatabaseManager(context);
+        String salt = databaseManager.getUserConfiguration(7).getSalt();
+        return salt;
+//        }
+//        return userConfiguration.getSalt();
     }
 
     public int getHashingIterations(Context context) throws JSONException {
-        checkUserConfiguration(context);
-        return userConfiguration.getIterations();
+//        checkUserConfiguration(context);
+//        return userConfiguration.getIterations();
+        DatabaseManager databaseManager = new DatabaseManager(context);
+        int iterations = databaseManager.getUserConfiguration(7).getIterations();
+        return iterations;
     }
 
 
@@ -238,49 +249,29 @@ public class FileManager {
         return bytes;
     }
 
-    public ArrayList<DataStructures.FileManagmentObject> readFileManagmentData(SecurityManager securityManager, Context context) throws JSONException, ParseException, IOException {
-        ArrayList<DataStructures.FileManagmentObject> filesArray = new ArrayList<>();
-
+    public ArrayList<com.development.security.ciphernote.model.File> readFileManagmentData(SecurityManager securityManager, Context context) throws JSONException, ParseException, IOException {
         DatabaseManager databaseManager = new DatabaseManager(context);
-        List<com.development.security.ciphernote.model.File> list = databaseManager.getAllFiles();
+        ArrayList<com.development.security.ciphernote.model.File> list = databaseManager.getAllFiles();
+
+//            try{
+//                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+//                parsedDate = formatter.parse(list.get(i).getAccessDate());
+//            }catch (Exception e){
+//                e.printStackTrace();
+//                parsedDate = new Date();
+//            }
 
 
-        for(int i = 0; i<list.size(); i++){
-            DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
-            fileManagmentObject.userDefinedFileName = list.get(i).getFileName();
-
-            Date parsedDate;
-            try{
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-                parsedDate = formatter.parse(list.get(i).getAccessDate());
-            }catch (Exception e){
-                e.printStackTrace();
-                parsedDate = new Date();
-            }
-
-
-            fileManagmentObject.lastAccessed = parsedDate;
-
-            filesArray.add(fileManagmentObject);
-        }
-
-        return filesArray;
+        return list;
     }
-    public void writeFileManagmentData(SecurityManager securityManager, Context context, ArrayList<DataStructures.FileManagmentObject> files, Boolean newFlag) throws JSONException {
+    public void writeFileManagmentData(SecurityManager securityManager, Context context, DataStructures.FileManagmentObject inputFile) throws JSONException {
         DatabaseManager databaseManager = new DatabaseManager(context);
-        for(int i = 0; i<files.size(); i++){
-            com.development.security.ciphernote.model.File file = new com.development.security.ciphernote.model.File();
-            file.setData("");
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-            file.setFileName(files.get(i).userDefinedFileName);
-            file.setAccessDate(dateFormat.format(files.get(i).lastAccessed));
-            if(newFlag){
-                databaseManager.addFile(file);
-            }else{
-                databaseManager.updateFile(file);
-            }
-
-        }
+        com.development.security.ciphernote.model.File file = new com.development.security.ciphernote.model.File();
+        file.setData("");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        file.setFileName(inputFile.userDefinedFileName);
+        file.setAccessDate(dateFormat.format(inputFile.lastAccessed));
+        databaseManager.addFile(file);
     }
 
 

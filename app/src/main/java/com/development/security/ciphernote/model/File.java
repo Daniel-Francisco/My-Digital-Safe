@@ -13,7 +13,7 @@ public class File {
     public static final String KEY_ACCESS_DATE = "access_date";
     public static final String KEY_DATA = "file_data";
 
-    int _id;
+    long _id;
     String file_name;
     String access_date;
     String data;
@@ -31,10 +31,10 @@ public class File {
         this.data = data;
     }
 
-    public void setID(int id){
+    public void setID(long id){
         _id = id;
     }
-    public int getID(){
+    public long getID(){
         return _id;
     }
 
