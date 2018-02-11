@@ -2,7 +2,9 @@ package com.development.security.ciphernote;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -13,13 +15,20 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.model.File;
+import com.google.gson.Gson;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class ListActivity extends android.app.ListActivity {
-    ArrayList<DataStructures.FileManagmentObject> list;
+    ArrayList<File> list;
     Context applicationContext;
     FileManager fileManager;
+    File selectedFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +38,24 @@ public class ListActivity extends android.app.ListActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         applicationContext = this.getBaseContext();
 
+//        byte[] testBytes = "test".getBytes();
+//        DatabaseManager databaseManagerTest = new DatabaseManager(applicationContext);
+//        File fileWrite = new File("test23", "", testBytes);
+//        databaseManagerTest.addFile(fileWrite);
+
+//        File sampleRead = databaseManagerTest.getFileByName(fileWrite.getFileName());
+
+
 
         try{
 
             fileManager = new FileManager();
-            list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
-
+            try {
+                list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
+            }catch(Exception e){
+                e.printStackTrace();
+                list = new ArrayList<>();
+            }
             listViewRefresh();
 
 
@@ -47,12 +68,18 @@ public class ListActivity extends android.app.ListActivity {
                         String name = noteNameEditText.getText().toString();
 
                         if(findIndex(name) == -1){
-                            DataStructures.FileManagmentObject fileManagmentObject = new DataStructures.FileManagmentObject();
+                            File newFile = new File();
                             Date date = new Date();
-                            fileManagmentObject.userDefinedFileName = name;
-                            fileManagmentObject.lastAccessed = date;
-                            list.add(fileManagmentObject);
-                            fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
+                            newFile.setFileName(name);
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                            newFile.setAccessDate(dateFormat.format(date));
+                            newFile.setData("");
+                            DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+
+
+                            long id = databaseManager.addFile(newFile);
+                            newFile.setID(id);
+                            list.add(newFile);
                             listViewRefresh();
 
                             noteNameEditText.setText("");
@@ -64,6 +91,11 @@ public class ListActivity extends android.app.ListActivity {
                                 String realFilename = SecurityManager.getInstance().SHA256Hash(name);
 
                                 landingIntent.putExtra("fileName", name);
+
+                                Gson gson = new Gson();
+                                String json = gson.toJson(newFile);
+
+                                landingIntent.putExtra("fileObject", json);
                                 startActivity(landingIntent);
                             }catch(Exception e){
                                 e.printStackTrace();
@@ -107,7 +139,7 @@ public class ListActivity extends android.app.ListActivity {
         String[] entities = new String[list.size()];
 
         for(int i = 0; i < list.size(); i++){
-            entities[i] = list.get(i).userDefinedFileName;
+            entities[i] = list.get(i).getFileName();
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(applicationContext, android.R.layout.simple_list_item_1, entities);
@@ -123,11 +155,11 @@ public class ListActivity extends android.app.ListActivity {
         int index = findIndex(itemValue);
         if(index != -1){
             try{
-                DataStructures.FileManagmentObject object = list.get(index);
-                list.remove(index);
-                list.add(object);
-
-                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list);
+                selectedFile = list.get(index);
+//                list.remove(index);
+//                list.add(object);
+//
+//                fileManager.writeFileManagmentData(SecurityManager.getInstance(), applicationContext, list, false);
                 listViewRefresh();
 
             }catch (Exception e){
@@ -141,15 +173,38 @@ public class ListActivity extends android.app.ListActivity {
             String realFilename = SecurityManager.getInstance().SHA256Hash(itemValue);
 
             landingIntent.putExtra("fileName", itemValue);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(selectedFile);
+
+            landingIntent.putExtra("fileObject", json);
+
             startActivity(landingIntent);
         }catch(Exception e){
             e.printStackTrace();
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        try {
+            try {
+                list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
+            }catch(Exception e){
+                e.printStackTrace();
+                list = new ArrayList<>();
+            }
+            listViewRefresh();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private int findIndex(String filename){
         for(int i = 0; i < list.size(); i++){
-            if(list.get(i).userDefinedFileName.equals(filename)){
+            if(list.get(i).getFileName().equals(filename)){
                 return i;
             }
         }
