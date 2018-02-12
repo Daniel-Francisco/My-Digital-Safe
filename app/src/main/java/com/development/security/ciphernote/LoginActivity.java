@@ -16,8 +16,6 @@ import android.webkit.WebView;
 import android.widget.Toast;
 import android.webkit.JavascriptInterface;
 
-import com.development.security.ciphernote.model.Contact;
-import com.development.security.ciphernote.model.DatabaseHandler;
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
 import com.development.security.ciphernote.model.UserConfiguration;
