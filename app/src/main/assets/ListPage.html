@@ -45,21 +45,23 @@
 
 <script>
 //Example of JSON backend will send
-//[{"lastAccessed":"Jan 10, 2018 12:38:58 AM","userDefinedFileName":"newNote"},
-//{"lastAccessed":"Jan 10, 2018 12:39:55 AM","userDefinedFileName":"newerNote"},
-//{"lastAccessed":"Jan 10, 2018 12:40:02 AM","userDefinedFileName":"newestStill"}]
+//[
+//    {"_id":1,"access_date":"2018-13-12 09:13:43","data":"value of note 1","file_name":"note 1"},
+//    {"_id":2,"access_date":"2018-17-12 09:17:51","data":"Note 2 value look at me I\u0027m a value.","file_name":"note 2"},
+//    {"_id":3,"access_date":"2018-18-12 09:18:45","data":"test","file_name":"note 3"}
+//]
 
 
     $(document).ready(function() {
         //add something
-        //Android.addNote("myNewNote");
+        //Android.addNote("note 3");
 
         //sample json for mynewnote
 		var json = Android.getData();
 		console.log("value: " + json);
 
 		//go to note
-		Android.listClickOccurred("myNewNote");
+		//Android.listClickOccurred("note 1");
 
 	});
 
