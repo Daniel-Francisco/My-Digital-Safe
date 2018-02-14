@@ -53,12 +53,15 @@
 
 
     $(document).ready(function() {
+        var map = Android.androidDataModel();
+        console.log(map);
+
         //add something
         //Android.addNote("note 3");
 
         //sample json for mynewnote
-		var json = Android.getData();
-		console.log("value: " + json);
+		//var json = Android.getData();
+		//console.log("value: " + json);
 
 		//go to note
 		//Android.listClickOccurred("note 1");

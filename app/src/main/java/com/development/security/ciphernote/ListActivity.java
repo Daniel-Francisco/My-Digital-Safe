@@ -22,6 +22,8 @@ import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,8 +55,6 @@ public class ListActivity extends Activity {
 
     }
 
-
-
     private int findIndex(String filename){
         for(int i = 0; i < list.size(); i++){
             if(list.get(i).getFileName().equals(filename)){
@@ -63,15 +63,6 @@ public class ListActivity extends Activity {
         }
         return -1;
     }
-
-
-
-
-
-
-
-
-
 
     protected String androidGetData(){
         try{
@@ -185,6 +176,20 @@ public class ListActivity extends Activity {
         @JavascriptInterface
         public void androidChangePassword(){
             androidChangePassword();
+        }
+
+        @JavascriptInterface
+        public String androidDataModel(){
+            try{
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id", File.KEY_ID);
+                jsonObject.put("name", File.KEY_FILE_NAME);
+                jsonObject.put("date", File.KEY_ACCESS_DATE);
+                return jsonObject.toString();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return "";
         }
     }
 
