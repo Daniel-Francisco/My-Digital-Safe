@@ -1,5 +1,10 @@
 package com.development.security.ciphernote.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * Created by danie on 2/6/2018.
  */
@@ -15,21 +20,10 @@ public class File {
 
     long _id;
     String file_name;
-    String access_date;
+    long access_date;
     String data;
 
     public File(){}
-    public File(int id, String file_name, String access_date, String data){
-        _id = id;
-        this.file_name = file_name;
-        this.access_date = access_date;
-        this.data = data;
-    }
-    public File(String file_name, String access_date, String data){
-        this.file_name = file_name;
-        this.access_date = access_date;
-        this.data = data;
-    }
 
     public void setID(long id){
         _id = id;
@@ -45,11 +39,15 @@ public class File {
         return file_name;
     }
 
-    public void setAccessDate(String access_date){
-        this.access_date = access_date;
+    public void setAccessDate(Date date) throws ParseException {
+        this.access_date = date.getTime();
     }
-    public String getAccessDate(){
-        return access_date;
+    public void setAccessDate(long date) throws ParseException {
+        this.access_date = date;
+    }
+    public Date getAccessDate() {
+        Date date = new Date(access_date);
+        return date;
     }
 
     public void setData(String data){
@@ -58,4 +56,5 @@ public class File {
     public String getData(){
         return data;
     }
+
 }

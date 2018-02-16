@@ -236,8 +236,6 @@ public class SecurityManager {
 
         if(userHashEncoded.equals(hashInFile)){
 
-            generateKey(context);
-
             return true;
         }
         return false;
@@ -309,18 +307,20 @@ public class SecurityManager {
 //            return 2;
 //        }
 
-    public byte[] encryptWithAlternatePassword(String password, byte[] data, Boolean encryptOrDecryptFlag){
+    public byte[] encryptWithAlternatePassword(String password, byte[] data, byte[] salt, int hashingIterations,  Boolean encryptOrDecryptFlag){
+        int keyLength = 256;
         try{
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 1, 256);
-            SecretKey tmp = factory.generateSecret(spec);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
+            userKey = skf.generateSecret(spec);
             SecretKey secretBackup = secret;
-            secret = new SecretKeySpec(tmp.getEncoded(), "AES");
+            secret = new SecretKeySpec(userKey.getEncoded(), "AES");
+
             byte[] cryptoData = null;
             if(encryptOrDecryptFlag){
                 cryptoData = encrypt(Base64.encodeToString(data, Base64.DEFAULT));
             }else{
-                cryptoData = decrypt(data).getBytes();
+                cryptoData = Base64.decode(decrypt(data), Base64.DEFAULT);
             }
             secret = secretBackup;
             return cryptoData;

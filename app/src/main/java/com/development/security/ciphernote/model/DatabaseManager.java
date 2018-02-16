@@ -9,8 +9,12 @@ import android.util.Base64;
 
 import com.development.security.ciphernote.SecurityManager;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -23,6 +27,9 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     // Database Name
     private static final String DATABASE_NAME = "ciphernote_db";
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
 
     public DatabaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -49,7 +56,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         String CREATE_Files_TABLE = "CREATE TABLE " + File.TABLE_FILES + "("
                 + File.KEY_ID + " INTEGER PRIMARY KEY," + File.KEY_FILE_NAME + " BLOB,"
-                + File.KEY_ACCESS_DATE + " BLOB,"
+                + File.KEY_ACCESS_DATE + " INTEGER,"
                 + File.KEY_DATA + " TEXT" + ")";
         sqLiteDatabase.execSQL(CREATE_Files_TABLE);
     }
@@ -146,12 +153,13 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public long addFile(File file) {
+    public long addFile(File file) throws ParseException {
         validateDB();
         SecurityManager securityManager = SecurityManager.getInstance();
 
         ContentValues values = new ContentValues();
-        values.put(File.KEY_ACCESS_DATE, securityManager.encrypt(file.getAccessDate()));
+        file.setAccessDate(new Date());
+        values.put(File.KEY_ACCESS_DATE, file.getAccessDate().getTime());
         values.put(File.KEY_FILE_NAME, securityManager.encrypt(file.getFileName()));
         values.put(File.KEY_DATA, Base64.encode(securityManager.encrypt(file.getData()), Base64.DEFAULT));
 
@@ -185,7 +193,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         String encryptedFileName = Base64.encodeToString(fileNameCipher, Base64.DEFAULT);
 
-        values.put(File.KEY_ACCESS_DATE, securityManager.encrypt(file.getAccessDate()));
+        values.put(File.KEY_ACCESS_DATE, file.getAccessDate().getTime());
         values.put(File.KEY_FILE_NAME, fileNameCipher);
         values.put(File.KEY_DATA, Base64.encodeToString(dataCipher, Base64.DEFAULT));
 
@@ -194,7 +202,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return id;
     }
 
-    public ArrayList<File> getAllFiles() {
+    public ArrayList<File> getAllFiles() throws ParseException {
         validateDB();
         SecurityManager securityManager = SecurityManager.getInstance();
 
@@ -210,8 +218,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
 //                UserConfiguration userConfiguration = new UserConfiguration(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getString(3));
                 File file = new File();
                 file.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(File.KEY_ID))));
-                byte[] accessDate = cursor.getBlob(cursor.getColumnIndex(File.KEY_ACCESS_DATE));
-                file.setAccessDate(securityManager.decrypt(accessDate));
+                long accessDate = cursor.getLong(cursor.getColumnIndex(File.KEY_ACCESS_DATE));
+                file.setAccessDate(accessDate);
 
                 file.setFileName(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_FILE_NAME))));
                 file.setData(securityManager.decrypt(Base64.decode(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)), Base64.DEFAULT)));
@@ -224,47 +232,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return fileList;
     }
 
-    public File getFileById(int id) {
-        SecurityManager securityManager = SecurityManager.getInstance();
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(File.TABLE_FILES, new String[] { File.KEY_ID, File.KEY_DATA, File.KEY_ACCESS_DATE, File.KEY_ACCESS_DATE }, UserConfiguration.KEY_ID + "=?",
-                new String[] { String.valueOf(id) }, null, null, null, null);
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        File file = new File();
-        file.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(File.KEY_ID))));
-        file.setAccessDate(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_ACCESS_DATE))));
-        file.setFileName(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_FILE_NAME))));
-        file.setData(securityManager.decrypt(Base64.decode(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)), Base64.DEFAULT)));
-
-        db.close();
-        return file;
-    }
-
-    public File getFileByName(String filename) {
-        SecurityManager securityManager = SecurityManager.getInstance();
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(File.TABLE_FILES, new String[] { File.KEY_ID, File.KEY_DATA, File.KEY_ACCESS_DATE }, File.KEY_FILE_NAME + "=?",
-                new String[] { filename }, null, null, null, null);
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        File file = new File();
-        file.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(File.KEY_ID))));
-        file.setAccessDate(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_ACCESS_DATE))));
-        file.setFileName(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_FILE_NAME))));
-        file.setData(securityManager.decrypt(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)).getBytes()));
-
-        db.close();
-
-        return file;
-    }
-    public void deleteFile(File file){
+    public void deleteFile(File file) throws ParseException {
         validateDB();
         List<File> filesBefore = getAllFiles();
 

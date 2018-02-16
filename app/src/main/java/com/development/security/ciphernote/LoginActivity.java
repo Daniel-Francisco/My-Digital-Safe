@@ -67,6 +67,7 @@ public class LoginActivity extends Activity {
                 String password = strings[0];
 
                 authentication = securityManager.authenticateUser(password, applicationContext, fileManager);
+                securityManager.generateKey(applicationContext);
 
                 if(authentication){
                     Log.d("help", "Successful authentication!");

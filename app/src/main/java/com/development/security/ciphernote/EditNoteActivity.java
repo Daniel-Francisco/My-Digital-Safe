@@ -26,7 +26,10 @@ import org.json.JSONObject;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EditNoteActivity extends AppCompatActivity {
@@ -91,20 +94,15 @@ public class EditNoteActivity extends AppCompatActivity {
 
         try {
             String plain = noteValue;
-//            byte[] userCipher = securityManager.encrypt(plain);
-//            String stuff = Base64.encodeToString(userCipher, Base64.DEFAULT);
-//
-//            String cipherString = Base64.encodeToString(userCipher, Base64.DEFAULT);
-            file.setData(plain);
 
-//            String test = securityManager.decrypt(Base64.decode(stuff, Base64.DEFAULT));
+            file.setAccessDate(new Date());
+
+            file.setData(plain);
 
             long id = databaseManager.updateFile(file);
             Log.d("help", "Id: " + id);
 
-//            Log.d("help", "Cipher: " + Base64.encodeToString(userCipher, Base64.DEFAULT));
 
-//            fileManager.writeDataFile(applicationContext, hashedFilename, userCipher);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -130,7 +128,7 @@ public class EditNoteActivity extends AppCompatActivity {
             fileManager.writeDataFile(applicationContext, fileName, deleteData);
 
             file.setFileName("redacted");
-            file.setAccessDate("redacted");
+            file.setAccessDate(new Date());
             file.setData("redacted");
             databaseManager.updateFile(file);
 
