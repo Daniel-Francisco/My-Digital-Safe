@@ -158,8 +158,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         SecurityManager securityManager = SecurityManager.getInstance();
 
         ContentValues values = new ContentValues();
-        file.setAccessDate(new Date());
-        values.put(File.KEY_ACCESS_DATE, file.getAccessDate().getTime());
+        values.put(File.KEY_ACCESS_DATE, securityManager.encrypt(file.getAccessDate()));
         values.put(File.KEY_FILE_NAME, securityManager.encrypt(file.getFileName()));
         values.put(File.KEY_DATA, Base64.encode(securityManager.encrypt(file.getData()), Base64.DEFAULT));
 
@@ -193,7 +192,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         String encryptedFileName = Base64.encodeToString(fileNameCipher, Base64.DEFAULT);
 
-        values.put(File.KEY_ACCESS_DATE, file.getAccessDate().getTime());
+        values.put(File.KEY_ACCESS_DATE, securityManager.encrypt(file.getAccessDate()));
         values.put(File.KEY_FILE_NAME, fileNameCipher);
         values.put(File.KEY_DATA, Base64.encodeToString(dataCipher, Base64.DEFAULT));
 
@@ -218,8 +217,9 @@ public class DatabaseManager extends SQLiteOpenHelper {
 //                UserConfiguration userConfiguration = new UserConfiguration(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getString(3));
                 File file = new File();
                 file.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(File.KEY_ID))));
-                long accessDate = cursor.getLong(cursor.getColumnIndex(File.KEY_ACCESS_DATE));
-                file.setAccessDate(accessDate);
+                byte[] accessDate = cursor.getBlob(cursor.getColumnIndex(File.KEY_ACCESS_DATE));
+
+                file.setAccessDate(securityManager.decrypt(accessDate));
 
                 file.setFileName(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_FILE_NAME))));
                 file.setData(securityManager.decrypt(Base64.decode(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)), Base64.DEFAULT)));

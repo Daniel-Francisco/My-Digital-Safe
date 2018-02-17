@@ -1,0 +1,27 @@
+.id{
+    display:none;
+}
+.fileName{
+    font-size: 24px;
+    font-weight: bold;
+    display:block;
+}
+.date{
+    display:block;
+    font-size: 10px;
+}
+#page{
+    width: 100%;
+    height: 100%;
+}
+#addNoteImageButton{
+    float:right;
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+}
+.hide{
+    display:none;
+}

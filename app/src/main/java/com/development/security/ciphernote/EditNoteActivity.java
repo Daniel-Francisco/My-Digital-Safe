@@ -93,11 +93,11 @@ public class EditNoteActivity extends AppCompatActivity {
         super.onPause();
 
         try {
-            String plain = noteValue;
+//            String plain = noteValue;
 
-            file.setAccessDate(new Date());
+//            file.setAccessDate(new Date());
 
-            file.setData(plain);
+//            file.setData(plain);
 
             long id = databaseManager.updateFile(file);
             Log.d("help", "Id: " + id);
@@ -128,7 +128,7 @@ public class EditNoteActivity extends AppCompatActivity {
             fileManager.writeDataFile(applicationContext, fileName, deleteData);
 
             file.setFileName("redacted");
-            file.setAccessDate(new Date());
+            file.setAccessDate("redacted");
             file.setData("redacted");
             databaseManager.updateFile(file);
 
@@ -170,15 +170,20 @@ public class EditNoteActivity extends AppCompatActivity {
         public void deleteNote(){
             androidDelete();
         }
-    }
 
-    private int findIndex(ArrayList<DataStructures.FileManagmentObject> list, String filename){
-        for(int i = 0; i < list.size(); i++){
-            if(list.get(i).userDefinedFileName.equals(filename)){
-                return i;
-            }
+        @JavascriptInterface
+        public void updateFile(String fileString){
+            Gson gson = new Gson();
+            Type type = new TypeToken<com.development.security.ciphernote.model.File>() {}.getType();
+            file = gson.fromJson(fileString, type);
+            Log.d("help", "time");
         }
-        return -1;
+        @JavascriptInterface
+        public String getFile(){
+            Gson gson = new Gson();
+            String fileJson = gson.toJson(file);
+            return fileJson;
+        }
     }
 
 
