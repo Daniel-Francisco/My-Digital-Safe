@@ -24,7 +24,7 @@
 <div id="page">
     <div id="primaryWindow">
         <div id="listWrapper"> </div>
-        <input id="addNoteImageButton" type="image" src="./images/plus_icon.png" alt="Add Note" width="48" height="48">
+        <input id="addNoteImageButton" type="image" src="./images/plus_icon.png" alt="Add Note">
     </div>
     <!--<div id="newNoteWindow" class="hide">-->
         <!--<input id="closeNewNoteWindowButton" type="image" src="./images/x_icon.png" alt="Close note" width="48" height="48"/>-->
@@ -57,35 +57,67 @@
 
         var jsonArray = JSON.parse(jsonString);
         for(var i = 0; i < jsonArray.length; i++) {
-            var baseHtmlStructure = document.createElement("div");
-            baseHtmlStructure.classList.add("listItem");
-            var idDiv = document.createElement("div");
-            idDiv.classList.add("id");
-            var fileNameDiv = document.createElement("div");
-            fileNameDiv.classList.add("fileName");
-            var dateDiv = document.createElement("div");
-            dateDiv.classList.add("date");
+            (function () {
 
-            var obj = jsonArray[i];
-            var id = obj._id;
-            var date = obj.access_date;
-            var data = obj.data;
-            var fileName = obj.file_name;
 
-            idDiv.innerText = id;
-            dateDiv.innerText = date;
-            fileNameDiv.innerText = fileName;
+                var baseHtmlStructure = document.createElement("div");
+                baseHtmlStructure.classList.add("listItem");
 
-            baseHtmlStructure.appendChild(idDiv);
-            baseHtmlStructure.appendChild(fileNameDiv);
-            baseHtmlStructure.appendChild(dateDiv);
+                var dataDiv = document.createElement("div");
+                dataDiv.classList.add("dataDiv");
 
-            baseHtmlStructure.addEventListener("click", function(){
-                console.log("Clicked id: " + id);
-                Android.listClickOccurred(fileName);
-            });
+                var deleteAreaDiv = document.createElement("div");
+                deleteAreaDiv.classList.add("deleteArea");
 
-            wrapper.appendChild(baseHtmlStructure);
+                var idDiv = document.createElement("div");
+                idDiv.classList.add("id");
+                var fileNameDiv = document.createElement("div");
+                fileNameDiv.classList.add("fileName");
+                var dateDiv = document.createElement("div");
+                dateDiv.classList.add("date");
+
+                var deleteButton = document.createElement("input");
+                deleteButton.classList.add("deleteNote");
+                deleteButton.value = "Delete";
+                deleteButton.type = "image";
+                deleteButton.src = "./images/x_button.png";
+
+                var file = jsonArray[i];
+                var id = file._id;
+                var date = file.access_date;
+                var data = file.data;
+                var fileName = file.file_name;
+
+                idDiv.innerText = id;
+                dateDiv.innerText = date;
+                fileNameDiv.innerText = fileName;
+
+                dataDiv.appendChild(idDiv);
+                dataDiv.appendChild(fileNameDiv);
+                dataDiv.appendChild(dateDiv);
+                deleteAreaDiv.appendChild(deleteButton);
+
+                baseHtmlStructure.appendChild(dataDiv);
+                baseHtmlStructure.appendChild(deleteAreaDiv);
+
+                dataDiv.addEventListener("click", function(){
+                    console.log("File = " + file);
+                    var fileString = JSON.stringify(file);
+                    console.log("FileString = " + fileString);
+                    Android.listClickOccurred(fileString);
+                });
+
+                deleteButton.addEventListener("click", function(){
+                    console.log("File = " + file);
+                    var fileString = JSON.stringify(file);
+                    console.log("FileString = " + fileString);
+                    Android.deleteNote(fileString);
+                });
+
+                wrapper.appendChild(baseHtmlStructure);
+
+
+            }());
 
         }
     }

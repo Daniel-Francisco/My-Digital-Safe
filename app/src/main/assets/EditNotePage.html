@@ -16,12 +16,12 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 		<link rel="stylesheet" href="./css/style.css">
+		<link rel="stylesheet" href="./css/EditNotePage.css">
 
 	</head>
 
 	<div id="page">
 		<input id="editNoteTitle" oninput="updateFile()" class="title" type="text"/>
-		<input id="deleteNote" value="Delete" class="delete" type="button">
 		<textarea id="noteArea" oninput="updateFile()" rows="30"></textarea>
 	</div>
 
@@ -88,19 +88,6 @@
 
         title.value = titleText;
         editText.value = initialText;
-
-
-		$("#deleteNote").on("click", function(event) {
-			event.preventDefault();
-	       	Android.deleteNote();
-		});
-
-		// document.getElementById("noteArea").addEventListener("keyup", function(event) {
-		// 	event.preventDefault();
-		// 	if (event.keyCode === 13) {
-		// 		document.getElementById("saveButton").click();
-		// 	}
-		// });
 
 	});
 

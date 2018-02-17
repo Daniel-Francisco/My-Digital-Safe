@@ -21,9 +21,11 @@ import com.development.security.ciphernote.R;
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,6 +55,9 @@ public class ListActivity extends Activity {
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new ListActivity.WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/ListPage.html");
+
+
+
 
     }
 
@@ -88,21 +93,13 @@ public class ListActivity extends Activity {
         return "error";
     }
 
-    protected void androidListClickOccurred(String name) {
-        int index = findIndex(name);
-        if (index != -1) {
-            try {
-                selectedFile = list.get(index);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    protected void androidListClickOccurred(File file) {
+        selectedFile = file;
 
         try {
             Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
 
-            landingIntent.putExtra("fileName", name);
+//            landingIntent.putExtra("fileName", name);
 
             Gson gson = new Gson();
             String json = gson.toJson(selectedFile);
@@ -158,6 +155,39 @@ public class ListActivity extends Activity {
     }
 
 
+
+    private void androidDelete(File file){
+        try {
+            DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+
+            file.setFileName("redacted");
+            file.setAccessDate("redacted");
+            file.setData("redacted");
+            databaseManager.updateFile(file);
+
+            databaseManager.deleteFile(file);
+
+            CharSequence failedAuthenticationString = getString(R.string.deleteFileSuccess);
+            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+            toast.show();
+
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:renderList()");
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            CharSequence failedAuthenticationString = getString(R.string.deleteFileFailed);
+            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
+
+
     public class WebAppInterface {
         Context mContext;
 
@@ -171,8 +201,11 @@ public class ListActivity extends Activity {
         }
 
         @JavascriptInterface
-        public void listClickOccurred(String value) {
-            androidListClickOccurred(value);
+        public void listClickOccurred(String fileString) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<File>() {}.getType();
+            File file = gson.fromJson(fileString, type);
+            androidListClickOccurred(file);
         }
 
         @JavascriptInterface
@@ -197,6 +230,15 @@ public class ListActivity extends Activity {
                 e.printStackTrace();
             }
             return "";
+        }
+
+        @JavascriptInterface
+        public void deleteNote(String fileString){
+            Log.d("help", fileString);
+            Gson gson = new Gson();
+            Type type = new TypeToken<File>() {}.getType();
+            File file = gson.fromJson(fileString, type);
+            androidDelete(file);
         }
     }
 
