@@ -16,32 +16,25 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/ListPage.css">
 
 </head>
 
 <div id="page">
-    <div>Hello World! Change to push!</div>
-</div>
+    <div id="primaryWindow">
+        <div id="listWrapper"> </div>
+        <input id="addNoteImageButton" type="image" src="./images/plus_icon.png" alt="Add Note" width="48" height="48">
+    </div>
+    <div id="newNoteWindow" class="hide">
+        <input id="closeNewNoteWindowButton" type="image" src="./images/x_icon.png" alt="Close note" width="48" height="48"/>
+        <input id="newNoteName" placeholder="New Note Name"/>
+        <input id="newNoteButton" value="Create Note!" class="login" type="button">
+    </div>
 
-<style>
-	#page{
-		width: 100%;
-		height: 100%;
-		display: block;
-		margin: auto;
-	}
-	#noteArea{
-		width:100%;
-		rows:100;
-	}
-	#deleteNote{
-		display: block;
-		position:relative;
-		margin: 10px auto;
-		float:none;
-		color:red;
-	}
-</style>
+
+    </div>
+
 
 <script>
 //Example of JSON backend will send
@@ -50,11 +43,91 @@
 //    {"_id":2,"access_date":"2018-17-12 09:17:51","data":"Note 2 value look at me I\u0027m a value.","file_name":"note 2"},
 //    {"_id":3,"access_date":"2018-18-12 09:18:45","data":"test","file_name":"note 3"}
 //]
+    var jsonString;
+    var wrapper;
+    var windowFlag = false;
 
 
     $(document).ready(function() {
-        var map = Android.androidDataModel();
-        console.log(map);
+        wrapper = document.getElementById("listWrapper");
+        jsonString = Android.getData();
+        console.log(jsonString);
+
+        //"[{"_id":1,"access_date":"2018-26-15 08:26:08","data":"test value","file_name":"test"}]"
+
+            var jsonArray = JSON.parse(jsonString);
+        for(var i = 0; i < jsonArray.length; i++) {
+            var baseHtmlStructure = document.createElement("div");
+            baseHtmlStructure.classList.add("listItem");
+            var idDiv = document.createElement("div");
+            idDiv.classList.add("id");
+            var fileNameDiv = document.createElement("div");
+            fileNameDiv.classList.add("fileName");
+            var dateDiv = document.createElement("div");
+            dateDiv.classList.add("date");
+
+            var obj = jsonArray[i];
+            var id = obj._id;
+            var date = obj.access_date;
+            var data = obj.data;
+            var fileName = obj.file_name;
+
+            idDiv.innerText = id;
+            dateDiv.innerText = date;
+            fileNameDiv.innerText = fileName;
+
+            baseHtmlStructure.appendChild(idDiv);
+            baseHtmlStructure.appendChild(fileNameDiv);
+            baseHtmlStructure.appendChild(dateDiv);
+
+            baseHtmlStructure.addEventListener("click", function(){
+                console.log("Clicked id: " + id);
+                Android.listClickOccurred(fileName);
+            });
+
+            wrapper.appendChild(baseHtmlStructure);
+
+        }
+
+        $("#newNoteButton")[0].addEventListener("keyup", function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                $("#signIn").click();
+            }
+        });
+        $("#newNoteButton").on("click", function(event) {
+            event.preventDefault();
+            var noteName = $("#newNoteName").val();
+            console.log(noteName);
+            Android.addNote(noteName);
+        });
+
+        $("#addNoteImageButton").on("click", function(event) {
+            event.preventDefault();
+            if(windowFlag){
+                document.getElementById("primaryWindow").classList.remove("hide");
+                document.getElementById("newNoteWindow").classList.add("hide");
+            }else{
+                document.getElementById("primaryWindow").classList.add("hide");
+                document.getElementById("newNoteWindow").classList.remove("hide");
+            }
+            windowFlag = !windowFlag;
+        });
+        $("#closeNewNoteWindowButton").on("click", function(event) {
+            event.preventDefault();
+            if(windowFlag){
+                document.getElementById("primaryWindow").classList.remove("hide");
+                document.getElementById("newNoteWindow").classList.add("hide");
+            }else{
+                document.getElementById("primaryWindow").classList.add("hide");
+                document.getElementById("newNoteWindow").classList.remove("hide");
+            }
+            windowFlag = !windowFlag;
+        });
+
+
+        // var map = Android.androidDataModel();
+        // console.log(map);
 
         //add something
         //Android.addNote("note 3");
