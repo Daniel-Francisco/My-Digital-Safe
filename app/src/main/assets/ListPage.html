@@ -24,7 +24,7 @@
 <div id="page">
     <div id="primaryWindow">
         <div id="listWrapper"> </div>
-        <input id="addNoteImageButton" type="image" src="./images/plus_icon.png" alt="Add Note">
+        <!--<input id="addNoteImageButton" type="image" src="./images/plus_icon.png" alt="Add Note">-->
     </div>
     <!--<div id="newNoteWindow" class="hide">-->
         <!--<input id="closeNewNoteWindowButton" type="image" src="./images/x_icon.png" alt="Close note" width="48" height="48"/>-->
@@ -125,12 +125,12 @@
     $(document).ready(function() {
         renderList();
 
-        $("#addNoteImageButton").on("click", function(event) {
-            event.preventDefault();
-            var noteName = "My Secure Note";//$("#newNoteName").val();
-            console.log(noteName);
-            Android.addNote(noteName);
-        });
+        // $("#addNoteImageButton").on("click", function(event) {
+        //     event.preventDefault();
+        //     var noteName = "My Secure Note";//$("#newNoteName").val();
+        //     console.log(noteName);
+        //     Android.addNote(noteName);
+        // });
         $("#closeNewNoteWindowButton").on("click", function(event) {
             event.preventDefault();
             if(windowFlag){
