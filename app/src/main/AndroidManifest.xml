@@ -24,9 +24,9 @@
             android:name=".Main2Activity"
             android:label="@string/title_activity_main2"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ListActivity" />
+        <activity android:name=".ListActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ChangePasswordActivity" />
-        <activity android:name=".ConfigurationActivity"></activity>
     </application>
 
 </manifest>

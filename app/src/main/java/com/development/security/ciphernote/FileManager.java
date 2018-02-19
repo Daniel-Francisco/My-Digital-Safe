@@ -264,15 +264,14 @@ public class FileManager {
 
         return list;
     }
-    public void writeFileManagmentData(SecurityManager securityManager, Context context, DataStructures.FileManagmentObject inputFile) throws JSONException {
-        DatabaseManager databaseManager = new DatabaseManager(context);
-        com.development.security.ciphernote.model.File file = new com.development.security.ciphernote.model.File();
-        file.setData("");
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-        file.setFileName(inputFile.userDefinedFileName);
-        file.setAccessDate(dateFormat.format(inputFile.lastAccessed));
-        databaseManager.addFile(file);
-    }
+//    public void writeFileManagmentData(SecurityManager securityManager, Context context, DataStructures.FileManagmentObject inputFile) throws JSONException {
+//        DatabaseManager databaseManager = new DatabaseManager(context);
+//        com.development.security.ciphernote.model.File file = new com.development.security.ciphernote.model.File();
+//        file.setData("");
+//        file.setFileName(inputFile.userDefinedFileName);
+//        file.setAccessDate(fo);
+//        databaseManager.addFile(file);
+//    }
 
 
     private void writeToSP(Context context, byte[] data){

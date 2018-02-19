@@ -26,7 +26,10 @@ import org.json.JSONObject;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EditNoteActivity extends AppCompatActivity {
@@ -90,21 +93,16 @@ public class EditNoteActivity extends AppCompatActivity {
         super.onPause();
 
         try {
-            String plain = noteValue;
-//            byte[] userCipher = securityManager.encrypt(plain);
-//            String stuff = Base64.encodeToString(userCipher, Base64.DEFAULT);
-//
-//            String cipherString = Base64.encodeToString(userCipher, Base64.DEFAULT);
-            file.setData(plain);
+//            String plain = noteValue;
 
-//            String test = securityManager.decrypt(Base64.decode(stuff, Base64.DEFAULT));
+//            file.setAccessDate(new Date());
+
+//            file.setData(plain);
 
             long id = databaseManager.updateFile(file);
             Log.d("help", "Id: " + id);
 
-//            Log.d("help", "Cipher: " + Base64.encodeToString(userCipher, Base64.DEFAULT));
 
-//            fileManager.writeDataFile(applicationContext, hashedFilename, userCipher);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,15 +170,20 @@ public class EditNoteActivity extends AppCompatActivity {
         public void deleteNote(){
             androidDelete();
         }
-    }
 
-    private int findIndex(ArrayList<DataStructures.FileManagmentObject> list, String filename){
-        for(int i = 0; i < list.size(); i++){
-            if(list.get(i).userDefinedFileName.equals(filename)){
-                return i;
-            }
+        @JavascriptInterface
+        public void updateFile(String fileString){
+            Gson gson = new Gson();
+            Type type = new TypeToken<com.development.security.ciphernote.model.File>() {}.getType();
+            file = gson.fromJson(fileString, type);
+            Log.d("help", "time");
         }
-        return -1;
+        @JavascriptInterface
+        public String getFile(){
+            Gson gson = new Gson();
+            String fileJson = gson.toJson(file);
+            return fileJson;
+        }
     }
 
 

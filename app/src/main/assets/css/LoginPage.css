@@ -1,0 +1,45 @@
+#password {
+    border: 1px solid #ebeff0;
+    background: #ffffff;
+    color: #181818;
+    margin: 10px auto 10px auto !important;
+    padding: 11px 38px 11px 38px !important;
+    font-family: sans-serif;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 1px;
+    font-size: 13px;
+    line-height: 17px;
+    border-radius: 0px !important;
+    width: 75% !important;
+}
+
+.login {
+    background: #92ccb6 !important;
+    background-color: #008CBA !important;
+    height: 30px !important;
+    width: 75% !important;
+    margin: 10px auto 10px auto !important;
+    border-radius: 2px !important;
+    padding: none !important;
+    color: #FFFFFF;
+    border: none;
+    box-shadow: 0 1px 0px 1px #bfbfbf;
+}
+
+.container {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#loginForm {
+    text-align: center !important;
+    margin-top: 50% !important;
+}
+#loginLogo{
+    width: 175px;
+    height: 175px;
+    align: middle;
+    display: block;
+    margin: 10px auto 10px auto !important;
+}

@@ -21,7 +21,47 @@
     bottom: 0px;
     padding-bottom: 10px;
     padding-right: 10px;
+<<<<<<< HEAD
 }
 .hide{
     display:none;
+=======
+    width: 75px;
+    length: 75px;
+}
+.hide{
+    display:none;
+}
+.listItem{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+    width: 100%;
+    display:block;
+    height: auto;
+    float:left;
+}
+
+.dataDiv{
+    display: inline-block;
+    width: 70%;
+    float:left;
+}
+.deleteAreaDiv{
+    display: block;
+    width: 30%;
+    height:100%;
+    float:right;
+
+    padding-right: 25px;
+    padding-top: 25px;
+}
+.deleteNote{
+    /*right: 0px;*/
+    float: right;
+    width: 35px;
+    height: 35px;
+    margin-top: 9px;
+    margin-right: 10px;
+>>>>>>> ad2888e1d43f734cf947455f161f515124c6e5cb
 }
