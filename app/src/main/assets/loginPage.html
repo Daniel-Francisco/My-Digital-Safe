@@ -1,57 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<html lang="en">
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	</html>
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <html lang="en">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </html>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-	<!-- jQuery library -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-	<!-- Latest compiled JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-	<link rel="stylesheet" href="./css/style.css">
-	<link rel="stylesheet" href="./css/LoginPage.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/LoginPage.css">
 
 </head>
 <body>
 <div class="container">
-	<div id="loginForm">
-		<img src="images/sample-logo.jpg" id="loginLogo"/>
-		<input name="password" id="password" value="password1" class="input" placeholder="Password" type="password">
-		<input id="signIn" value="Sign In" class="login" type="button">
-	</div>
+    <div id="loginForm">
+        <img src="images/sample-logo.jpg" id="loginLogo"/>
+        <progress id="loginProgressBar" value="0" max="100"></progress>
+        <input name="password" id="password" value="password1" class="input" placeholder="Password" type="password">
+        <input id="signIn" value="Sign In" class="login" type="button">
+    </div>
+
 </div>
 
 
 <script>
-			$(document).ready(function() {
+    var attemptingLogin = false;
+    var loginTime = 500;
+    var precentProgress = 0;
+    $(document).ready(function () {
 
-				$("#signIn").on("click", function(event) {
-					event.preventDefault();
-			        var password = $("#password").val();
-					console.log(password);
-					Android.authenticateUser(password);
-				});
-			
-				$("#password")[0].addEventListener("keyup", function(event) {
-					event.preventDefault();
-					if (event.keyCode === 13) {
-						$("#signIn").click();
-					}
-				});				
-			});
+        // $("#passwordStrengthBar").val(80);
 
+        $("#signIn").on("click", function (event) {
+            event.preventDefault();
+            if(!attemptingLogin){
+                var password = $("#password").val();
+                attemptingLogin = true;
+                document.getElementById("loginProgressBar").classList.add("showProgressBar");
+                setTimeout(updateProgressBar, (loginTime/100));
+                Android.authenticateUser(password);
+            }
 
-			function danielTestPleaseDontJudge(){
-				console.log("PURPLE NABLA");
-			}
-			
-		</script>
+        });
+
+        $("#password")[0].addEventListener("keyup", function (event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                $("#signIn").click();
+            }
+        });
+    });
+
+    function updateProgressBar(){
+        console.log("updateProgressBar ran, value = " + precentProgress);
+        $("#loginProgressBar").val(precentProgress);
+        precentProgress++;
+        if(precentProgress != 101){
+            setTimeout(updateProgressBar, (loginTime/100));
+        }
+    }
+
+    function danielTestPleaseDontJudge() {
+        console.log("PURPLE NABLA");
+    }
+
+</script>
 
 </body>
 
