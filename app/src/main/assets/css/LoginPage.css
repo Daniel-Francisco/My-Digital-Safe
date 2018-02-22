@@ -35,6 +35,7 @@
 #loginForm {
     text-align: center !important;
     margin-top: 50% !important;
+    height:100%;
 }
 #loginLogo{
     width: 175px;
@@ -45,9 +46,25 @@
 }
 
 #loginProgressBar{
+    display:block!important;
+    margin: 10px auto 10px auto !important;
+}
+
+#loginProgressArea{
     display: none;
+    width: 100%;
 }
 .showProgressBar{
-    display:inline-block!important;
+    display: block!important;
+}
+.progressTitle{
+    display:block!important;
     margin: 10px auto 10px auto !important;
+    font-size: 16px;
+}
+#loginInfoArea{
+    display:inline-block;
+}
+.hideLoginInfoArea{
+    display:none!important;
 }

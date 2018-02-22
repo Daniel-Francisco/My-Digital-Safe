@@ -1,5 +1,6 @@
 package com.development.security.ciphernote;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,6 +47,7 @@ public class StartupActivity extends AppCompatActivity {
             int score = securityManager.calculatePasswordStrength(passwordOne);
 
             if (passwordOne.equals(passwordTwo) && score > 0) {
+                long start_time = System.nanoTime();
                 int iterations;
                 if(levelValue.equals("high")){
                     iterations = 250000;
@@ -69,6 +71,12 @@ public class StartupActivity extends AppCompatActivity {
                 fileManager.writeToFirstRunFile(applicationContext);
 
                 fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
+
+                long end_time = System.nanoTime();
+                double difference = (end_time - start_time) / 1e6;
+                int loginTime = (int) difference;
+                writeLoginTime(loginTime);
+
                 Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
                 startActivity(loginIntent);
                 finish();
@@ -100,6 +108,13 @@ public class StartupActivity extends AppCompatActivity {
 
     private int androidCheckPasswordStrength(String password){
         return securityManager.calculatePasswordStrength(password);
+    }
+
+    private void writeLoginTime(int time){
+        SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("login_time", time);
+        editor.commit();
     }
 
 

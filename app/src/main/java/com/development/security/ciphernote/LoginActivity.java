@@ -20,6 +20,7 @@ import android.webkit.JavascriptInterface;
 public class LoginActivity extends Activity {
     Context applicationContext;
     SharedPreferences prefs = null;
+    int loginTime = -1;
 
 
     final SecurityManager securityManager = SecurityManager.getInstance();
@@ -48,13 +49,6 @@ public class LoginActivity extends Activity {
 
     public void androidAuthenticateUser(String password){
        //Call ASYNC task
-
-        browser.post(new Runnable() {
-            @Override
-            public void run() {
-                browser.loadUrl("javascript:spinnerToggle(true)");
-            }
-        });
         new AsyncLogin().execute(password);
     }
 
@@ -62,7 +56,10 @@ public class LoginActivity extends Activity {
     private class AsyncLogin extends AsyncTask<String, String, Boolean> {
         @Override
         protected Boolean doInBackground(String... strings) {
+            long start_time = System.nanoTime();
             try{
+
+
                 Boolean authentication = null;
                 String password = strings[0];
 
@@ -78,28 +75,37 @@ public class LoginActivity extends Activity {
                 }else{
                     Log.d("help", "Failed authentication");
 //                passwordField.setText("");
+                    long end_time = System.nanoTime();
+                    double difference = (end_time - start_time) / 1e6;
+                    loginTime = (int) difference;
                     return false;
                 }
+
+                long end_time = System.nanoTime();
+                double difference = (end_time - start_time) / 1e6;
+                loginTime = (int) difference;
                 return true;
             }catch (Exception e){
                 e.printStackTrace();
             }
+            long end_time = System.nanoTime();
+            double difference = (end_time - start_time) / 1e6;
+            loginTime = (int) difference;
             return false;
-
         }
 
         protected void onProgressUpdate(Integer... progress) {
         }
 
         protected void onPostExecute(Boolean status) {
-            browser.post(new Runnable() {
-                @Override
-                public void run() {
-                    browser.loadUrl("javascript:spinnerToggle(false)");
-                }
-            });
-
+            writeLoginTime(loginTime);
             if(!status){
+                browser.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        browser.loadUrl("javascript:failedLogin()");
+                    }
+                });
                 CharSequence failedAuthenticationString = getString(R.string.failed_login_toast);
 
                 Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
@@ -107,6 +113,19 @@ public class LoginActivity extends Activity {
             }
 
         }
+    }
+
+    private void writeLoginTime(int time){
+        SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("login_time", time);
+        editor.commit();
+    }
+    private int readLoginTime(){
+        SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);
+        int loginTime = sp.getInt("login_time", -1);
+
+        return loginTime;
     }
 
 
@@ -118,6 +137,12 @@ public class LoginActivity extends Activity {
         @JavascriptInterface
         public void authenticateUser(String password) {
             androidAuthenticateUser(password);
+        }
+
+        @JavascriptInterface
+        public int getloginTime(){
+            Log.d("loginTime", String.valueOf(readLoginTime()));
+            return readLoginTime();
         }
     }
 

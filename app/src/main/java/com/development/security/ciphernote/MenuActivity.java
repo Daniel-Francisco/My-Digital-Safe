@@ -87,8 +87,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
             Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
             toast.show();
 
-//            Intent changePasswordIntent = new Intent(applicationContext, ChangePasswordActivity.class);
-//            startActivity(changePasswordIntent);
+            Intent aboutIntent = new Intent(applicationContext, AboutActivity.class);
+            startActivity(aboutIntent);
         } else if (id == R.id.logout) {
             CharSequence failedAuthenticationString = "Logout clicked";
 

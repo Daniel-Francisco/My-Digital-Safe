@@ -3,6 +3,7 @@ package com.development.security.ciphernote;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.google.gson.Gson;
@@ -85,7 +87,6 @@ public class EditNoteActivity extends AppCompatActivity {
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/EditNotePage.html");
 
-
     }
 
     @Override
@@ -98,6 +99,9 @@ public class EditNoteActivity extends AppCompatActivity {
 //            file.setAccessDate(new Date());
 
 //            file.setData(plain);
+            if(file.getData().equals("")){
+                file.setData(" ");
+            }
 
             long id = databaseManager.updateFile(file);
             Log.d("help", "Id: " + id);

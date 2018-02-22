@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
+import android.util.Log;
 
 import com.development.security.ciphernote.SecurityManager;
 
@@ -211,6 +212,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         Cursor cursor = writeDatabase.rawQuery(selectQuery, null);
 
+
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
@@ -223,7 +225,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
                 file.setFileName(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_FILE_NAME))));
                 file.setData(securityManager.decrypt(Base64.decode(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)), Base64.DEFAULT)));
-
+                Log.d("test", cursor.getString(cursor.getColumnIndex(File.KEY_DATA)));
                 fileList.add(file);
             } while (cursor.moveToNext());
         }

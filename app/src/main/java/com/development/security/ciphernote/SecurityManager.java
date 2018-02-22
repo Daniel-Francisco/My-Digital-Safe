@@ -206,6 +206,7 @@ public class SecurityManager {
 
             secret = new SecretKeySpec(tmp2.getEncoded(), "AES");
 
+            Log.d("help", "test");
             //        byte[] passwordBytes = password.getBytes();
 //        return new SecretKeySpec(passwordBytes, ALGO);
         }catch(Exception e){

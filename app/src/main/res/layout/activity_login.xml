@@ -6,15 +6,15 @@
     android:layout_height="match_parent"
     tools:context="com.development.security.ciphernote.LoginActivity">
 
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <WebView
+            android:id="@+id/webkit"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/webkit"/>
+            android:layout_height="match_parent" />
 
     </ScrollView>
 

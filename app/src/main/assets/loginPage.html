@@ -22,9 +22,14 @@
 <div class="container">
     <div id="loginForm">
         <img src="images/sample-logo.jpg" id="loginLogo"/>
-        <progress id="loginProgressBar" value="0" max="100"></progress>
-        <input name="password" id="password" value="password1" class="input" placeholder="Password" type="password">
-        <input id="signIn" value="Sign In" class="login" type="button">
+        <div id="loginProgressArea">
+            <div class="progressTitle">Login Progress:</div>
+            <progress id="loginProgressBar" value="0" max="100"></progress>
+        </div>
+        <div id="loginInfoArea">
+            <input name="password" id="password" value="password1" class="input" placeholder="Password" type="password">
+            <input id="signIn" value="Sign In" class="login" type="button">
+        </div>
     </div>
 
 </div>
@@ -32,19 +37,36 @@
 
 <script>
     var attemptingLogin = false;
-    var loginTime = 500;
+    var loginTime = -1;
     var precentProgress = 0;
+    var currentTimer = null;
+
     $(document).ready(function () {
 
         // $("#passwordStrengthBar").val(80);
 
+
         $("#signIn").on("click", function (event) {
+            loginTime = Android.getloginTime();
+            console.log("1");
             event.preventDefault();
-            if(!attemptingLogin){
+            console.log("2");
+            console.log("3");
+            if (!attemptingLogin) {
+                console.log("4");
                 var password = $("#password").val();
+                console.log("5");
                 attemptingLogin = true;
-                document.getElementById("loginProgressBar").classList.add("showProgressBar");
-                setTimeout(updateProgressBar, (loginTime/100));
+                console.log("6");
+                if (loginTime != -1) {
+                    console.log("7");
+                    document.getElementById("loginInfoArea").classList.add("hideLoginInfoArea");
+                    console.log("8");
+                    document.getElementById("loginProgressArea").classList.add("showProgressBar");
+                    console.log("9");
+                    setTimeout(updateProgressBar, (loginTime / 100));
+                }
+                console.log("10");
                 Android.authenticateUser(password);
             }
 
@@ -58,17 +80,27 @@
         });
     });
 
-    function updateProgressBar(){
+    function updateProgressBar() {
         console.log("updateProgressBar ran, value = " + precentProgress);
         $("#loginProgressBar").val(precentProgress);
         precentProgress++;
-        if(precentProgress != 101){
-            setTimeout(updateProgressBar, (loginTime/100));
+        if (precentProgress != 101) {
+            currentTimer = setTimeout(updateProgressBar, (loginTime / 100));
+        }else{
+            currentTimer = null;
         }
     }
 
-    function danielTestPleaseDontJudge() {
-        console.log("PURPLE NABLA");
+    function failedLogin(){
+        attemptingLogin = false;
+        if(currentTimer != null){
+            clearTimeout(currentTimer);
+        }
+        $("#loginProgressBar").val(0);
+        document.getElementById("loginInfoArea").classList.remove("hideLoginInfoArea");
+        document.getElementById("loginProgressArea").classList.remove("showProgressBar");
+        $("#password").val("");
+        precentProgress = 0;
     }
 
 </script>
