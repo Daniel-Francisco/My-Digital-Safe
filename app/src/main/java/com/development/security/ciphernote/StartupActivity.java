@@ -74,12 +74,12 @@ public class StartupActivity extends AppCompatActivity {
                 finish();
             } else {
                 if(passwordOne.equals(passwordTwo)){
-                    CharSequence failedAuthenticationString = getString(R.string.passwordsDoNotMatch);
+                    CharSequence failedAuthenticationString = getString(R.string.passwordTooShort);
 
                     Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
                     toast.show();
                 }else{
-                    CharSequence failedAuthenticationString = getString(R.string.passwordTooShort);
+                    CharSequence failedAuthenticationString = getString(R.string.passwordsDoNotMatch);
 
                     Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
                     toast.show();
