@@ -1,6 +1,7 @@
 package com.development.security.ciphernote;
 
 import android.content.Context;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -17,6 +18,13 @@ import com.development.security.ciphernote.model.File;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 
 public class AboutActivity extends MenuActivity {
@@ -25,6 +33,8 @@ public class AboutActivity extends MenuActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+
+        applicationContext = this.getBaseContext();
 
         WebView browser;
         browser=(WebView)findViewById(R.id.webkit);
@@ -53,6 +63,7 @@ public class AboutActivity extends MenuActivity {
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     public class WebAppInterface {
@@ -64,5 +75,6 @@ public class AboutActivity extends MenuActivity {
         public void deleteNote(){
             Log.d("help", "test");
         }
+
     }
 }

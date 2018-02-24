@@ -41,9 +41,9 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -65,15 +65,17 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
             startActivity(landingIntent);
 
             finish();
-        } else if (id == R.id.settings) {
-            CharSequence failedAuthenticationString = "Setting Clicked";
-
-            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-            toast.show();
-
-//            Intent landingIntent = new Intent(applicationContext, ListActivity.class);
-//            startActivity(landingIntent);
-        } else if (id == R.id.changePassword) {
+        }
+//        else if (id == R.id.settings) {
+//            CharSequence failedAuthenticationString = "Setting Clicked";
+//
+//            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+//            toast.show();
+//
+//            Intent settingsIntent = new Intent(applicationContext, SettingsActivity.class);
+//            startActivity(settingsIntent);
+//        }
+        else if (id == R.id.changePassword) {
             CharSequence failedAuthenticationString = "Change Password Clicked";
 
             Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);

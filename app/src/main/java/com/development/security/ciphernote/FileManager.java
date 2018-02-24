@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -249,7 +250,7 @@ public class FileManager {
         return bytes;
     }
 
-    public ArrayList<com.development.security.ciphernote.model.File> readFileManagmentData(SecurityManager securityManager, Context context) throws JSONException, ParseException, IOException {
+    public ArrayList<com.development.security.ciphernote.model.File> readFileManagmentData(SecurityManager securityManager, Context context) throws JSONException, ParseException, IOException, NoSuchAlgorithmException {
         DatabaseManager databaseManager = new DatabaseManager(context);
         ArrayList<com.development.security.ciphernote.model.File> list = databaseManager.getAllFiles();
 

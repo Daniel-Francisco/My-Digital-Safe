@@ -5,6 +5,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.model.File;
 import com.development.security.ciphernote.model.UserConfiguration;
 
 import org.json.JSONException;
@@ -127,34 +128,41 @@ public class SecurityManager {
         return "";
     }
 
-    public void generateNewKey(Context context, String userPassword, String devicePassword){
+    public void changePassword(Context context, String userPassword, String newPassword){
         try{
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            char[] passwordChars = userPassword.toCharArray();
-            KeySpec spec = new PBEKeySpec(passwordChars, salt.getBytes(), 1, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-
-            secret = new SecretKeySpec(tmp.getEncoded(), "AES");
-
             FileManager fileManager = new FileManager();
-//            byte[] passwordBytes = fileManager.readFromPasswordFile(context);
-//            String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
-//            if(dataString.isEmpty() || dataString == null || dataString.equals("")){
-            String newPassword = devicePassword;
-            byte[] encryptedNewPassword = encrypt(newPassword);
-            fileManager.writeToPasswordFile(context, encryptedNewPassword);
-            byte[] passwordBytes = encryptedNewPassword;
-//            }
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
+            secret = new SecretKeySpec(userKey.getEncoded(), "AES");
+
+            DatabaseManager databaseManager = new DatabaseManager(context);
+            UserConfiguration config = databaseManager.getUserConfiguration(1);
+
+
+            byte[] passwordBytes = config.getDevicePassword();
+            if(passwordBytes == null){
+                passwordBytes = new byte[0];
+            }
             String passwordString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
+            Log.d("password", "Pre-decrypt: " + passwordString);
+            String passwordValue;
+            byte[] decryptedDevicePassword = encryptWithAlternatePassword(userPassword, passwordBytes, config.getSalt().getBytes(), config.getIterations(), false);
+            passwordValue = new String(decryptedDevicePassword);
+            Log.d("password", passwordValue);
 
-            KeySpec spec2 = new PBEKeySpec(passwordString.toCharArray(), salt.getBytes(), 1, 256);
-            SecretKey tmp2 = factory.generateSecret(spec2);
 
-            secret = new SecretKeySpec(tmp2.getEncoded(), "AES");
+            byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(newPassword, decryptedDevicePassword, config.getSalt().getBytes(), config.getIterations(), true);
 
-            //        byte[] passwordBytes = password.getBytes();
-//        return new SecretKeySpec(passwordBytes, ALGO);
+            byte[] test = encryptWithAlternatePassword(newPassword, reEncryptedDevicePassword, config.getSalt().getBytes(), config.getIterations(), false);
+            String testString = new String(test);
+
+            config.setDevicePassword(reEncryptedDevicePassword);
+
+            databaseManager.addUserConfiguration(config);
+//            UserConfiguration config = databaseManager.getUserConfiguration(1);
+//            byte[] encryptedNewPassword = encrypt(passwordValue);
+//            config.setDevicePassword(encryptedNewPassword);
+//            databaseManager.addUserConfiguration(config);
         }catch(Exception e){
             e.printStackTrace();
             Log.d("Error", "Error in generateKey");
@@ -188,15 +196,17 @@ public class SecurityManager {
                 passwordBytes = new byte[0];
             }
             String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
+            Log.d("password", "Pre-decrypt: " + dataString);
             String passwordValue;
             if(dataString.isEmpty() || dataString == null || dataString.equals("")){
                 passwordValue = generateSalt();
+                Log.d("password", "New password: " + passwordValue);
                 byte[] encryptedNewPassword = encrypt(passwordValue);
                 config.setDevicePassword(encryptedNewPassword);
                 databaseManager.addUserConfiguration(config);
             }else{
                 passwordValue = decrypt(passwordBytes);
-                Log.d("help", "tet");
+                Log.d("password", passwordValue);
 //                passwordValue = "hello";
             }
 
@@ -247,6 +257,11 @@ public class SecurityManager {
         int keyLength = 256;
         try {
 //            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+
+            Log.d("passwordTest", "Password in hash: " + password);
+            Log.d("passwordTest", "Salt in hash: " + new String(salt));
+            Log.d("passwordTest", "Iterations in hash: " + String.valueOf(hashingIterations));
+
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
             userKey = skf.generateSecret(spec);
@@ -311,6 +326,10 @@ public class SecurityManager {
     public byte[] encryptWithAlternatePassword(String password, byte[] data, byte[] salt, int hashingIterations,  Boolean encryptOrDecryptFlag){
         int keyLength = 256;
         try{
+            Log.d("passwordTest", "Password in alternate: " + password);
+            Log.d("passwordTest", "Salt in alternate: " + new String(salt));
+            Log.d("passwordTest", "Iterations in alternate: " + String.valueOf(hashingIterations));
+
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
             userKey = skf.generateSecret(spec);
@@ -329,6 +348,35 @@ public class SecurityManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public File setFileHash(File file) throws NoSuchAlgorithmException {
+        String concatString = file.getAccessDate() + file.getID() + file.getData() + file.getData();
+
+        Log.d("hash", concatString);
+
+        String hash = SHA256Hash(concatString);
+
+        Log.d("hash", hash);
+
+        file.setHash(hash);
+
+        return file;
+    }
+
+    public boolean validateFileHash(File file) throws NoSuchAlgorithmException {
+        String concatString = file.getAccessDate() + file.getID() + file.getData() + file.getData();
+
+        Log.d("hash", concatString);
+
+        String hash = SHA256Hash(concatString);
+
+        Log.d("hash", hash);
+
+        if(hash.equals(file.getHash())){
+            return true;
+        }
+        return false;
     }
 
 

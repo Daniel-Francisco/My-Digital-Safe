@@ -21,15 +21,16 @@
 <body>
 <div class="container">
     <div id="title">Digital Safe</div>
-
+    <div id="location"></div>
 </div>
 
 
 <script>
 
     $(document).ready(function () {
+        var stringThing = Android.getLogs();
 
-
+        document.getElementById("location").innerText = stringThing;
     });
 
 </script>

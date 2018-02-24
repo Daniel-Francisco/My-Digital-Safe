@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.development.security.ciphernote.SecurityManager;
 
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,9 +29,6 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     // Database Name
     private static final String DATABASE_NAME = "ciphernote_db";
-
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-
 
     public DatabaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -58,6 +56,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         String CREATE_Files_TABLE = "CREATE TABLE " + File.TABLE_FILES + "("
                 + File.KEY_ID + " INTEGER PRIMARY KEY," + File.KEY_FILE_NAME + " BLOB,"
                 + File.KEY_ACCESS_DATE + " INTEGER,"
+                + File.KEY_HASH + " TEXT,"
                 + File.KEY_DATA + " TEXT" + ")";
         sqLiteDatabase.execSQL(CREATE_Files_TABLE);
     }
@@ -154,20 +153,23 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public long addFile(File file) throws ParseException {
+    public long addFile(File file) throws ParseException, NoSuchAlgorithmException {
         validateDB();
         SecurityManager securityManager = SecurityManager.getInstance();
+
+        file = securityManager.setFileHash(file);
 
         ContentValues values = new ContentValues();
         values.put(File.KEY_ACCESS_DATE, securityManager.encrypt(file.getAccessDate()));
         values.put(File.KEY_FILE_NAME, securityManager.encrypt(file.getFileName()));
         values.put(File.KEY_DATA, Base64.encode(securityManager.encrypt(file.getData()), Base64.DEFAULT));
+        values.put(File.KEY_HASH, file.getHash());
 
         // Inserting Row
         return writeDatabase.insert(File.TABLE_FILES, null, values);
     }
 
-    public long updateFile(File file) {
+    public long updateFile(File file) throws NoSuchAlgorithmException {
         validateDB();
         SecurityManager securityManager = SecurityManager.getInstance();
 
@@ -193,16 +195,19 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         String encryptedFileName = Base64.encodeToString(fileNameCipher, Base64.DEFAULT);
 
+        file = securityManager.setFileHash(file);
+
         values.put(File.KEY_ACCESS_DATE, securityManager.encrypt(file.getAccessDate()));
         values.put(File.KEY_FILE_NAME, fileNameCipher);
         values.put(File.KEY_DATA, Base64.encodeToString(dataCipher, Base64.DEFAULT));
+        values.put(File.KEY_HASH, file.getHash());
 
         // Inserting Row
         long id = writeDatabase.update(File.TABLE_FILES, values, File.KEY_ID + " = ?", new String[] { String.valueOf(file.getID()) });
         return id;
     }
 
-    public ArrayList<File> getAllFiles() throws ParseException {
+    public ArrayList<File> getAllFiles() throws ParseException, NoSuchAlgorithmException {
         validateDB();
         SecurityManager securityManager = SecurityManager.getInstance();
 
@@ -225,6 +230,14 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
                 file.setFileName(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_FILE_NAME))));
                 file.setData(securityManager.decrypt(Base64.decode(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)), Base64.DEFAULT)));
+                file.setHash(cursor.getString(cursor.getColumnIndex(File.KEY_HASH)));
+
+                boolean fileStatus = securityManager.validateFileHash(file);
+
+                if(!fileStatus){
+                    file = null;
+                }
+
                 Log.d("test", cursor.getString(cursor.getColumnIndex(File.KEY_DATA)));
                 fileList.add(file);
             } while (cursor.moveToNext());
@@ -234,12 +247,9 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return fileList;
     }
 
-    public void deleteFile(File file) throws ParseException {
+    public void deleteFile(File file) throws ParseException, NoSuchAlgorithmException {
         validateDB();
-        List<File> filesBefore = getAllFiles();
-
         writeDatabase.delete(File.TABLE_FILES, File.KEY_ID + " = ?", new String[] { String.valueOf(file.getID()) });
-        List<File> filesAfter = getAllFiles();
     }
 
     private void validateDB(){

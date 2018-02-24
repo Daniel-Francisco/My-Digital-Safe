@@ -12,11 +12,13 @@ public class File {
     public static final String KEY_FILE_NAME = "file_name";
     public static final String KEY_ACCESS_DATE = "access_date";
     public static final String KEY_DATA = "file_data";
+    public static final String KEY_HASH = "file_hash";
 
     long _id;
     String file_name;
     String access_date;
     String data;
+    String hash;
 
     public File(){}
     public File(int id, String file_name, String access_date, String data){
@@ -57,5 +59,12 @@ public class File {
     }
     public String getData(){
         return data;
+    }
+
+    public void setHash(String hash){
+        this.hash = hash;
+    }
+    public String getHash(){
+        return hash;
     }
 }

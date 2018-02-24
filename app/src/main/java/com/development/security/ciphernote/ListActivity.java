@@ -53,7 +53,7 @@ public class ListActivity extends MenuActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+         setContentView(R.layout.activity_list);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         applicationContext = this.getBaseContext();

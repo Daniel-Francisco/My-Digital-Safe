@@ -47,6 +47,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
     com.development.security.ciphernote.model.File file;
 
+    boolean changeOccured = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,26 +88,21 @@ public class EditNoteActivity extends AppCompatActivity {
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/EditNotePage.html");
 
+        setTitle("Digital Safe");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         try {
-//            String plain = noteValue;
+            if(changeOccured){
+                if(file.getData().equals("")){
+                    file.setData(" ");
+                }
 
-//            file.setAccessDate(new Date());
-
-//            file.setData(plain);
-            if(file.getData().equals("")){
-                file.setData(" ");
+                long id = databaseManager.updateFile(file);
+                Log.d("help", "Id: " + id);
             }
-
-            long id = databaseManager.updateFile(file);
-            Log.d("help", "Id: " + id);
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -160,23 +156,12 @@ public class EditNoteActivity extends AppCompatActivity {
         WebAppInterface(Context c) {
             mContext = c;
         }
-        @JavascriptInterface
-        public String fetchContents() {
-            return fetchFileString();
-        }
-
-        @JavascriptInterface
-        public void updateNoteValue(String value){
-            noteValue = value;
-        }
-
-        @JavascriptInterface
-        public void deleteNote(){
-            androidDelete();
-        }
 
         @JavascriptInterface
         public void updateFile(String fileString){
+            if(!changeOccured){
+                changeOccured = true;
+            }
             Gson gson = new Gson();
             Type type = new TypeToken<com.development.security.ciphernote.model.File>() {}.getType();
             file = gson.fromJson(fileString, type);

@@ -41,21 +41,21 @@ public class StartupActivity extends AppCompatActivity {
 
     }
 
-    protected void androidCreatePassword(String passwordOne, String passwordTwo, String levelValue){
+    protected void androidCreatePassword(String passwordOne, String passwordTwo){
         try {
             //Boolean passwordVaidate = validatePassword(passwordOneValue);
             int score = securityManager.calculatePasswordStrength(passwordOne);
 
             if (passwordOne.equals(passwordTwo) && score > 0) {
                 long start_time = System.nanoTime();
-                int iterations;
-                if(levelValue.equals("high")){
-                    iterations = 250000;
-                }else if(levelValue.equals("medium")){
-                    iterations = 75000;
-                }else{
-                    iterations = 10000;
-                }
+                int iterations = 200000;
+//                if(levelValue.equals("high")){
+//                    iterations = 250000;
+//                }else if(levelValue.equals("medium")){
+//                    iterations = 75000;
+//                }else{
+//                    iterations = 10000;
+//                }
 
 
                 String salt = securityManager.generateSalt();
@@ -110,7 +110,7 @@ public class StartupActivity extends AppCompatActivity {
         return securityManager.calculatePasswordStrength(password);
     }
 
-    private void writeLoginTime(int time){
+       private void writeLoginTime(int time){
         SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt("login_time", time);
@@ -124,8 +124,8 @@ public class StartupActivity extends AppCompatActivity {
             mContext = c;
         }
         @JavascriptInterface
-        public void createPassword(String passwordOne, String passwordTwo, String levelValue) {
-            androidCreatePassword(passwordOne, passwordTwo, levelValue);
+        public void createPassword(String passwordOne, String passwordTwo) {
+            androidCreatePassword(passwordOne, passwordTwo);
         }
 
         @JavascriptInterface

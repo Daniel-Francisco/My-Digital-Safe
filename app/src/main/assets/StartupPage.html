@@ -28,14 +28,14 @@
             <div id="userPasswordPrompt"></div> <br>
 
             <div>Please create your password!</div>
-            <input name="passwordOne" id="passwordOne" value="" class="input" placeholder="New Password" type="password">
-            <input name="passwordTwo" id="passwordTwo" value="" class="input" placeholder="Confirm New Password" type="password"><br>
+            <input name="passwordOne" id="passwordOne" value="password1" class="input" placeholder="New Password" type="password">
+            <input name="passwordTwo" id="passwordTwo" value="password1" class="input" placeholder="Confirm New Password" type="password"><br>
 
-            <select id="dropDown">
-                <option value="high">High level security</option>
-                <option value="medium">Medium level security</option>
-                <option value="low" selected="selected">Low level security</option>
-            </select>
+            <!--<select id="dropDown">-->
+                <!--<option value="high">High level security</option>-->
+                <!--<option value="medium">Medium level security</option>-->
+                <!--<option value="low" selected="selected">Low level security</option>-->
+            <!--</select>-->
 
             <br>
 
@@ -57,9 +57,9 @@
 			    var passwordOne = $("#passwordOne").val();
 			    var passwordTwo = $("#passwordTwo").val();
 
-			    var dropDownValue = $('#dropDown').val();
+			    // var dropDownValue = $('#dropDown').val();
 
-				Android.createPassword(passwordOne, passwordTwo, dropDownValue);
+				Android.createPassword(passwordOne, passwordTwo);
 			});
 
 
