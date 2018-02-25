@@ -33,10 +33,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class ListActivity extends MenuActivity{
+public class ListActivity extends MenuActivity {
     ArrayList<File> list;
     WebView browser;
 
@@ -45,7 +47,7 @@ public class ListActivity extends MenuActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_list);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         applicationContext = this.getBaseContext();
@@ -106,24 +108,9 @@ public class ListActivity extends MenuActivity{
             DatabaseManager databaseManager = new DatabaseManager(applicationContext);
             list = databaseManager.getAllFiles();
 
-//            Collections.sort(list, new Comparator<File>() {
-//                public int compare(File o1, File o2) {
-//                    try{
-//                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-//                        Date fromO1 = sdf.parse(o1.getAccessDate());
-//                        Date fromO2 = sdf.parse(o2.getAccessDate());
-//
-//                        return fromO1.compareTo(fromO2);
-//                    }catch (Exception e){
-//                        e.printStackTrace();
-//                    }
-//                    return -1;
-//                }
-//            });
-//
-//            Collections.sort(list);
+            sortList();
 
-            for(int i = 0; i  < list.size(); i++){
+            for (int i = 0; i < list.size(); i++) {
                 list.get(i).setAccessDate(beautifyDate(list.get(i).getAccessDate()));
             }
 
@@ -135,6 +122,28 @@ public class ListActivity extends MenuActivity{
 
         return "error";
     }
+
+
+    private void sortList() {
+        Collections.sort(list, new Comparator<File>() {
+
+            @Override
+            public int compare(File o1, File o2) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                Date dateOne = new Date();
+                Date dateTwo = new Date();
+                try {
+                    dateOne = sdf.parse(o1.getAccessDate());
+                    dateTwo = sdf.parse(o2.getAccessDate());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                return dateTwo.compareTo(dateOne);
+            }
+        });
+    }
+
 
     private String beautifyDate(String date) throws ParseException {
         Date now = new Date();
@@ -152,15 +161,15 @@ public class ListActivity extends MenuActivity{
 
         String responseString = "";
 
-        if(diffSeconds < 60){
+        if (diffSeconds < 60) {
             responseString = (diffSeconds + " seconds since last viewed.");
-        }else if(diffMinutes < 60){
+        } else if (diffMinutes < 60) {
             responseString = (diffMinutes + " minutes since last viewed.");
-        }else if(diffMinutes < 1440){
+        } else if (diffMinutes < 1440) {
             //less than a day
             long hours = diffMinutes / 60;
             responseString = (hours + " hours since last viewed.");
-        }else{
+        } else {
             long days = (diffMinutes / 1440);
             responseString = (days + " days since last viewed.");
         }
@@ -168,10 +177,9 @@ public class ListActivity extends MenuActivity{
     }
 
 
-
     public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
         long diffInMillies = date2.getTime() - date1.getTime();
-        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+        return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
 
     protected void androidListClickOccurred(File file) {
@@ -238,8 +246,7 @@ public class ListActivity extends MenuActivity{
     }
 
 
-
-    private void androidDelete(File file){
+    private void androidDelete(File file) {
         try {
             DatabaseManager databaseManager = new DatabaseManager(applicationContext);
 
@@ -286,7 +293,8 @@ public class ListActivity extends MenuActivity{
         @JavascriptInterface
         public void listClickOccurred(String fileString) {
             Gson gson = new Gson();
-            Type type = new TypeToken<File>() {}.getType();
+            Type type = new TypeToken<File>() {
+            }.getType();
             File file = gson.fromJson(fileString, type);
             androidListClickOccurred(file);
         }
@@ -316,10 +324,11 @@ public class ListActivity extends MenuActivity{
         }
 
         @JavascriptInterface
-        public void deleteNote(String fileString){
+        public void deleteNote(String fileString) {
             Log.d("help", fileString);
             Gson gson = new Gson();
-            Type type = new TypeToken<File>() {}.getType();
+            Type type = new TypeToken<File>() {
+            }.getType();
             File file = gson.fromJson(fileString, type);
             androidDelete(file);
         }

@@ -1,5 +1,10 @@
 package com.development.security.ciphernote.model;
 
+import android.support.annotation.NonNull;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by danie on 2/6/2018.
  */
@@ -67,4 +72,19 @@ public class File {
     public String getHash(){
         return hash;
     }
+
+//    @Override
+//    public int compareTo(File o) {
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//        try {
+//            Date thisOne = sdf.parse(this.getAccessDate());
+//            Date thatOne = sdf.parse(o.getAccessDate());
+//            if (thisOne.after(thatOne)) {
+//                return 1;
+//            }
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//        return 0;
+//    }
 }
