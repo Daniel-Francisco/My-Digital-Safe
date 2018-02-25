@@ -37,9 +37,13 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 //android.app.ListActivity
 public class ListActivity extends MenuActivity{
@@ -113,6 +117,28 @@ public class ListActivity extends MenuActivity{
     protected String androidGetData() {
         try {
             list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
+
+//            Collections.sort(list, new Comparator<File>() {
+//                public int compare(File o1, File o2) {
+//                    try{
+//                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//                        Date fromO1 = sdf.parse(o1.getAccessDate());
+//                        Date fromO2 = sdf.parse(o2.getAccessDate());
+//
+//                        return fromO1.compareTo(fromO2);
+//                    }catch (Exception e){
+//                        e.printStackTrace();
+//                    }
+//                    return -1;
+//                }
+//            });
+//
+//            Collections.sort(list);
+
+            for(int i = 0; i  < list.size(); i++){
+                list.get(i).setAccessDate(beautifyDate(list.get(i).getAccessDate()));
+            }
+
             Gson gson = new Gson();
             return gson.toJson(list);
         } catch (Exception e) {
@@ -122,11 +148,50 @@ public class ListActivity extends MenuActivity{
         return "error";
     }
 
+    private String beautifyDate(String date) throws ParseException {
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+        Log.d("date", "List date: " + date);
+
+        Date then = sdf.parse(date);
+        int diff = now.getDate() - then.getDate();
+
+
+        long diffMillisecons = getDateDiff(then, now, TimeUnit.MILLISECONDS);
+        long diffSeconds = getDateDiff(then, now, TimeUnit.SECONDS);//diff / 1000 % 60;
+        long diffMinutes = getDateDiff(then, now, TimeUnit.MINUTES);//diff / (60 * 1000) % 60;
+
+        String responseString = "";
+
+        if(diffSeconds < 60){
+            responseString = (diffSeconds + " seconds since last viewed.");
+        }else if(diffMinutes < 60){
+            responseString = (diffMinutes + " minutes since last viewed.");
+        }else if(diffMinutes < 1440){
+            //less than a day
+            long hours = diffMinutes / 60;
+            responseString = (hours + " hours since last viewed.");
+        }else{
+            long days = (diffMinutes / 1440);
+            responseString = (days + " days since last viewed.");
+        }
+        return responseString;
+    }
+
+
+
+    public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        long diffInMillies = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+    }
+
     protected void androidListClickOccurred(File file) {
         selectedFile = file;
 
         try {
             Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
+            landingIntent.putExtra("newNoteFlag", false);
 
 //            landingIntent.putExtra("fileName", name);
 
@@ -172,6 +237,7 @@ public class ListActivity extends MenuActivity{
                 String json = gson.toJson(newFile);
 
                 landingIntent.putExtra("fileObject", json);
+                landingIntent.putExtra("newNoteFlag", true);
 
                 startActivity(landingIntent);
             } catch (Exception e) {

@@ -48,7 +48,7 @@ public class StartupActivity extends AppCompatActivity {
 
             if (passwordOne.equals(passwordTwo) && score > 0) {
                 long start_time = System.nanoTime();
-                int iterations = 200000;
+                int iterations = 100000;
 //                if(levelValue.equals("high")){
 //                    iterations = 250000;
 //                }else if(levelValue.equals("medium")){

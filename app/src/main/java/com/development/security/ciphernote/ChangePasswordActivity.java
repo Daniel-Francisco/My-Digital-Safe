@@ -66,7 +66,7 @@ public class ChangePasswordActivity extends MenuActivity {
 
                     if (newPasswordOne.equals(newPasswordTwo) && score > 0) {
                         long start_time = System.nanoTime();
-                        int iterations = 200000;
+                        int iterations = 100000;
 //                        if (levelValue.equals("high")) {
 //                            iterations = 250000;
 //                        } else if (levelValue.equals("medium")) {

@@ -48,6 +48,7 @@ public class EditNoteActivity extends AppCompatActivity {
     com.development.security.ciphernote.model.File file;
 
     boolean changeOccured = false;
+    boolean newNoteFlag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         fileName = intent.getStringExtra("fileName");
+        newNoteFlag = intent.getBooleanExtra("newNoteFlag", false);
         String jsonForFile = intent.getStringExtra("fileObject");
 
         Gson gson = new Gson();
@@ -95,11 +97,19 @@ public class EditNoteActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         try {
-            if(changeOccured){
+            if(changeOccured || newNoteFlag){
                 if(file.getData().equals("")){
                     file.setData(" ");
                 }
+                Date date = new Date();
 
+
+//                DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+                String dateString = sdf.format(date);
+                Log.d("date", dateString);
+                file.setAccessDate(dateString);
                 long id = databaseManager.updateFile(file);
                 Log.d("help", "Id: " + id);
             }
