@@ -8,8 +8,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
 import android.util.Log;
 
+import com.development.security.ciphernote.DataStructures;
 import com.development.security.ciphernote.SecurityManager;
 
+import org.json.JSONException;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -141,7 +149,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
 
-    public UserConfiguration getUserConfiguration(int id) {
+    public UserConfiguration getUserConfiguration() {
         List<UserConfiguration> allConfigs = getAllUserConfigurations();
         if(allConfigs.size() == 0){
             return null;
@@ -257,4 +265,77 @@ public class DatabaseManager extends SQLiteOpenHelper {
             writeDatabase = this.getWritableDatabase();
         }
     }
+
+
+
+
+
+
+
+
+
+    public Boolean checkForFirstRunFile(Context context) throws JSONException, IOException {
+        byte[] data = readFromDataFile(context, "startup", true);
+        if((new String(data)).equals("started")){
+            return false;
+        }
+        return true;
+    }
+
+
+
+    private byte[] readFromDataFile(Context context, String fileName, Boolean configFlag) throws IOException {
+        java.io.File file = null;
+        if(configFlag){
+            file = new java.io.File(context.getFilesDir() + "/config/" + fileName+".txt");
+        }else{
+            file = new java.io.File(context.getFilesDir() + "/" + fileName+".txt");
+        }
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return bytes;
+    }
+    public void writeToDataFile(Context context, byte[] data, String fileName, Boolean configFlag) {
+        try {
+            java.io.File file = null;
+            if(configFlag){
+                file = new java.io.File(context.getFilesDir() + "/config/" + fileName+".txt");
+            }else{
+                file = new java.io.File(context.getFilesDir() + "/" + fileName+".txt");
+            }
+
+
+            if(data != null){
+                FileOutputStream fos = new FileOutputStream(file);
+
+                fos.write(data);
+                fos.close();
+            }
+
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+
+
+    public void checkConfigDirectory(Context context){
+        java.io.File direct = new java.io.File(context.getFilesDir() +  "/config");
+
+        if(!direct.exists()) {
+            if(direct.mkdir()); //directory is created;
+        }
+    }
+
 }

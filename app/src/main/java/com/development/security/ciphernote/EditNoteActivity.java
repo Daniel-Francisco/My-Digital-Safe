@@ -37,7 +37,6 @@ import java.util.List;
 public class EditNoteActivity extends AppCompatActivity {
     Context applicationContext;
     EditText userInput = null;
-    FileManager fileManager;
     SecurityManager securityManager;
     String fileName;
     String hashedFilename = "";
@@ -68,7 +67,6 @@ public class EditNoteActivity extends AppCompatActivity {
 
 //        file = new com.development.security.ciphernote.model.File();
 
-        fileManager = new FileManager();
         securityManager = SecurityManager.getInstance();
         applicationContext = this.getBaseContext();
         databaseManager = new DatabaseManager(applicationContext);
@@ -131,35 +129,35 @@ public class EditNoteActivity extends AppCompatActivity {
         return "";
     }
 
-    private void androidDelete(){
-        try {
-            noteValue = "";
-            byte[] deleteData = noteValue.getBytes();
-            fileManager.writeDataFile(applicationContext, fileName, deleteData);
-
-            file.setFileName("redacted");
-            file.setAccessDate("redacted");
-            file.setData("redacted");
-            databaseManager.updateFile(file);
-
-            databaseManager.deleteFile(file);
-
-            CharSequence failedAuthenticationString = getString(R.string.deleteFileSuccess);
-            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-            toast.show();
-
-            Intent landingIntent = new Intent(applicationContext, ListActivity.class);
-            startActivity(landingIntent);
-            finish();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            CharSequence failedAuthenticationString = getString(R.string.deleteFileFailed);
-            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-            toast.show();
-        }
-    }
+//    private void androidDelete(){
+//        try {
+//            noteValue = "";
+//            byte[] deleteData = noteValue.getBytes();
+//            fileManager.writeDataFile(applicationContext, fileName, deleteData);
+//
+//            file.setFileName("redacted");
+//            file.setAccessDate("redacted");
+//            file.setData("redacted");
+//            databaseManager.updateFile(file);
+//
+//            databaseManager.deleteFile(file);
+//
+//            CharSequence failedAuthenticationString = getString(R.string.deleteFileSuccess);
+//            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+//            toast.show();
+//
+//            Intent landingIntent = new Intent(applicationContext, ListActivity.class);
+//            startActivity(landingIntent);
+//            finish();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//
+//            CharSequence failedAuthenticationString = getString(R.string.deleteFileFailed);
+//            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+//            toast.show();
+//        }
+//    }
 
     public class WebAppInterface {
         Context mContext;

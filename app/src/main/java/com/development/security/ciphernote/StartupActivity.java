@@ -15,13 +15,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.model.UserConfiguration;
+
 import org.json.JSONException;
 
 public class StartupActivity extends AppCompatActivity {
     Context applicationContext;
     WebView browser;
     final SecurityManager securityManager = SecurityManager.getInstance();
-    final FileManager fileManager = new FileManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,17 +62,37 @@ public class StartupActivity extends AppCompatActivity {
 
                 String salt = securityManager.generateSalt();
                 Log.d("help", "StartupActivity salt: " + salt);
-                fileManager.saveHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
 
-                String saltFromFile = fileManager.getSalt(applicationContext);
+
+                DataStructures.UserConfiguration userConfiguration = new DataStructures.UserConfiguration();
+                userConfiguration.setPasswordHash("");
+                userConfiguration.setSalt(salt);
+                userConfiguration.setIterations(iterations);
+                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+                databaseManager.addUserConfiguration(new UserConfiguration(userConfiguration.getIterations(), userConfiguration.getPasswordHash(), userConfiguration.getSalt()));
+
+//                writeUserConfig(context);
+
+//                fileManager.saveHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
+
+                String saltFromFile = databaseManager.getUserConfiguration().getSalt();
 
                 byte[] newHash = securityManager.hashPassword(passwordOne, saltFromFile.getBytes(), iterations);
 
                 Log.d("help", "Startup ran");
 
-                fileManager.writeToFirstRunFile(applicationContext);
+                databaseManager.checkConfigDirectory(applicationContext);
+                databaseManager.writeToDataFile(applicationContext, "started".getBytes(), "startup", true);
 
-                fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
+
+                UserConfiguration currentUserConfig = databaseManager.getUserConfiguration();
+                String hash = Base64.encodeToString(newHash, Base64.DEFAULT);
+                currentUserConfig.setPassword_hash(hash);
+                databaseManager.addUserConfiguration(currentUserConfig);
+
+//                fileManager.writeToFirstRunFile(applicationContext);
+//
+//                fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
 
                 long end_time = System.nanoTime();
                 double difference = (end_time - start_time) / 1e6;

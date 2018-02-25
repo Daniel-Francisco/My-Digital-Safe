@@ -24,8 +24,6 @@ public class LoginActivity extends Activity {
 
 
     final SecurityManager securityManager = SecurityManager.getInstance();
-    DataStructures dataStructures = new DataStructures();
-    final FileManager fileManager = new FileManager();
     WebView browser;
 
 
@@ -63,7 +61,7 @@ public class LoginActivity extends Activity {
                 Boolean authentication = null;
                 String password = strings[0];
 
-                authentication = securityManager.authenticateUser(password, applicationContext, fileManager);
+                authentication = securityManager.authenticateUser(password, applicationContext);
                 securityManager.generateKey(applicationContext);
 
                 if(authentication){

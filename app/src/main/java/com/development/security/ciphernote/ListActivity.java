@@ -19,15 +19,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import com.development.security.ciphernote.DataStructures;
-import com.development.security.ciphernote.FileManager;
-import com.development.security.ciphernote.R;
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
 import com.google.gson.Gson;
@@ -40,16 +33,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-//android.app.ListActivity
 public class ListActivity extends MenuActivity{
     ArrayList<File> list;
-//    Context applicationContext;
-    FileManager fileManager;
     WebView browser;
 
     File selectedFile;
@@ -63,7 +51,6 @@ public class ListActivity extends MenuActivity{
         applicationContext = this.getBaseContext();
 
         list = new ArrayList<>();
-        fileManager = new FileManager();
 
         browser = (WebView) findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
@@ -116,7 +103,8 @@ public class ListActivity extends MenuActivity{
 
     protected String androidGetData() {
         try {
-            list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
+            DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+            list = databaseManager.getAllFiles();
 
 //            Collections.sort(list, new Comparator<File>() {
 //                public int compare(File o1, File o2) {

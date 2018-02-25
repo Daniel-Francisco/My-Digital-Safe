@@ -130,13 +130,12 @@ public class SecurityManager {
 
     public void changePassword(Context context, String userPassword, String newPassword){
         try{
-            FileManager fileManager = new FileManager();
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
             secret = new SecretKeySpec(userKey.getEncoded(), "AES");
 
             DatabaseManager databaseManager = new DatabaseManager(context);
-            UserConfiguration config = databaseManager.getUserConfiguration(1);
+            UserConfiguration config = databaseManager.getUserConfiguration();
 
 
             byte[] passwordBytes = config.getDevicePassword();
@@ -188,7 +187,7 @@ public class SecurityManager {
             secret = new SecretKeySpec(userKey.getEncoded(), "AES");
 
             DatabaseManager databaseManager = new DatabaseManager(context);
-            UserConfiguration config = databaseManager.getUserConfiguration(1);
+            UserConfiguration config = databaseManager.getUserConfiguration();
 
 
             byte[] passwordBytes = config.getDevicePassword();
@@ -225,9 +224,10 @@ public class SecurityManager {
         }
     }
 
-    public Boolean authenticateUser(String password, Context context, FileManager fileManager) throws JSONException {
-        String userSalt = fileManager.getSalt(context);
-        int iterations = fileManager.getHashingIterations(context);
+    public Boolean authenticateUser(String password, Context context) throws JSONException {
+        DatabaseManager databaseManager = new DatabaseManager(context);
+        String userSalt = databaseManager.getUserConfiguration().getSalt();
+        int iterations = databaseManager.getUserConfiguration().getIterations();
         byte[] userSaltBytes;
 
         userSaltBytes = userSalt.getBytes();
@@ -237,11 +237,13 @@ public class SecurityManager {
 
         byte[] hash = hashPassword(password, userSaltBytes, iterations);
 
+        String hashString = Base64.encodeToString(hash, Base64.DEFAULT);
+
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
         Log.d("help", "Hash duration: " + duration);
 
-        String hashInFile = fileManager.readHash(context);
+        String hashInFile = databaseManager.getUserConfiguration().getPassword_hash();
         String userHashEncoded  = Base64.encodeToString(hash, Base64.DEFAULT);
 
 

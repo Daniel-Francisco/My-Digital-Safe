@@ -24,7 +24,7 @@ public class ChangePasswordActivity extends MenuActivity {
     Context context;
     WebView browser;
     final SecurityManager securityManager = SecurityManager.getInstance();
-    final FileManager fileManager = new FileManager();
+//    final FileManager fileManager = new FileManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +58,8 @@ public class ChangePasswordActivity extends MenuActivity {
         try {
             if (newPasswordOne.equals(newPasswordTwo)) {
                 SecurityManager securityManager = SecurityManager.getInstance();
-                FileManager fileManager = new FileManager();
-                if (securityManager.authenticateUser(currentPassword, context, fileManager)) {
+//                FileManager fileManager = new FileManager();
+                if (securityManager.authenticateUser(currentPassword, context)) {
 
                     DatabaseManager databaseManager = new DatabaseManager(context);
                     int score = securityManager.calculatePasswordStrength(newPasswordOne);
@@ -79,14 +79,14 @@ public class ChangePasswordActivity extends MenuActivity {
 //                        String salt = securityManager.generateSalt();
 //                        Log.d("help", "StartupActivity salt: " + salt);
 
-                        UserConfiguration userConfiguration = databaseManager.getUserConfiguration(1);
+                        UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
                         userConfiguration.setIterations(iterations);
                         userConfiguration.setPassword_hash("");
 //                        userConfiguration.setSalt(salt);
                         databaseManager.addUserConfiguration(userConfiguration);
 //                        fileManager.updateHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
 
-                        String saltFromFile = fileManager.getSalt(applicationContext);
+                        String saltFromFile =  databaseManager.getUserConfiguration().getSalt();
 
                         byte[] newHash = securityManager.hashPassword(newPasswordOne, saltFromFile.getBytes(), iterations);
                         String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);

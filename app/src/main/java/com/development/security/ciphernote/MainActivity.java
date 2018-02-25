@@ -12,6 +12,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.development.security.ciphernote.model.DatabaseManager;
+
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,11 +24,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        FileManager fileManager = new FileManager();
-
+        DatabaseManager databaseManager = new DatabaseManager(this.getApplicationContext());
         try{
-            if(fileManager.checkForFirstRunFile(this.getApplicationContext())){
+            if(databaseManager.checkForFirstRunFile(this.getApplicationContext())){
                 Log.d("help", "FirstRun again");
 
                 Intent startupIntent = new Intent(this, StartupActivity.class);
@@ -44,14 +44,4 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();  // Always call the superclass method first
-//
-//        Log.d("help", "Going to call landingActivity");
-//
-//        Intent loginActivity = new Intent(this, LoginActivity.class);
-//        startActivity(loginActivity);
-//    }
 }
