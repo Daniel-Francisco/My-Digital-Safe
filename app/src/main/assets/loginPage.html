@@ -1,76 +1,103 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <html lang="en">
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        </html>
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<head>
+    <html lang="en">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </html>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-        <!-- jQuery library -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-        <!-- Latest compiled JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-        <link rel="stylesheet" href="./css/style.css">
-        <link rel="stylesheet" href="./css/LoginPage.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/LoginPage.css">
 
-    </head>
-    <body>
-        <div class="container">
-            <div id="loginForm">
-                <img src="images/sample-logo.jpg" id="loginLogo"/>
-                <progress id="loginProgressBar" value="0" max="100"></progress>
-                <input name="password" id="password" value="password1" class="input" placeholder="Password" type="password">
-                <input id="signIn" value="Sign In" class="login" type="button">
-            </div>
-
+</head>
+<body>
+<div class="container">
+    <div id="loginForm">
+        <img src="images/sample-logo.jpg" id="loginLogo"/>
+        <div id="loginProgressArea">
+            <div class="progressTitle">Login Progress:</div>
+            <progress id="loginProgressBar" value="0" max="100"></progress>
         </div>
+        <div id="loginInfoArea">
+            <input name="password" id="password" value="" class="input" placeholder="Password" type="password">
+            <input id="signIn" value="Sign In" class="login" type="button">
+        </div>
+    </div>
+
+</div>
 
 
-        <script>
-            var attemptingLogin = false;
-            var loginTime = 500;
-            var percentProgress = 0;
-            $(document).ready(function () {
+<script>
+    var attemptingLogin = false;
+    var loginTime = -1;
+    var percentProgress = 0;
+    var currentTimer = null;
 
-                // $("#passwordStrengthBar").val(80);
+    $(document).ready(function () {
 
-                $("#signIn").on("click", function (event) {
-                    event.preventDefault();
-                    if(!attemptingLogin){
-                        var password = $("#password").val().trim();
-                        attemptingLogin = true;
-                        $("#loginProgressBar").addClass("showProgressBar");
-                        setTimeout(updateProgressBar, (loginTime/100));
-                        Android.authenticateUser(password);
-                    }
+        // $("#passwordStrengthBar").val(80);
 
-                });
 
-                $("#password")[0].addEventListener("keyup", function (event) {
-                    event.preventDefault();
-                    if (event.keyCode === 13) {
-                        $("#signIn").click();
-                    }
-                });
-            });
-
-            function updateProgressBar(){
-                console.log("updateProgressBar ran, value = " + percentProgress);
-                $("#loginProgressBar").val(percentProgress);
-                percentProgress++;
-                if(percentProgress != 101){
-                    setTimeout(updateProgressBar, (loginTime/100));
+        $("#signIn").on("click", function (event) {
+            loginTime = Android.getloginTime();
+            console.log("1");
+            event.preventDefault();
+            console.log("2");
+            console.log("3");
+            if (!attemptingLogin) {
+                console.log("4");
+                var password = $("#password").val().trim();
+                console.log("5");
+                attemptingLogin = true;
+                console.log("6");
+                if (loginTime != -1) {
+                    console.log("7");
+                    $("#loginInfoArea").classList.add("hideLoginInfoArea");
+                    console.log("8");
+                    $("#loginProgressArea").classList.add("showProgressBar");
+                    console.log("9");
+                    setTimeout(updateProgressBar, (loginTime / 100));
                 }
+                console.log("10");
+                Android.authenticateUser(password);
             }
 
             function danielTestPleaseDontJudge() {
                 console.log("PURPLE NABLA");
             }
+        });
+    });
 
+    function updateProgressBar() {
+        console.log("updateProgressBar ran, value = " + percentProgress);
+        $("#loginProgressBar").val(percentProgress);
+        percentProgress++;
+        if (percentProgress != 101) {
+            currentTimer = setTimeout(updateProgressBar, (loginTime / 100));
+        }else{
+            currentTimer = null;
+        }
+    }
+
+    function failedLogin(){
+        attemptingLogin = false;
+        if(currentTimer != null){
+            clearTimeout(currentTimer);
+        }
+        $("#loginProgressBar").val(0);
+        $("#loginInfoArea").classList.remove("hideLoginInfoArea");
+        $("#loginProgressArea").classList.remove("showProgressBar");
+        $("#password").val("");
+        percentProgress = 0;
+    }
         </script>
 
     </body>

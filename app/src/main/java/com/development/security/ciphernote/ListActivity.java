@@ -19,15 +19,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import com.development.security.ciphernote.DataStructures;
-import com.development.security.ciphernote.FileManager;
-import com.development.security.ciphernote.R;
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
 import com.google.gson.Gson;
@@ -37,15 +30,16 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
-//android.app.ListActivity
-public class ListActivity extends MenuActivity{
+public class ListActivity extends MenuActivity {
     ArrayList<File> list;
-//    Context applicationContext;
-    FileManager fileManager;
     WebView browser;
 
     File selectedFile;
@@ -59,7 +53,6 @@ public class ListActivity extends MenuActivity{
         applicationContext = this.getBaseContext();
 
         list = new ArrayList<>();
-        fileManager = new FileManager();
 
         browser = (WebView) findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
@@ -112,7 +105,15 @@ public class ListActivity extends MenuActivity{
 
     protected String androidGetData() {
         try {
-            list = fileManager.readFileManagmentData(SecurityManager.getInstance(), applicationContext);
+            DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+            list = databaseManager.getAllFiles();
+
+            sortList();
+
+            for (int i = 0; i < list.size(); i++) {
+                list.get(i).setAccessDate(beautifyDate(list.get(i).getAccessDate()));
+            }
+
             Gson gson = new Gson();
             return gson.toJson(list);
         } catch (Exception e) {
@@ -122,11 +123,71 @@ public class ListActivity extends MenuActivity{
         return "error";
     }
 
+
+    private void sortList() {
+        Collections.sort(list, new Comparator<File>() {
+
+            @Override
+            public int compare(File o1, File o2) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                Date dateOne = new Date();
+                Date dateTwo = new Date();
+                try {
+                    dateOne = sdf.parse(o1.getAccessDate());
+                    dateTwo = sdf.parse(o2.getAccessDate());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                return dateTwo.compareTo(dateOne);
+            }
+        });
+    }
+
+
+    private String beautifyDate(String date) throws ParseException {
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+        Log.d("date", "List date: " + date);
+
+        Date then = sdf.parse(date);
+        int diff = now.getDate() - then.getDate();
+
+
+        long diffMillisecons = getDateDiff(then, now, TimeUnit.MILLISECONDS);
+        long diffSeconds = getDateDiff(then, now, TimeUnit.SECONDS);//diff / 1000 % 60;
+        long diffMinutes = getDateDiff(then, now, TimeUnit.MINUTES);//diff / (60 * 1000) % 60;
+
+        String responseString = "";
+
+        if (diffSeconds < 60) {
+            responseString = (diffSeconds + " seconds since last viewed.");
+        } else if (diffMinutes < 60) {
+            responseString = (diffMinutes + " minutes since last viewed.");
+        } else if (diffMinutes < 1440) {
+            //less than a day
+            long hours = diffMinutes / 60;
+            responseString = (hours + " hours since last viewed.");
+        } else {
+            long days = (diffMinutes / 1440);
+            responseString = (days + " days since last viewed.");
+        }
+        return responseString;
+    }
+
+
+    public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        long diffInMillies = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
+    }
+
     protected void androidListClickOccurred(File file) {
         selectedFile = file;
 
         try {
             Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
+            landingIntent.putExtra("newNoteFlag", false);
 
 //            landingIntent.putExtra("fileName", name);
 
@@ -172,6 +233,7 @@ public class ListActivity extends MenuActivity{
                 String json = gson.toJson(newFile);
 
                 landingIntent.putExtra("fileObject", json);
+                landingIntent.putExtra("newNoteFlag", true);
 
                 startActivity(landingIntent);
             } catch (Exception e) {
@@ -184,8 +246,7 @@ public class ListActivity extends MenuActivity{
     }
 
 
-
-    private void androidDelete(File file){
+    private void androidDelete(File file) {
         try {
             DatabaseManager databaseManager = new DatabaseManager(applicationContext);
 
@@ -232,7 +293,8 @@ public class ListActivity extends MenuActivity{
         @JavascriptInterface
         public void listClickOccurred(String fileString) {
             Gson gson = new Gson();
-            Type type = new TypeToken<File>() {}.getType();
+            Type type = new TypeToken<File>() {
+            }.getType();
             File file = gson.fromJson(fileString, type);
             androidListClickOccurred(file);
         }
@@ -262,10 +324,11 @@ public class ListActivity extends MenuActivity{
         }
 
         @JavascriptInterface
-        public void deleteNote(String fileString){
+        public void deleteNote(String fileString) {
             Log.d("help", fileString);
             Gson gson = new Gson();
-            Type type = new TypeToken<File>() {}.getType();
+            Type type = new TypeToken<File>() {
+            }.getType();
             File file = gson.fromJson(fileString, type);
             androidDelete(file);
         }

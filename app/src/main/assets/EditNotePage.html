@@ -48,7 +48,7 @@
 	console.log("Test");
 	var initialText;// = Android.fetchContents();
     var file;
-	var editText;// = document.getElementById("noteArea");
+	var editText;// = $("#noteArea");
 	var title;
 	var titleText;
 
@@ -74,8 +74,8 @@
 	    initialText = file.data;
         titleText = file.file_name;
         console.log("4");
-        editText = document.getElementById("noteArea");
-        title = document.getElementById("editNoteTitle");
+        editText = $("#noteArea");
+        title = $("#editNoteTitle");
 
         console.log("Data = " + initialText);
         console.log("Title = " + titleText);

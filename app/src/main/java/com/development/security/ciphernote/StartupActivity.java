@@ -1,5 +1,6 @@
 package com.development.security.ciphernote;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,13 +15,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.model.UserConfiguration;
+
 import org.json.JSONException;
 
 public class StartupActivity extends AppCompatActivity {
     Context applicationContext;
     WebView browser;
     final SecurityManager securityManager = SecurityManager.getInstance();
-    final FileManager fileManager = new FileManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,35 +43,62 @@ public class StartupActivity extends AppCompatActivity {
 
     }
 
-    protected void androidCreatePassword(String passwordOne, String passwordTwo, String levelValue){
+    protected void androidCreatePassword(String passwordOne, String passwordTwo){
         try {
             //Boolean passwordVaidate = validatePassword(passwordOneValue);
             int score = securityManager.calculatePasswordStrength(passwordOne);
 
             if (passwordOne.equals(passwordTwo) && score > 0) {
-                int iterations;
-                if(levelValue.equals("high")){
-                    iterations = 250000;
-                }else if(levelValue.equals("medium")){
-                    iterations = 75000;
-                }else{
-                    iterations = 10000;
-                }
+                long start_time = System.nanoTime();
+                int iterations = 100000;
+//                if(levelValue.equals("high")){
+//                    iterations = 250000;
+//                }else if(levelValue.equals("medium")){
+//                    iterations = 75000;
+//                }else{
+//                    iterations = 10000;
+//                }
 
 
                 String salt = securityManager.generateSalt();
                 Log.d("help", "StartupActivity salt: " + salt);
-                fileManager.saveHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
 
-                String saltFromFile = fileManager.getSalt(applicationContext);
+
+                DataStructures.UserConfiguration userConfiguration = new DataStructures.UserConfiguration();
+                userConfiguration.setPasswordHash("");
+                userConfiguration.setSalt(salt);
+                userConfiguration.setIterations(iterations);
+                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+                databaseManager.addUserConfiguration(new UserConfiguration(userConfiguration.getIterations(), userConfiguration.getPasswordHash(), userConfiguration.getSalt()));
+
+//                writeUserConfig(context);
+
+//                fileManager.saveHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
+
+                String saltFromFile = databaseManager.getUserConfiguration().getSalt();
 
                 byte[] newHash = securityManager.hashPassword(passwordOne, saltFromFile.getBytes(), iterations);
 
                 Log.d("help", "Startup ran");
 
-                fileManager.writeToFirstRunFile(applicationContext);
+                databaseManager.checkConfigDirectory(applicationContext);
+                databaseManager.writeToDataFile(applicationContext, "started".getBytes(), "startup", true);
 
-                fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
+
+                UserConfiguration currentUserConfig = databaseManager.getUserConfiguration();
+                String hash = Base64.encodeToString(newHash, Base64.DEFAULT);
+                currentUserConfig.setPassword_hash(hash);
+                databaseManager.addUserConfiguration(currentUserConfig);
+
+//                fileManager.writeToFirstRunFile(applicationContext);
+//
+//                fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
+
+                long end_time = System.nanoTime();
+                double difference = (end_time - start_time) / 1e6;
+                int loginTime = (int) difference;
+                writeLoginTime(loginTime);
+
                 Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
                 startActivity(loginIntent);
                 finish();
@@ -102,6 +132,13 @@ public class StartupActivity extends AppCompatActivity {
         return securityManager.calculatePasswordStrength(password);
     }
 
+       private void writeLoginTime(int time){
+        SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("login_time", time);
+        editor.commit();
+    }
+
 
     public class WebAppInterface {
         Context mContext;
@@ -109,8 +146,8 @@ public class StartupActivity extends AppCompatActivity {
             mContext = c;
         }
         @JavascriptInterface
-        public void createPassword(String passwordOne, String passwordTwo, String levelValue) {
-            androidCreatePassword(passwordOne, passwordTwo, levelValue);
+        public void createPassword(String passwordOne, String passwordTwo) {
+            androidCreatePassword(passwordOne, passwordTwo);
         }
 
         @JavascriptInterface
