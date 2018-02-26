@@ -134,11 +134,11 @@
                 $("#closeNewNoteWindowButton").on("click", function(event) {
                     event.preventDefault();
                     if(windowFlag) {
-                        $("#primaryWindow").classList.remove("hide");
+                        $("#primaryWindow").removeClass("hide");
                         $("#newNoteWindow").addClass("hide");
                     }else{
                         $("#primaryWindow").addClass("hide");
-                        $("#newNoteWindow").classList.remove("hide");
+                        $("#newNoteWindow").removeClass("hide");
                     }
                     windowFlag = !windowFlag;
                 });

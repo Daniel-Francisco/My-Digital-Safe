@@ -60,9 +60,9 @@
                 console.log("6");
                 if (loginTime != -1) {
                     console.log("7");
-                    $("#loginInfoArea").classList.add("hideLoginInfoArea");
+                    $("#loginInfoArea").addClass("hideLoginInfoArea");
                     console.log("8");
-                    $("#loginProgressArea").classList.add("showProgressBar");
+                    $("#loginProgressArea").addClass("showProgressBar");
                     console.log("9");
                     setTimeout(updateProgressBar, (loginTime / 100));
                 }
@@ -93,8 +93,8 @@
             clearTimeout(currentTimer);
         }
         $("#loginProgressBar").val(0);
-        $("#loginInfoArea").classList.remove("hideLoginInfoArea");
-        $("#loginProgressArea").classList.remove("showProgressBar");
+        $("#loginInfoArea").removeClass("hideLoginInfoArea");
+        $("#loginProgressArea").removeClass("showProgressBar");
         $("#password").val("");
         percentProgress = 0;
     }
