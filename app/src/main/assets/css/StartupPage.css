@@ -37,11 +37,23 @@
     text-align: center !important;
 }
 .goodPassword{
-    background-color: green;
+    /*background-color: green;*/
+    color: green!important;
 }
 .mediumPassword{
-    background-color: deepskyblue;
+    /*background-color: deepskyblue;*/
+    color: deepskyblue!important;
 }
 .badPassword{
-    background-color: red;
+    /*background-color: red;*/
+    color: red!important;
+}
+
+#passwordStrengthBar{
+    width:75%;
+    height: 30px;
+    color: black;
+}
+#userPasswordPrompt{
+    color: red;
 }
