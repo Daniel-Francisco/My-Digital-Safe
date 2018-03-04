@@ -37,7 +37,7 @@
             <input name="passwordTwo" id="passwordTwo" value="" class="input" placeholder="Confirm New Password"
                    type="password"><br>
 
-            <input id="createPassword" value="Create Password!" class="login" type="button">
+            <input id="createPassword" value="Create Password!" class="primaryButton" type="button">
             <div id="loader" class="displayNone loader"></div>
 
         </div>
@@ -60,12 +60,12 @@
         $("#createPassword").on("click", function (event) {
             event.preventDefault();
 
+            document.getElementById("loader").classList.remove("displayNone");
+            document.getElementById("createPassword").classList.add("displayNone");
+
             var passwordOne = $("#passwordOne").val().trim();
             var passwordTwo = $("#passwordTwo").val().trim();
             // var dropDownValue = $('#dropDown').val();
-
-            document.getElementById("loader").classList.remove("displayNone");
-            document.getElementById("createPassword").classList.add("displayNone");
 
             Android.createPassword(passwordOne, passwordTwo);
         });

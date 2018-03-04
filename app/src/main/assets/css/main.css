@@ -34,7 +34,7 @@
     margin: auto;
 }
 
-#password, #signIn {
+#password {
     display: block;
     position: relative;
     margin: 10px auto;
