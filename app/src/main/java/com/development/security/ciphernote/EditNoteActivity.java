@@ -1,9 +1,12 @@
 package com.development.security.ciphernote;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -88,7 +91,36 @@ public class EditNoteActivity extends AppCompatActivity {
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/EditNotePage.html");
 
-        setTitle("Digital Safe");
+        setTitle("My Digital Safe");
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.deleteButton);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                androidDelete();
+
+//                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        switch (which){
+//                            case DialogInterface.BUTTON_POSITIVE:
+//                                //Yes button clicked
+//                                androidDelete();
+//                                break;
+//
+//                            case DialogInterface.BUTTON_NEGATIVE:
+//                                //No button clicked
+//                                break;
+//                        }
+//                    }
+//                };
+//                AlertDialog.Builder builder = new AlertDialog.Builder(applicationContext);
+//                builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+//                        .setNegativeButton("No", dialogClickListener).show();
+//
+            }
+        });
     }
 
     @Override
@@ -112,48 +144,34 @@ public class EditNoteActivity extends AppCompatActivity {
         }
     }
 
-    private String fetchFileString() {
-        try {
-//            byte[] fileJson = fileManager.readDataFile(applicationContext, hashedFilename);
-//            noteValue = securityManager.decrypt(fileJson);
 
-            noteValue = file.getData();
-            return noteValue;
+    private void androidDelete(){
+        try {
+            DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+
+            file.setFileName("redacted");
+            file.setAccessDate("redacted");
+            file.setData("redacted");
+            databaseManager.updateFile(file);
+
+            databaseManager.deleteFile(file);
+
+            CharSequence failedAuthenticationString = getString(R.string.deleteFileSuccess);
+            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+            toast.show();
+
+            Intent listIntent = new Intent(applicationContext, ListActivity.class);
+            startActivity(listIntent);
+            finish();
+
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return "";
-    }
 
-//    private void androidDelete(){
-//        try {
-//            noteValue = "";
-//            byte[] deleteData = noteValue.getBytes();
-//            fileManager.writeDataFile(applicationContext, fileName, deleteData);
-//
-//            file.setFileName("redacted");
-//            file.setAccessDate("redacted");
-//            file.setData("redacted");
-//            databaseManager.updateFile(file);
-//
-//            databaseManager.deleteFile(file);
-//
-//            CharSequence failedAuthenticationString = getString(R.string.deleteFileSuccess);
-//            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-//            toast.show();
-//
-//            Intent landingIntent = new Intent(applicationContext, ListActivity.class);
-//            startActivity(landingIntent);
-//            finish();
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//
-//            CharSequence failedAuthenticationString = getString(R.string.deleteFileFailed);
-//            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-//            toast.show();
-//        }
-//    }
+            CharSequence failedAuthenticationString = getString(R.string.deleteFileFailed);
+            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
 
     public class WebAppInterface {
         Context mContext;

@@ -2,13 +2,13 @@
     display: none!important;
 }
 
-#createPassword{
+#createPassword, #changePassword{
     height: 30px !important;
     width: 75% !important;
     margin: 10px auto 10px auto !important;
 }
 
-#passwordOne, #passwordTwo{
+#passwordOne, #passwordTwo, #currentPassword{
     width: 75%;
     display: block;
     margin: 10px auto 10px auto !important;
@@ -18,7 +18,7 @@
 
 #loginLogo{
     width: 250px;
-    height: 150px;
+    height: 125px;
     align: middle;
     display: block;
     margin: 0 auto 10px auto !important;

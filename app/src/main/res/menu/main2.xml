@@ -4,6 +4,9 @@
     <!--<item-->
         <!--android:id="@+id/action_settings"-->
         <!--android:orderInCategory="100"-->
+        <!--android:layout_gravity="right"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_alignParentRight="true"-->
         <!--android:title="@string/action_settings"-->
         <!--app:showAsAction="never" />-->
 </menu>

@@ -34,8 +34,8 @@
 
     <div id="faqTitle">FAQ Section:</div>
     <div class="faqWrapper">
-        <div class="faqQuestion">Q: How does My Digital Safe secure my password?<img src="images/black_logo.png" class="arrow"/></div>
-        <div class="faqAnswer">A: My Digital Safe used the PBKDF2 with HMAC SHA256. This cryptographic hash function is used to derive the hash to validate your password and ultimately
+        <div class="faqQuestion">Q: How does My Digital Safe secure my password?<img src="drawable-hdpi/arrow_down.png" class="arrow"/></div>
+        <div class="faqAnswer showAnswer">A: My Digital Safe used the PBKDF2 with HMAC SHA256. This cryptographic hash function is used to derive the hash to validate your password and ultimately
             derive the symmetric encryption key to protect your data. Simple version? We take your password and turn it into a irreversible garbled mess of characters using a 'hashing' function.
             Some very smart Mathematicians create and validate the effectiveness of this hashing function and security developers such as ourselves can use it in our applications. This 'hash'
             is impossible to convert back into your password, and we can re-calculate the hash each time you log in. If the hash we calculate matches the stored hash, your login is successful.
@@ -43,7 +43,7 @@
     </div>
 
     <div class="faqWrapper">
-        <div class="faqQuestion">Q: How does My Digital Safe secure my data?</div>
+        <div class="faqQuestion">Q: How does My Digital Safe secure my data?<img src="drawable-hdpi/arrow_down.png" class="arrow"/></div>
         <div class="faqAnswer">A: We encrypt all of your data using AES-256 algorithm before storing it in a database on your phone. The key to this algorithm is calculate through the PBKDF2 with HMAC SHA256
             algorithm during the password hashing process. In simplified terms, we use your password to encrypt and decrypt your data. Without your password, this data is impossible to decrypt.
             No matter what we do for you, if someone steals or guesses your password, we cannot help you. Therefore, pick a good password if you really care about your data's security!</div>
@@ -61,9 +61,29 @@
 <script>
 
     $(document).ready(function () {
-        var stringThing = Android.getLogs();
+        // var stringThing = Android.getLogs();
+        //
+        // $("#location").innerText = stringThing;
 
-        $("#location").innerText = stringThing;
+        var questions = document.getElementsByClassName("faqQuestion");
+        for(var i = 0; i < questions.length; i++){
+            var question = questions[i];
+
+            question.addEventListener("click", function(){
+                alert("Hello World!");
+                var answer = question.nextSibling;
+
+                console.log("Answer element: ");
+                console.log(answer.classList);
+
+                if(answer.classList.contains("showAnswer")){
+                    answer.classList.remove("showAnswer");
+                }else{
+                    answer.classList.add("showAnswer");
+                }
+            });
+
+        }
     });
 
 </script>

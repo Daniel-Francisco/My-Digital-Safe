@@ -55,52 +55,27 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.home) {
-            // Handle the camera action
-            CharSequence failedAuthenticationString = "Home clicked!";
-
-            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-            toast.show();
-
             Intent landingIntent = new Intent(applicationContext, ListActivity.class);
             startActivity(landingIntent);
 
             finish();
         }
-//        else if (id == R.id.settings) {
-//            CharSequence failedAuthenticationString = "Setting Clicked";
-//
-//            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-//            toast.show();
-//
-//            Intent settingsIntent = new Intent(applicationContext, SettingsActivity.class);
-//            startActivity(settingsIntent);
-//        }
+
         else if (id == R.id.changePassword) {
-            CharSequence failedAuthenticationString = "Change Password Clicked";
-
-            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-            toast.show();
-
             Intent changePasswordIntent = new Intent(applicationContext, ChangePasswordActivity.class);
             startActivity(changePasswordIntent);
-        } else if (id == R.id.about) {
-            CharSequence failedAuthenticationString = "About Clicked";
-
-            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-            toast.show();
-
-            Intent aboutIntent = new Intent(applicationContext, AboutActivity.class);
-            startActivity(aboutIntent);
-        } else if (id == R.id.logout) {
-            CharSequence failedAuthenticationString = "Logout clicked";
-
-            Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-            toast.show();
 
             finish();
+        } else if (id == R.id.about) {
+            Intent aboutIntent = new Intent(applicationContext, AboutActivity.class);
+            startActivity(aboutIntent);
 
+            finish();
+        } else if (id == R.id.logout) {
             Intent mainActivityIntent = new Intent(applicationContext, MainActivity.class);
             startActivity(mainActivityIntent);
+
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

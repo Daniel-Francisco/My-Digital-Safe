@@ -21,7 +21,7 @@
 <body>
 <div class="container">
     <div id="loginForm">
-        <img src="images/black_logo.png" id="loginLogo"/>
+        <img src="images/logo.png" id="loginLogo"/>
         <div id="loginProgressArea">
             <div class="progressTitle">Login Progress:</div>
             <progress id="loginProgressBar" value="0" max="100"></progress>
@@ -74,6 +74,14 @@
                 console.log("PURPLE NABLA");
             }
         });
+
+        ("#password")[0].addEventListener("keyup", function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                $("#signIn").click();
+            }
+        });
+
     });
 
     function updateProgressBar() {
