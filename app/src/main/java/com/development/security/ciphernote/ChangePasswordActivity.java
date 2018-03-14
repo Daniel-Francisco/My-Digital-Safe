@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,6 +25,11 @@ public class ChangePasswordActivity extends MenuActivity {
     Context context;
     WebView browser;
     final SecurityManager securityManager = SecurityManager.getInstance();
+
+    String passwordCurrent = null;
+    String passwordOne = null;
+    String passwordTwo = null;
+
 //    final FileManager fileManager = new FileManager();
 
     @Override
@@ -55,80 +61,92 @@ public class ChangePasswordActivity extends MenuActivity {
 
 
     private void androidUpdatePassword(String currentPassword, String newPasswordOne, String newPasswordTwo) {
-        try {
-            if (newPasswordOne.equals(newPasswordTwo)) {
-                SecurityManager securityManager = SecurityManager.getInstance();
+       passwordCurrent = currentPassword;
+       passwordOne = newPasswordOne;
+       passwordTwo = newPasswordTwo;
+
+        new ChangePasswordActivity.AsyncChangePassword().execute("");
+
+    }
+
+    private class AsyncChangePassword extends AsyncTask<String, String, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try {
+                if (passwordOne.equals(passwordTwo)) {
+                    SecurityManager securityManager = SecurityManager.getInstance();
 //                FileManager fileManager = new FileManager();
-                if (securityManager.authenticateUser(currentPassword, context)) {
+                    if (securityManager.authenticateUser(passwordCurrent, context)) {
 
-                    DatabaseManager databaseManager = new DatabaseManager(context);
-                    int score = securityManager.calculatePasswordStrength(newPasswordOne);
+                        DatabaseManager databaseManager = new DatabaseManager(context);
+                        int score = securityManager.calculatePasswordStrength(passwordOne);
 
-                    if (newPasswordOne.equals(newPasswordTwo) && score > 0) {
-                        long start_time = System.nanoTime();
-                        int iterations = 100000;
-//                        if (levelValue.equals("high")) {
-//                            iterations = 250000;
-//                        } else if (levelValue.equals("medium")) {
-//                            iterations = 75000;
-//                        } else {
-//                            iterations = 10000;
-//                        }
+                        if (passwordOne.equals(passwordTwo) && score > 0) {
+                            long start_time = System.nanoTime();
+                            int iterations = 100000;
 
+                            UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+                            userConfiguration.setIterations(iterations);
+                            userConfiguration.setPassword_hash("");
+                            databaseManager.addUserConfiguration(userConfiguration);
 
-//                        String salt = securityManager.generateSalt();
-//                        Log.d("help", "StartupActivity salt: " + salt);
+                            String saltFromFile =  databaseManager.getUserConfiguration().getSalt();
 
-                        UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
-                        userConfiguration.setIterations(iterations);
-                        userConfiguration.setPassword_hash("");
-//                        userConfiguration.setSalt(salt);
-                        databaseManager.addUserConfiguration(userConfiguration);
-//                        fileManager.updateHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
+                            byte[] newHash = securityManager.hashPassword(passwordOne, saltFromFile.getBytes(), iterations);
+                            String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);
 
-                        String saltFromFile =  databaseManager.getUserConfiguration().getSalt();
+                            userConfiguration.setPassword_hash(newHashString);
+                            databaseManager.addUserConfiguration(userConfiguration);
 
-                        byte[] newHash = securityManager.hashPassword(newPasswordOne, saltFromFile.getBytes(), iterations);
-                        String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);
-
-                        userConfiguration.setPassword_hash(newHashString);
-                        databaseManager.addUserConfiguration(userConfiguration);
-
-                        Log.d("help", "Startup ran");
+                            Log.d("help", "Startup ran");
 
 
 //                        fileManager.updateHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
 
-                        long end_time = System.nanoTime();
-                        double difference = (end_time - start_time) / 1e6;
-                        int loginTime = (int) difference;
-                        writeLoginTime(loginTime);
+                            long end_time = System.nanoTime();
+                            double difference = (end_time - start_time) / 1e6;
+                            int loginTime = (int) difference;
+                            writeLoginTime(loginTime);
+                        }
+
+
+                        securityManager.changePassword(context, passwordCurrent, passwordOne);
+
+                        return true;
                     }
+                } else {
+                    return false;
 
-
-                    securityManager.changePassword(context, currentPassword, newPasswordOne);
-
-                    Intent loginActivity = new Intent(context, LoginActivity.class);
-                    startActivity(loginActivity);
-                    finish();
                 }
-            } else {
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+        }
+
+        protected void onPostExecute(Boolean status) {
+            if(status){
+                Intent loginActivity = new Intent(context, LoginActivity.class);
+                startActivity(loginActivity);
+                finish();
+            }else{
                 CharSequence failedAuthenticationString = getString(R.string.failed_login_toast);
 
                 Toast toast = Toast.makeText(context, failedAuthenticationString, Toast.LENGTH_LONG);
                 toast.show();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:clearFields()");
+                }
+            });
+
         }
-
-        browser.post(new Runnable() {
-            @Override
-            public void run() {
-                browser.loadUrl("javascript:clearFields()");
-            }
-        });
-
     }
 
     private int androidCheckPasswordStrength(String password) {

@@ -75,11 +75,15 @@
             }
         });
 
-        ("#password")[0].addEventListener("keyup", function(event) {
+        $("#password")[0].addEventListener("keyup", function (event) {
             event.preventDefault();
             if (event.keyCode === 13) {
                 $("#signIn").click();
             }
+        });
+        $( "#password" ).submit(function( event ) {
+            event.preventDefault();
+            $("#signIn").click();
         });
 
     });

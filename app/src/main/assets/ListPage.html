@@ -23,16 +23,10 @@
 
 <div id="page">
     <div id="primaryWindow">
-        <div id="listWrapper"> </div>
+        <div id="listWrapper"></div>
+        <div id="noNotesComment">Looks like you don't have any notes yet! Click the plus icon in the bottom right corner to get started.</div>
         <!--<input id="addNoteImageButton" type="image" src="./images/plus_icon.png" alt="Add Note">-->
     </div>
-    <!--<div id="newNoteWindow" class="hide">-->
-    <!--<input id="closeNewNoteWindowButton" type="image" src="./images/x_icon.png" alt="Close note" width="48" height="48"/>-->
-    <!--<input id="newNoteName" placeholder="New Note Name"/>-->
-    <!--<input id="newNoteButton" value="Create Note!" class="login" type="button">-->
-    <!--</div>-->
-
-
 </div>
 
 
@@ -46,6 +40,7 @@
     var jsonString;
     var wrapper;
     var windowFlag = false;
+    var noNotesCommentDiv;
 
     function renderList(){
         wrapper = document.getElementById("listWrapper");
@@ -56,9 +51,18 @@
         //"[{"_id":1,"access_date":"2018-26-15 08:26:08","data":"test value","file_name":"test"}]"
 
         var jsonArray = JSON.parse(jsonString);
+
+        console.log(noNotesCommentDiv);
+        if(jsonArray.length > 0){
+            console.log("JsonArray length > 0. Length = " + length);
+            noNotesCommentDiv.classList.add("hide");
+        }else{
+            console.log("JsonArray length is zero.");
+            // noNotesCommentDiv.classList.remove("hide");
+        }
+
         for(var i = 0; i < jsonArray.length; i++) {
             (function () {
-
 
                 var baseHtmlStructure = document.createElement("div");
                 baseHtmlStructure.classList.add("listItem");
@@ -110,6 +114,9 @@
     }
 
     $(document).ready(function() {
+        noNotesCommentDiv = document.getElementById("noNotesComment");
+        console.log("Test = " + noNotesCommentDiv);
+
         renderList();
 
         // $("#addNoteImageButton").on("click", function(event) {

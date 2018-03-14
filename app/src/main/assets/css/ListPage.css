@@ -43,3 +43,16 @@
     width: 70%;
     float:left;
 }
+#noNotesComment{
+    color: grey;
+    text-align: center;
+    font-size: 14px;
+    display:inline-block;
+    margin-left:10%;
+    margin-right:10%;
+    margin-top:15px;
+}
+
+.hide{
+    display:none;
+}

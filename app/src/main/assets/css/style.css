@@ -55,5 +55,12 @@
     color: #fff;
     background-color: #952422
 }
+#loginLogo{
+    width: 250px;
+    height: 125px;
+    align: middle;
+    display: block;
+    margin: 10px auto 10px auto !important;
+}
 
 /*255 255 255*/
