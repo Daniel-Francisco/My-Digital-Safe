@@ -33,18 +33,11 @@ public class StartupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
-
         applicationContext = getApplicationContext();
-
-
         browser=(WebView)findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new StartupActivity.WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/StartupPage.html");
-
-
-
-
     }
 
 
@@ -52,24 +45,12 @@ public class StartupActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(String... strings) {
             try {
-                //Boolean passwordVaidate = validatePassword(passwordOneValue);
                 int score = securityManager.calculatePasswordStrength(firstPassword);
-
                 if (firstPassword.equals(secondPassword) && score > 0) {
                     long start_time = System.nanoTime();
                     int iterations = 100000;
-//                if(levelValue.equals("high")){
-//                    iterations = 250000;
-//                }else if(levelValue.equals("medium")){
-//                    iterations = 75000;
-//                }else{
-//                    iterations = 10000;
-//                }
-
 
                     String salt = securityManager.generateSalt();
-                    Log.d("help", "StartupActivity salt: " + salt);
-
 
                     DataStructures.UserConfiguration userConfiguration = new DataStructures.UserConfiguration();
                     userConfiguration.setPasswordHash("");
@@ -78,15 +59,9 @@ public class StartupActivity extends AppCompatActivity {
                     DatabaseManager databaseManager = new DatabaseManager(applicationContext);
                     databaseManager.addUserConfiguration(new UserConfiguration(userConfiguration.getIterations(), userConfiguration.getPasswordHash(), userConfiguration.getSalt()));
 
-//                writeUserConfig(context);
-
-//                fileManager.saveHashInfo(applicationContext, "", Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
-
                     String saltFromFile = databaseManager.getUserConfiguration().getSalt();
 
                     byte[] newHash = securityManager.hashPassword(firstPassword, saltFromFile.getBytes(), iterations);
-
-                    Log.d("help", "Startup ran");
 
                     databaseManager.checkConfigDirectory(applicationContext);
                     databaseManager.writeToDataFile(applicationContext, "started".getBytes(), "startup", true);
@@ -96,10 +71,6 @@ public class StartupActivity extends AppCompatActivity {
                     String hash = Base64.encodeToString(newHash, Base64.DEFAULT);
                     currentUserConfig.setPassword_hash(hash);
                     databaseManager.addUserConfiguration(currentUserConfig);
-
-//                fileManager.writeToFirstRunFile(applicationContext);
-//
-//                fileManager.saveHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
 
                     long end_time = System.nanoTime();
                     double difference = (end_time - start_time) / 1e6;

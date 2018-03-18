@@ -48,30 +48,19 @@
 
         $("#signIn").on("click", function (event) {
             loginTime = Android.getloginTime();
-            console.log("1");
             event.preventDefault();
-            console.log("2");
-            console.log("3");
             if (!attemptingLogin) {
-                console.log("4");
                 var password = $("#password").val().trim();
-                console.log("5");
                 attemptingLogin = true;
-                console.log("6");
                 if (loginTime != -1) {
-                    console.log("7");
                     $("#loginInfoArea").addClass("hideLoginInfoArea");
-                    console.log("8");
                     $("#loginProgressArea").addClass("showProgressBar");
-                    console.log("9");
                     setTimeout(updateProgressBar, (loginTime / 100));
                 }
-                console.log("10");
                 Android.authenticateUser(password);
             }
 
             function danielTestPleaseDontJudge() {
-                console.log("PURPLE NABLA");
             }
         });
 
@@ -89,7 +78,6 @@
     });
 
     function updateProgressBar() {
-        console.log("updateProgressBar ran, value = " + percentProgress);
         $("#loginProgressBar").val(percentProgress);
         percentProgress++;
         if (percentProgress != 101) {

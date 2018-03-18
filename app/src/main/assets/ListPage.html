@@ -25,18 +25,11 @@
     <div id="primaryWindow">
         <div id="listWrapper"></div>
         <div id="noNotesComment">Looks like you don't have any notes yet! Click the plus icon in the bottom right corner to get started.</div>
-        <!--<input id="addNoteImageButton" type="image" src="./images/plus_icon.png" alt="Add Note">-->
     </div>
 </div>
 
 
 <script>
-    //Example of JSON backend will send
-    //[
-    //    {"_id":1,"access_date":"2018-13-12 09:13:43","data":"value of note 1","file_name":"note 1"},
-    //    {"_id":2,"access_date":"2018-17-12 09:17:51","data":"Note 2 value look at me I\u0027m a value.","file_name":"note 2"},
-    //    {"_id":3,"access_date":"2018-18-12 09:18:45","data":"test","file_name":"note 3"}
-    //]
     var jsonString;
     var wrapper;
     var windowFlag = false;
@@ -46,18 +39,12 @@
         wrapper = document.getElementById("listWrapper");
         wrapper.innerHTML = "";
         jsonString = Android.getData();
-        console.log(jsonString);
-
-        //"[{"_id":1,"access_date":"2018-26-15 08:26:08","data":"test value","file_name":"test"}]"
 
         var jsonArray = JSON.parse(jsonString);
 
-        console.log(noNotesCommentDiv);
         if(jsonArray.length > 0){
-            console.log("JsonArray length > 0. Length = " + length);
             noNotesCommentDiv.classList.add("hide");
         }else{
-            console.log("JsonArray length is zero.");
             // noNotesCommentDiv.classList.remove("hide");
         }
 
@@ -83,7 +70,6 @@
                 var file = jsonArray[i];
                 var id = file._id;
                 var date = file.access_date;
-                var data = file.data;
                 var fileName = file.file_name;
 
                 idDiv.innerText = id;
@@ -102,9 +88,7 @@
                 baseHtmlStructure.appendChild(deleteAreaDiv);
 
                 dataDiv.addEventListener("click", function(){
-                    console.log("File = " + file);
                     var fileString = JSON.stringify(file);
-                    console.log("FileString = " + fileString);
                     Android.listClickOccurred(fileString);
                 });
 
@@ -112,7 +96,7 @@
                 borderDiv.classList.add("borderDiv");
 
 
-                wrapper.appendChild(baseHtmlStructure);
+                wrapper.appendChild(baseHtmlStructure); 
 
 
             }());
@@ -122,16 +106,9 @@
 
     $(document).ready(function() {
         noNotesCommentDiv = document.getElementById("noNotesComment");
-        console.log("Test = " + noNotesCommentDiv);
 
         renderList();
 
-        // $("#addNoteImageButton").on("click", function(event) {
-        //     event.preventDefault();
-        //     var noteName = "My Secure Note";//$("#newNoteName").val();
-        //     console.log(noteName);
-        //     Android.addNote(noteName);
-        // });
         $("#closeNewNoteWindowButton").on("click", function(event) {
             event.preventDefault();
             if(windowFlag){
@@ -143,21 +120,6 @@
             }
             windowFlag = !windowFlag;
         });
-
-
-        // var map = Android.androidDataModel();
-        // console.log(map);
-
-        //add something
-        //Android.addNote("note 3");
-
-        //sample json for mynewnote
-        //var json = Android.getData();
-        //console.log("value: " + json);
-
-        //go to note
-        //Android.listClickOccurred("note 1");
-
     });
 
 </script>

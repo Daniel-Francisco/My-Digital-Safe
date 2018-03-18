@@ -98,11 +98,6 @@ public class ChangePasswordActivity extends MenuActivity {
                             userConfiguration.setPassword_hash(newHashString);
                             databaseManager.addUserConfiguration(userConfiguration);
 
-                            Log.d("help", "Startup ran");
-
-
-//                        fileManager.updateHashInfo(applicationContext, Base64.encodeToString(newHash, Base64.DEFAULT), Base64.encodeToString(salt.getBytes(), Base64.DEFAULT), iterations);
-
                             long end_time = System.nanoTime();
                             double difference = (end_time - start_time) / 1e6;
                             int loginTime = (int) difference;

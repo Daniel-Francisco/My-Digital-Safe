@@ -27,7 +27,6 @@
 
 
 <script>
-    console.log("Test");
     var initialText;// = Android.fetchContents();
     var file;
     var editText;// = document.getElementById("noteArea");
@@ -45,12 +44,9 @@
 	// }
 
     function updateFile(){
-        console.log("Updating file");
         file.data = editText.value;
         file.file_name = title.value;
         var fileString = JSON.stringify(file);
-        console.log("File: " + file);
-        console.log("FileString: " + fileString);
         Android.updateFile(fileString);
     }
 
@@ -63,12 +59,8 @@
         editText = document.getElementById("noteArea");
         title = document.getElementById("editNoteTitle");
 
-        console.log("1");
         var fileString = Android.getFile();
         file = JSON.parse(fileString);
-        console.log("2");
-        console.log(file);
-        console.log("3");
         initialText = file.data;
 
 
@@ -79,13 +71,6 @@
             titleText = file.file_name;
             title.value = titleText;
 		}
-
-        console.log("4");
-
-
-        console.log("Data = " + initialText);
-        console.log("Title = " + titleText);
-
 
         editText.value = initialText;
 

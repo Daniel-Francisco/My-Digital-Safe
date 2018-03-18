@@ -68,9 +68,6 @@ public class SecurityManager {
      */
     public byte[] encrypt(String data){
         try{
-
-            Log.d("help", "Data: " + data);
-
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secret);
             AlgorithmParameters params = cipher.getParameters();
@@ -89,7 +86,6 @@ public class SecurityManager {
             return finalMessage;
         }catch(Exception e){
             e.printStackTrace();
-            Log.d("help", "Error in Encrypt");
         }
         return null;
     }
@@ -117,13 +113,9 @@ public class SecurityManager {
             byte[] decryptedText = cipher.doFinal(cipherText);
 
             String plainText = new String(decryptedText);
-
-            Log.d("help", plainText);
-
             return plainText;
         }catch(Exception e){
             e.printStackTrace();
-            Log.d("help", "Error in decrypt");
         }
         return "";
     }
@@ -143,11 +135,9 @@ public class SecurityManager {
                 passwordBytes = new byte[0];
             }
             String passwordString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
-            Log.d("password", "Pre-decrypt: " + passwordString);
             String passwordValue;
             byte[] decryptedDevicePassword = encryptWithAlternatePassword(userPassword, passwordBytes, config.getSalt().getBytes(), config.getIterations(), false);
             passwordValue = new String(decryptedDevicePassword);
-            Log.d("password", passwordValue);
 
 
             byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(newPassword, decryptedDevicePassword, config.getSalt().getBytes(), config.getIterations(), true);
@@ -164,7 +154,6 @@ public class SecurityManager {
 //            databaseManager.addUserConfiguration(config);
         }catch(Exception e){
             e.printStackTrace();
-            Log.d("Error", "Error in generateKey");
         }
     }
 
@@ -187,18 +176,14 @@ public class SecurityManager {
                 passwordBytes = new byte[0];
             }
             String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
-            Log.d("password", "Pre-decrypt: " + dataString);
             String passwordValue;
             if(dataString.isEmpty() || dataString == null || dataString.equals("")){
                 passwordValue = generateSalt();
-                Log.d("password", "New password: " + passwordValue);
                 byte[] encryptedNewPassword = encrypt(passwordValue);
                 config.setDevicePassword(encryptedNewPassword);
                 databaseManager.addUserConfiguration(config);
             }else{
                 passwordValue = decrypt(passwordBytes);
-                Log.d("password", passwordValue);
-//                passwordValue = "hello";
             }
 
 
@@ -207,12 +192,8 @@ public class SecurityManager {
 
             secret = new SecretKeySpec(tmp2.getEncoded(), "AES");
 
-            Log.d("help", "test");
-            //        byte[] passwordBytes = password.getBytes();
-//        return new SecretKeySpec(passwordBytes, ALGO);
         }catch(Exception e){
             e.printStackTrace();
-            Log.d("Error", "Error in generateKey");
         }
     }
 
@@ -233,7 +214,6 @@ public class SecurityManager {
 
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
-        Log.d("help", "Hash duration: " + duration);
 
         String hashInFile = databaseManager.getUserConfiguration().getPassword_hash();
         String userHashEncoded  = Base64.encodeToString(hash, Base64.DEFAULT);
@@ -250,11 +230,6 @@ public class SecurityManager {
     public byte[] hashPassword(String password, byte[] salt, int hashingIterations) {
         int keyLength = 256;
         try {
-//            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
-
-            Log.d("passwordTest", "Password in hash: " + password);
-            Log.d("passwordTest", "Salt in hash: " + new String(salt));
-            Log.d("passwordTest", "Iterations in hash: " + String.valueOf(hashingIterations));
 
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
@@ -320,10 +295,6 @@ public class SecurityManager {
     public byte[] encryptWithAlternatePassword(String password, byte[] data, byte[] salt, int hashingIterations,  Boolean encryptOrDecryptFlag){
         int keyLength = 256;
         try{
-            Log.d("passwordTest", "Password in alternate: " + password);
-            Log.d("passwordTest", "Salt in alternate: " + new String(salt));
-            Log.d("passwordTest", "Iterations in alternate: " + String.valueOf(hashingIterations));
-
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
             userKey = skf.generateSecret(spec);
@@ -346,13 +317,7 @@ public class SecurityManager {
 
     public File setFileHash(File file) throws NoSuchAlgorithmException {
         String concatString = file.getAccessDate() + file.getID() + file.getData() + file.getData();
-
-        Log.d("hash", concatString);
-
         String hash = SHA256Hash(concatString);
-
-        Log.d("hash", hash);
-
         file.setHash(hash);
 
         return file;
@@ -360,13 +325,7 @@ public class SecurityManager {
 
     public boolean validateFileHash(File file) throws NoSuchAlgorithmException {
         String concatString = file.getAccessDate() + file.getID() + file.getData() + file.getData();
-
-        Log.d("hash", concatString);
-
         String hash = SHA256Hash(concatString);
-
-        Log.d("hash", hash);
-
         if(hash.equals(file.getHash())){
             return true;
         }

@@ -27,14 +27,10 @@ public class MainActivity extends AppCompatActivity {
         DatabaseManager databaseManager = new DatabaseManager(this.getApplicationContext());
         try{
             if(databaseManager.checkForFirstRunFile(this.getApplicationContext())){
-                Log.d("help", "FirstRun again");
-
                 Intent startupIntent = new Intent(this, StartupActivity.class);
                 startActivity(startupIntent);
                 finish();
             }else{
-                Log.d("help", "Going to call landingActivity");
-
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
                 finish();

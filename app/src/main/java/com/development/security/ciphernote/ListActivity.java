@@ -149,8 +149,6 @@ public class ListActivity extends MenuActivity {
         Date now = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-        Log.d("date", "List date: " + date);
-
         Date then = sdf.parse(date);
         int diff = now.getDate() - then.getDate();
 
@@ -325,7 +323,6 @@ public class ListActivity extends MenuActivity {
 
         @JavascriptInterface
         public void deleteNote(String fileString) {
-            Log.d("help", fileString);
             Gson gson = new Gson();
             Type type = new TypeToken<File>() {
             }.getType();

@@ -67,19 +67,11 @@ public class EditNoteActivity extends AppCompatActivity {
         Type type = new TypeToken<com.development.security.ciphernote.model.File>() {
         }.getType();
         file = gson.fromJson(jsonForFile, type);
-
-//        file = new com.development.security.ciphernote.model.File();
-
         securityManager = SecurityManager.getInstance();
         applicationContext = this.getBaseContext();
         databaseManager = new DatabaseManager(applicationContext);
-
-
-//        file = databaseManager.getFileByName(fileName);
-
         hashedFilename = fileName;
 
-        Log.d("help", "Filename: " + fileName + " hash: " + hashedFilename);
 
         setTitle(fileName);
 
@@ -109,28 +101,6 @@ public class EditNoteActivity extends AppCompatActivity {
                                 androidDelete();
                             }})
                         .setNegativeButton(android.R.string.no, null).show();
-
-
-
-//                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        switch (which){
-//                            case DialogInterface.BUTTON_POSITIVE:
-//                                //Yes button clicked
-//                                androidDelete();
-//                                break;
-//
-//                            case DialogInterface.BUTTON_NEGATIVE:
-//                                //No button clicked
-//                                break;
-//                        }
-//                    }
-//                };
-//                AlertDialog.Builder builder = new AlertDialog.Builder(applicationContext);
-//                builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
-//                        .setNegativeButton("No", dialogClickListener).show();
-//
             }
         });
 
@@ -144,14 +114,11 @@ public class EditNoteActivity extends AppCompatActivity {
             Date date = new Date();
 
 
-//                DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
             String dateString = sdf.format(date);
-            Log.d("date", dateString);
             file.setAccessDate(dateString);
             long id = databaseManager.updateFile(file);
-            Log.d("help", "Id: " + id);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -200,7 +167,6 @@ public class EditNoteActivity extends AppCompatActivity {
             Type type = new TypeToken<com.development.security.ciphernote.model.File>() {
             }.getType();
             file = gson.fromJson(fileString, type);
-            Log.d("help", "time");
         }
 
         @JavascriptInterface

@@ -253,7 +253,6 @@ public class DatabaseManager extends SQLiteOpenHelper {
                     file = null;
                 }
 
-                Log.d("test", cursor.getString(cursor.getColumnIndex(File.KEY_DATA)));
                 fileList.add(file);
             } while (cursor.moveToNext());
         }

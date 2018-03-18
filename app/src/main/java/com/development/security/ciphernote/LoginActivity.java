@@ -32,7 +32,6 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        Log.d("help", "EditNoteActivity ran");
         prefs = getSharedPreferences("com.security.test", MODE_PRIVATE);
         applicationContext = getApplicationContext();
 
@@ -41,8 +40,6 @@ public class LoginActivity extends Activity {
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/loginPage.html");
-
-        Log.d("help", "test");
     }
 
     public void androidAuthenticateUser(String password){
@@ -65,14 +62,10 @@ public class LoginActivity extends Activity {
                 securityManager.generateKey(applicationContext);
 
                 if(authentication){
-                    Log.d("help", "Successful authentication!");
-//                    securityManager.generateKey(applicationContext, password);
                     Intent landingIntent = new Intent(applicationContext, ListActivity.class);
                     startActivity(landingIntent);
                     finish();
                 }else{
-                    Log.d("help", "Failed authentication");
-//                passwordField.setText("");
                     long end_time = System.nanoTime();
                     double difference = (end_time - start_time) / 1e6;
                     loginTime = (int) difference;
@@ -139,7 +132,6 @@ public class LoginActivity extends Activity {
 
         @JavascriptInterface
         public int getloginTime(){
-            Log.d("loginTime", String.valueOf(readLoginTime()));
             return readLoginTime();
         }
     }
