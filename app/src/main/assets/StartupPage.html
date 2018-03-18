@@ -25,7 +25,7 @@
 <div class="container">
     <div id="loginForm">
         <div id="passwordCreateArea">
-            <img src="images/logo.png" id="loginLogo"/>
+            <img src="images/logo.svg" id="logo"/>
 
             <div id="passwordStrengthTitle" class="displayNone">Password Strength:</div>
             <progress id="passwordStrengthBar" value="0" class="displayNone" max="10"></progress>
@@ -68,6 +68,33 @@
             // var dropDownValue = $('#dropDown').val();
 
             Android.createPassword(passwordOne, passwordTwo);
+        });
+
+
+        $("#passwordOne")[0].addEventListener("keyup", function (event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                $("#createPassword").click();
+                $("#passwordOne").blur();
+            }
+        });
+        $("#passwordOne").submit(function( event ) {
+            event.preventDefault();
+            $("#createPassword").click();
+            $("#passwordOne").blur();
+        });
+
+        $("#passwordTwo")[0].addEventListener("keyup", function (event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                $("#createPassword").click();
+                $("#passwordTwo").blur();
+            }
+        });
+        $("#passwordTwo").submit(function( event ) {
+            event.preventDefault();
+            $("#createPassword").click();
+            $("#passwordTwo").blur();
         });
 
 

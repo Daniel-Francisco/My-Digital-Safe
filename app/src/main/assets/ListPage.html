@@ -90,9 +90,13 @@
                 dateDiv.innerText = date;
                 fileNameDiv.innerText = fileName;
 
+                var spacerDiv = document.createElement("div");
+                spacerDiv.classList.add("spacer");
+
                 dataDiv.appendChild(idDiv);
                 dataDiv.appendChild(fileNameDiv);
                 dataDiv.appendChild(dateDiv);
+                dataDiv.appendChild(spacerDiv);
 
                 baseHtmlStructure.appendChild(dataDiv);
                 baseHtmlStructure.appendChild(deleteAreaDiv);
@@ -103,6 +107,9 @@
                     console.log("FileString = " + fileString);
                     Android.listClickOccurred(fileString);
                 });
+
+                var borderDiv = document.createElement("div");
+                borderDiv.classList.add("borderDiv");
 
 
                 wrapper.appendChild(baseHtmlStructure);

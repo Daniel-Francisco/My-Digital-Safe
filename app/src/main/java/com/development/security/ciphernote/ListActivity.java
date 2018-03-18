@@ -155,13 +155,13 @@ public class ListActivity extends MenuActivity {
         int diff = now.getDate() - then.getDate();
 
 
-        long diffMillisecons = getDateDiff(then, now, TimeUnit.MILLISECONDS);
         long diffSeconds = getDateDiff(then, now, TimeUnit.SECONDS);//diff / 1000 % 60;
         long diffMinutes = getDateDiff(then, now, TimeUnit.MINUTES);//diff / (60 * 1000) % 60;
 
         String responseString = "";
-
-        if (diffSeconds < 60) {
+        if(diffSeconds < 30){
+            responseString = "Last viewed a few moments ago.";
+        }else if (diffSeconds < 60) {
             responseString = (diffSeconds + " seconds since last viewed.");
         } else if (diffMinutes < 60) {
             responseString = (diffMinutes + " minutes since last viewed.");

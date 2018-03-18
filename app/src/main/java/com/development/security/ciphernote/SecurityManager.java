@@ -175,14 +175,6 @@ public class SecurityManager {
     public void generateKey(Context context){
         try{
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-//            char[] passwordChars = password.toCharArray();
-//            KeySpec spec = new PBEKeySpec(passwordChars, salt.getBytes(), 1, 256);
-//            SecretKey tmp = factory.generateSecret(spec);
-
-
-//            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-//            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
-//            userKey = skf.generateSecret(spec);
 
             secret = new SecretKeySpec(userKey.getEncoded(), "AES");
 

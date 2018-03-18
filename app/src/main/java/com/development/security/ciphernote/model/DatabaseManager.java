@@ -237,7 +237,14 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 file.setAccessDate(securityManager.decrypt(accessDate));
 
                 file.setFileName(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_FILE_NAME))));
-                file.setData(securityManager.decrypt(Base64.decode(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)), Base64.DEFAULT)));
+
+                try{
+                    file.setData(securityManager.decrypt(Base64.decode(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)), Base64.DEFAULT)));
+                }catch(Exception e){
+                    e.printStackTrace();
+                    file.setData("");
+                }
+
                 file.setHash(cursor.getString(cursor.getColumnIndex(File.KEY_HASH)));
 
                 boolean fileStatus = securityManager.validateFileHash(file);

@@ -1,3 +1,10 @@
+#loginLogo{
+    width: 250px;
+    height: 200px;
+    align: middle;
+    display: block;
+    margin: 10px auto 10px auto !important;
+}
 #password {
     border: 1px solid #ebeff0;
     background: #ffffff;
@@ -55,9 +62,9 @@
     color: #fff;
     background-color: #952422
 }
-#loginLogo{
+#logo{
     width: 250px;
-    height: 125px;
+    height: 200px;
     align: middle;
     display: block;
     margin: 10px auto 10px auto !important;

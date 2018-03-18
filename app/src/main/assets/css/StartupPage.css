@@ -16,9 +16,13 @@
     border:solid 1px gray;
 }
 
+#currentPassword{
+    margin-bottom: 30px!important;
+}
+
 #loginLogo{
     width: 250px;
-    height: 125px;
+    height: 200px;
     align: middle;
     display: block;
     margin: 0 auto 10px auto !important;
@@ -44,9 +48,14 @@
 
 #passwordStrengthBar{
     width:75%;
-    height: 30px;
+    /*height: 30px;*/
     color: black;
 }
 #userPasswordPrompt{
     color: red;
+}
+#startupForm{
+    height:100%;
+    margin-top: 10%;
+    text-align: center !important;
 }

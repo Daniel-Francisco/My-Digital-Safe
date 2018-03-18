@@ -21,29 +21,10 @@
 </head>
 
 <div id="page">
-	<input id="editNoteTitle" oninput="updateFile()" onclick="alert('clicked')" class="title" type="text"/>
-	<textarea id="noteArea" oninput="updateFile()" rows="30"></textarea>
+	<input id="editNoteTitle" oninput="updateFile()" class="title" type="text"/>
+	<textarea id="noteArea" oninput="updateFile()" ></textarea>
 </div>
 
-<style>
-	#page{
-		width: 100%;
-		height: 100%;
-		display: block;
-		margin: auto;
-	}
-	#noteArea{
-		width:100%;
-		rows:100;
-	}
-	#deleteNote{
-		display: block;
-		position:relative;
-		margin: 10px auto;
-		float:none;
-		color:red;
-	}
-</style>
 
 <script>
     console.log("Test");
@@ -53,11 +34,15 @@
     var title;
     var titleText;
 
-	function test(){
-	    alert("CLICK");
-	}
 
-
+    //
+	// function checkTitle(div){
+	//     alert("check");
+	//     if(div.innerText == "My Secure Note"){
+	//         alert("detected");
+	//         div.innerText = "";
+	// 	}
+	// }
 
     function updateFile(){
         console.log("Updating file");
@@ -72,6 +57,12 @@
     $(document).ready(function() {
         // {"_id":4,"access_date":"2018-45-17 10:45:54","data":"","file_name":"My Secure Note"}
 
+        var documentHeight = $(document).height();
+        document.getElementById('page').style.height = documentHeight+'px';
+
+        editText = document.getElementById("noteArea");
+        title = document.getElementById("editNoteTitle");
+
         console.log("1");
         var fileString = Android.getFile();
         file = JSON.parse(fileString);
@@ -79,15 +70,23 @@
         console.log(file);
         console.log("3");
         initialText = file.data;
-        titleText = file.file_name;
+
+
+        if(file.file_name == "My Secure Note"){
+            titleText = "";
+            title.placeholder = "My Secure Note";
+        }else{
+            titleText = file.file_name;
+            title.value = titleText;
+		}
+
         console.log("4");
-        editText = document.getElementById("noteArea");
-        title = document.getElementById("editNoteTitle");
+
 
         console.log("Data = " + initialText);
         console.log("Title = " + titleText);
 
-        title.value = titleText;
+
         editText.value = initialText;
 
         $("#editNoteTitle").on("click touchstart",function(e){

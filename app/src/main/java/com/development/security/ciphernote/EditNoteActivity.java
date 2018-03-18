@@ -1,7 +1,6 @@
 package com.development.security.ciphernote;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
+import android.content.DialogInterface;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.google.gson.Gson;
@@ -93,12 +93,24 @@ public class EditNoteActivity extends AppCompatActivity {
 
         setTitle("My Digital Safe");
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.deleteButton);
+
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.deleteButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                androidDelete();
+
+                new android.app.AlertDialog.Builder(fab.getContext())
+                        .setTitle("Delete this note?")
+                        .setMessage("Are you sure you wish to delete this note? This is permanent.")
+                        .setIcon(android.R.drawable.ic_delete)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                androidDelete();
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+
+
 
 //                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 //                    @Override
@@ -121,6 +133,8 @@ public class EditNoteActivity extends AppCompatActivity {
 //
             }
         });
+
+
     }
 
     @Override

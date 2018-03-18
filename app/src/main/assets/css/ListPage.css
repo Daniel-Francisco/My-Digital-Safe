@@ -3,7 +3,7 @@
 }
 .fileName{
     font-size: 24px;
-    font-weight: bold;
+    /*font-weight: bold;*/
     display:block;
 }
 .date{
@@ -29,9 +29,8 @@
 }
 .listItem{
     padding-top: 10px;
-    padding-bottom: 10px;
+    padding-right: 10px;
     padding-left: 10px;
-    border-bottom: 1px solid black;
     width: 100%;
     display:block;
     height: auto;
@@ -40,7 +39,7 @@
 
 .dataDiv{
     display: inline-block;
-    width: 70%;
+    width: 100%;
     float:left;
 }
 #noNotesComment{
@@ -56,3 +55,21 @@
 .hide{
     display:none;
 }
+
+/*.borderDiv{*/
+    /*width:90%;*/
+    /*padding-left:5%;*/
+    /*padding-right:5%;*/
+    /*border-bottom: 1px solid black;*/
+/*}*/
+
+.spacer{
+    width:100%;
+    height:1px;
+    background: lightgrey;
+    padding-right:10px;
+}
+
+
+
+
