@@ -55,8 +55,6 @@ public class EditNoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
         Intent intent = getIntent();
         fileName = intent.getStringExtra("fileName");
         newNoteFlag = intent.getBooleanExtra("newNoteFlag", false);
@@ -115,6 +113,13 @@ public class EditNoteActivity extends AppCompatActivity {
 
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+            if(file.getFileName().equals("") || file.getFileName() == null){
+                file.setFileName("My Secure Note");
+            }
+            if(file.getData().equals("") || file.getData().equals(null)){
+                file.setData(" ");
+            }
 
             String dateString = sdf.format(date);
             file.setAccessDate(dateString);

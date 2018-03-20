@@ -6,13 +6,11 @@
 
 .container {
     width: 100% !important;
-    height: 100% !important;
 }
 
 #loginForm {
     text-align: center !important;
     margin-top: 30% !important;
-    height:100%;
 }
 
 #loginProgressBar{
@@ -33,7 +31,6 @@
     font-size: 16px;
 }
 #loginInfoArea{
-    height:100%;
     width: 100%;
     text-align: center !important;
 }

@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     </html>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -27,7 +28,8 @@
             <progress id="loginProgressBar" value="0" max="100"></progress>
         </div>
         <div id="loginInfoArea">
-            <input name="password" id="password" value="" class="input" placeholder="Password" type="password">
+            <input name="password" id="password" value="" class="input" placeholder="Password"
+                   type="password">
             <input id="signIn" value="Sign In" class="primaryButton" type="button">
         </div>
     </div>
@@ -66,6 +68,7 @@
 
         $("#password")[0].addEventListener("keyup", function (event) {
             event.preventDefault();
+            document.getElementById("password").scrollIntoView();
             if (event.keyCode === 13) {
                 $("#signIn").click();
             }
@@ -98,8 +101,9 @@
         $("#password").val("");
         percentProgress = 0;
     }
-        </script>
 
-    </body>
+</script>
+
+</body>
 
 </html>
