@@ -15,6 +15,8 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+    <script src="./javascript/LoginPage.js"></script>
+
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/LoginPage.css">
 
@@ -24,8 +26,9 @@
     <div id="loginForm">
         <img src="images/logo.svg" id="loginLogo"/>
         <div id="loginProgressArea">
-            <div class="progressTitle">Login Progress:</div>
+            <div class="progressTitle">Logging in!</div>
             <progress id="loginProgressBar" value="0" max="100"></progress>
+            <div id="percentageText"></div>
         </div>
         <div id="loginInfoArea">
             <input name="password" id="password" value="" class="input" placeholder="Password"
@@ -37,72 +40,6 @@
 </div>
 
 
-<script>
-    var attemptingLogin = false;
-    var loginTime = -1;
-    var percentProgress = 0;
-    var currentTimer = null;
-
-    $(document).ready(function () {
-
-        // $("#passwordStrengthBar").val(80);
-
-
-        $("#signIn").on("click", function (event) {
-            loginTime = Android.getloginTime();
-            event.preventDefault();
-            if (!attemptingLogin) {
-                var password = $("#password").val().trim();
-                attemptingLogin = true;
-                if (loginTime != -1) {
-                    $("#loginInfoArea").addClass("hideLoginInfoArea");
-                    $("#loginProgressArea").addClass("showProgressBar");
-                    setTimeout(updateProgressBar, (loginTime / 100));
-                }
-                Android.authenticateUser(password);
-            }
-
-            function danielTestPleaseDontJudge() {
-            }
-        });
-
-        $("#password")[0].addEventListener("keyup", function (event) {
-            event.preventDefault();
-            document.getElementById("password").scrollIntoView();
-            if (event.keyCode === 13) {
-                $("#signIn").click();
-            }
-        });
-        $( "#password" ).submit(function( event ) {
-            event.preventDefault();
-            $("#signIn").click();
-        });
-
-    });
-
-    function updateProgressBar() {
-        $("#loginProgressBar").val(percentProgress);
-        percentProgress++;
-        if (percentProgress != 101) {
-            currentTimer = setTimeout(updateProgressBar, (loginTime / 100));
-        }else{
-            currentTimer = null;
-        }
-    }
-
-    function failedLogin(){
-        attemptingLogin = false;
-        if(currentTimer != null){
-            clearTimeout(currentTimer);
-        }
-        $("#loginProgressBar").val(0);
-        $("#loginInfoArea").removeClass("hideLoginInfoArea");
-        $("#loginProgressArea").removeClass("showProgressBar");
-        $("#password").val("");
-        percentProgress = 0;
-    }
-
-</script>
 
 </body>
 

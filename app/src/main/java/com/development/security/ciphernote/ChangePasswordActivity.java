@@ -30,6 +30,8 @@ public class ChangePasswordActivity extends MenuActivity {
     String passwordOne = null;
     String passwordTwo = null;
 
+    int lastScore = 0;
+
 //    final FileManager fileManager = new FileManager();
 
     @Override
@@ -59,6 +61,24 @@ public class ChangePasswordActivity extends MenuActivity {
 
     }
 
+    @Override
+    public void onRestart(){
+        super.onRestart();
+
+        Intent mainActivityIntent = new Intent(applicationContext, MainActivity.class);
+        startActivity(mainActivityIntent);
+
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // your code.
+        Intent listIntent = new Intent(applicationContext, ListActivity.class);
+        startActivity(listIntent);
+        finish();
+    }
+
 
     private void androidUpdatePassword(String currentPassword, String newPasswordOne, String newPasswordTwo) {
        passwordCurrent = currentPassword;
@@ -79,9 +99,8 @@ public class ChangePasswordActivity extends MenuActivity {
                     if (securityManager.authenticateUser(passwordCurrent, context)) {
 
                         DatabaseManager databaseManager = new DatabaseManager(context);
-                        int score = securityManager.calculatePasswordStrength(passwordOne);
 
-                        if (passwordOne.equals(passwordTwo) && score > 0) {
+                        if (passwordOne.equals(passwordTwo) && lastScore > 3) {
                             long start_time = System.nanoTime();
                             int iterations = 100000;
 
@@ -145,7 +164,74 @@ public class ChangePasswordActivity extends MenuActivity {
     }
 
     private int androidCheckPasswordStrength(String password) {
-        return SecurityManager.getInstance().calculatePasswordStrength(password);
+        password = password.trim();
+
+        //total score of password
+        int iPasswordScore = 0;
+
+        if (password.length() < 6) {
+            return -1;
+        }else{
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:clearLength()");
+                }
+            });
+        }
+        if (password.length() >= 10) {
+            iPasswordScore += 2;
+        }
+
+        //if it contains one digit, add 2 to total score
+        if (password.matches("(?=.*[0-9]).*")){
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:clearBadNumber()");
+                }
+            });
+            iPasswordScore += 2;
+        }
+
+        //if it contains one lower case letter, add 2 to total score
+        if (password.matches("(?=.*[a-z]).*")) {
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:clearLowerCase()");
+                }
+            });
+            iPasswordScore += 2;
+        }
+        //if it contains one upper case letter, add 2 to total score
+        if (password.matches("(?=.*[A-Z]).*")) {
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:clearUpperCase()");
+                }
+            });
+            iPasswordScore += 2;
+        }
+
+        //if it contains one special character, add 2 to total score
+        if (password.matches("(?=.*[~!@#$%^&*()_-]).*")) {
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:clearBadSymbol()");
+                }
+            });
+            iPasswordScore += 2;
+        }
+
+        if (iPasswordScore < 3) {
+            iPasswordScore = -2;
+        }
+
+        lastScore = iPasswordScore;
+        return iPasswordScore;
     }
 
     private void writeLoginTime(int time){

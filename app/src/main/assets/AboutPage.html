@@ -14,81 +14,68 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+    <script src="./javascript/AboutPage.js"></script>
+
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/AboutPage.css">
 
 </head>
 <body>
 <div class="container">
-    <p>Hello! Welcome to My Digital Safe, we at the development team are hoping you are enjoying your experience.<br><br>
+    <p>Hello! Welcome to My Digital Safe, we at the development team are hoping you are enjoying your
+        experience.<br><br>
 
-    My Digital Safe was developed by a small team of Computer Engineering students looking to advance their experiences by taking on the design, development and maintenance of an Android app
-        of their very own. The initial founder of the app has a special interest for computer security, and took notice to a considerable hole in the market on the Google Play Store of a
-    solid, easy to use secure note application. <br><br>
+        My Digital Safe was developed by a small team of Computer Engineering students looking to advance their
+        experiences by taking on the design, development and maintenance of an Android app
+        of their very own. The initial founder of the app has a special interest for computer security, and took notice
+        to a considerable hole in the market on the Google Play Store of a
+        solid, easy to use secure note application. <br><br>
 
-    My Digital Safe is an open source project. If you do not know what that means, it means we leave our code wide-open for the public to see. Why? Well, we have nothing to hide! Many of the
-    apps on the Google Play Store love to make claims of their security, but keep their source code hidden for fear of anyone actually looking at what they do. We have nothing to hide, and invite anyone
-    to take a look at our code.
+        My Digital Safe is an open source project. If you do not know what that means, it means we leave our code
+        wide-open for the public to see. Why? Well, we have nothing to hide! Many of the
+        apps on the Google Play Store love to make claims of their security, but keep their source code hidden for fear
+        of anyone actually looking at what they do. We have nothing to hide, and invite anyone
+        to take a look at our code.
 
-    Our GitHub page can be found here: <a>https://github.com/defrancisco/My-Digital-Safe</a></p>
+        Our GitHub page can be found here: <a>https://github.com/defrancisco/My-Digital-Safe</a></p>
 
     <div id="faqTitle">FAQ Section:</div>
     <div class="faqWrapper">
-        <div class="faqQuestion"><div class="faqQuestionText">How does My Digital Safe secure my password?</div><div class="faqQuestionArrow"><img src="images/arrow_down.png" class="arrow"/></div></div>
-        <div class="faqAnswer">My Digital Safe used the PBKDF2 with HMAC SHA256. This cryptographic hash function is used to derive the hash to validate your password and ultimately
-            derive the symmetric encryption key to protect your data. Simple version? We take your password and turn it into a irreversible garbled mess of characters using a 'hashing' function.
-            Some very smart Mathematicians create and validate the effectiveness of this hashing function and security developers such as ourselves can use it in our applications. This 'hash'
-            is impossible to convert back into your password, and we can re-calculate the hash each time you log in. If the hash we calculate matches the stored hash, your login is successful.
-            Interesting, right?</div>
+        <div class="faqQuestion">
+            <div class="faqQuestionText">How does My Digital Safe secure my password?</div>
+            <div class="faqQuestionArrow"><img src="images/arrow_down.png" class="arrow"/></div>
+        </div>
+        <div class="faqAnswer">My Digital Safe used the PBKDF2 with HMAC SHA256. This cryptographic hash function is
+            used to derive the hash to validate your password and ultimately
+            derive the symmetric encryption key to protect your data. Simple version? We take your password and turn it
+            into a irreversible garbled mess of characters using a 'hashing' function.
+            Some very smart Mathematicians create and validate the effectiveness of this hashing function and security
+            developers such as ourselves can use it in our applications. This 'hash'
+            is impossible to convert back into your password, and we can re-calculate the hash each time you log in. If
+            the hash we calculate matches the stored hash, your login is successful.
+            Interesting, right?
+        </div>
     </div>
 
     <div class="faqWrapper">
-        <div class="faqQuestion">How does My Digital Safe secure my data?<img src="images/arrow_down.png" class="arrow"/></div>
-        <div class="faqAnswer">We encrypt all of your data using AES-256 algorithm before storing it in a database on your phone. The key to this algorithm is calculate through the PBKDF2 with HMAC SHA256
-            algorithm during the password hashing process. In simplified terms, we use your password to encrypt and decrypt your data. Without your password, this data is impossible to decrypt.
-            No matter what we do for you, if someone steals or guesses your password, we cannot help you. Therefore, pick a good password if you really care about your data's security!</div>
+        <div class="faqQuestion">How does My Digital Safe secure my data?<img src="images/arrow_down.png"
+                                                                              class="arrow"/></div>
+        <div class="faqAnswer">We encrypt all of your data using AES-256 algorithm before storing it in a database on
+            your phone. The key to this algorithm is calculate through the PBKDF2 with HMAC SHA256
+            algorithm during the password hashing process. In simplified terms, we use your password to encrypt and
+            decrypt your data. Without your password, this data is impossible to decrypt.
+            No matter what we do for you, if someone steals or guesses your password, we cannot help you. Therefore,
+            pick a good password if you really care about your data's security!
+        </div>
     </div>
 
 
     <!--<div class="faqQuestion"></div>-->
     <!--<div class="faqAnswer"></div>-->
-<!---->
+    <!---->
     <!--<div class="faqQuestion"></div>-->
     <!--<div class="faqAnswer"></div>-->
 </div>
-
-
-<script>
-
-    $(document).ready(function () {
-        // var stringThing = Android.getLogs();
-        //
-        // $("#location").innerText = stringThing;
-
-        var questions = document.getElementsByClassName("faqQuestion");
-
-
-        document.querySelectorAll('.faqQuestion').forEach(function(question) {
-            // Now do something with my button
-            question.addEventListener("click", function () {
-                var wrapper = question.parentElement;
-                var answer = wrapper.getElementsByClassName("faqAnswer")[0];
-                var arrowImage = wrapper.getElementsByClassName("arrow")[0];
-
-                if(answer.classList.contains("showAnswer")){
-                    answer.classList.remove("showAnswer");
-                    arrowImage.src = "images/arrow_down.png";
-                }else{
-                    answer.classList.add("showAnswer");
-                    arrowImage.src = "images/arrow_up.png";
-                }
-            });
-        });
-
-
-    });
-
-</script>
 
 </body>
 

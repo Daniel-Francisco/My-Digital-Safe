@@ -13,7 +13,7 @@
 
     <string name="passwordsDoNotMatch">Passwords do not match!</string>
 
-    <string name="passwordTooShort">Password is too short!</string>
+    <string name="passwordTooShort">Password is not complex enough!</string>
 
     <string name="deleteFileFailed">Failed to delete file!</string>
 

@@ -35,7 +35,8 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class SecurityManager {
     private static SecurityManager singletonInstance = new SecurityManager();
-    public static SecurityManager getInstance(){
+
+    public static SecurityManager getInstance() {
         return singletonInstance;
     }
 
@@ -66,8 +67,8 @@ public class SecurityManager {
      * @param data is a string
      * @return the encrypted string
      */
-    public byte[] encrypt(String data){
-        try{
+    public byte[] encrypt(String data) {
+        try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secret);
             AlgorithmParameters params = cipher.getParameters();
@@ -76,15 +77,15 @@ public class SecurityManager {
             byte[] ciphertext = cipher.doFinal(data.getBytes("UTF-8"));
 
             byte[] finalMessage = new byte[ciphertext.length + iv.length];
-            for(int i = 0; i<iv.length; i++){
+            for (int i = 0; i < iv.length; i++) {
                 finalMessage[i] = iv[i];
             }
-            for(int i = 0; i < ciphertext.length; i++){
+            for (int i = 0; i < ciphertext.length; i++) {
                 finalMessage[i + iv.length] = ciphertext[i];
             }
 
             return finalMessage;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -92,19 +93,20 @@ public class SecurityManager {
 
     /**
      * Decrypt a string with AES algorithm.
+     * <p>
+     * is a string
      *
-     *  is a string
      * @return the decrypted string
      */
-    public String decrypt(byte[] data){
+    public String decrypt(byte[] data) {
         try {
             byte[] iv = new byte[16];
             byte[] cipherText = new byte[data.length - iv.length];
 
-            for(int i = 0; i < 16;  i++){
+            for (int i = 0; i < 16; i++) {
                 iv[i] = data[i];
             }
-            for(int i = 0; i < cipherText.length; i++){
+            for (int i = 0; i < cipherText.length; i++) {
                 cipherText[i] = data[i + iv.length];
             }
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -114,14 +116,14 @@ public class SecurityManager {
 
             String plainText = new String(decryptedText);
             return plainText;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
     }
 
-    public void changePassword(Context context, String userPassword, String newPassword){
-        try{
+    public void changePassword(Context context, String userPassword, String newPassword) {
+        try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
             secret = new SecretKeySpec(userKey.getEncoded(), "AES");
@@ -131,7 +133,7 @@ public class SecurityManager {
 
 
             byte[] passwordBytes = config.getDevicePassword();
-            if(passwordBytes == null){
+            if (passwordBytes == null) {
                 passwordBytes = new byte[0];
             }
             String passwordString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
@@ -152,7 +154,7 @@ public class SecurityManager {
 //            byte[] encryptedNewPassword = encrypt(passwordValue);
 //            config.setDevicePassword(encryptedNewPassword);
 //            databaseManager.addUserConfiguration(config);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -161,8 +163,8 @@ public class SecurityManager {
     /**
      * Generate a new encryption key.
      */
-    public void generateKey(Context context){
-        try{
+    public void generateKey(Context context) {
+        try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
             secret = new SecretKeySpec(userKey.getEncoded(), "AES");
@@ -172,17 +174,17 @@ public class SecurityManager {
 
 
             byte[] passwordBytes = config.getDevicePassword();
-            if(passwordBytes == null){
+            if (passwordBytes == null) {
                 passwordBytes = new byte[0];
             }
             String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
             String passwordValue;
-            if(dataString.isEmpty() || dataString == null || dataString.equals("")){
+            if (dataString.isEmpty() || dataString == null || dataString.equals("")) {
                 passwordValue = generateSalt();
                 byte[] encryptedNewPassword = encrypt(passwordValue);
                 config.setDevicePassword(encryptedNewPassword);
                 databaseManager.addUserConfiguration(config);
-            }else{
+            } else {
                 passwordValue = decrypt(passwordBytes);
             }
 
@@ -192,7 +194,7 @@ public class SecurityManager {
 
             secret = new SecretKeySpec(tmp2.getEncoded(), "AES");
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -216,10 +218,10 @@ public class SecurityManager {
         long duration = (endTime - startTime);
 
         String hashInFile = databaseManager.getUserConfiguration().getPassword_hash();
-        String userHashEncoded  = Base64.encodeToString(hash, Base64.DEFAULT);
+        String userHashEncoded = Base64.encodeToString(hash, Base64.DEFAULT);
 
 
-        if(userHashEncoded.equals(hashInFile)){
+        if (userHashEncoded.equals(hashInFile)) {
 
             return true;
         }
@@ -227,6 +229,7 @@ public class SecurityManager {
     }
 
     private SecretKey userKey = null;
+
     public byte[] hashPassword(String password, byte[] salt, int hashingIterations) {
         int keyLength = 256;
         try {
@@ -246,55 +249,16 @@ public class SecurityManager {
         }
     }
 
-    public String generateSalt(){
+    public String generateSalt() {
         Random randomValue = new SecureRandom();
         byte[] salt = new byte[32];
         randomValue.nextBytes(salt);
         return Base64.encodeToString(salt, Base64.DEFAULT);
     }
 
-    public int calculatePasswordStrength(String password){
-
-        //total score of password
-        int iPasswordScore = 0;
-
-        if( password.length() < 6 )
-            return -1;
-        else if( password.length() >= 10 )
-            iPasswordScore += 2;
-
-        //if it contains one digit, add 2 to total score
-        if( password.matches("(?=.*[0-9]).*") )
-            iPasswordScore += 2;
-
-        //if it contains one lower case letter, add 2 to total score
-        if( password.matches("(?=.*[a-z]).*") )
-            iPasswordScore += 2;
-
-        //if it contains one upper case letter, add 2 to total score
-        if( password.matches("(?=.*[A-Z]).*") )
-            iPasswordScore += 2;
-
-        //if it contains one special character, add 2 to total score
-        if( password.matches("(?=.*[~!@#$%^&*()_-]).*") )
-            iPasswordScore += 2;
-
-        if(iPasswordScore < 3){
-            iPasswordScore = -2;
-        }
-
-        return iPasswordScore;
-
-    }
-
-//        String numberlessString = userPassword.replaceAll("[*0-9]", "");
-//        if((userPassword.length() - numberlessString.length()) == 0){
-//            return 2;
-//        }
-
-    public byte[] encryptWithAlternatePassword(String password, byte[] data, byte[] salt, int hashingIterations,  Boolean encryptOrDecryptFlag){
+    public byte[] encryptWithAlternatePassword(String password, byte[] data, byte[] salt, int hashingIterations, Boolean encryptOrDecryptFlag) {
         int keyLength = 256;
-        try{
+        try {
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
             userKey = skf.generateSecret(spec);
@@ -302,14 +266,14 @@ public class SecurityManager {
             secret = new SecretKeySpec(userKey.getEncoded(), "AES");
 
             byte[] cryptoData = null;
-            if(encryptOrDecryptFlag){
+            if (encryptOrDecryptFlag) {
                 cryptoData = encrypt(Base64.encodeToString(data, Base64.DEFAULT));
-            }else{
+            } else {
                 cryptoData = Base64.decode(decrypt(data), Base64.DEFAULT);
             }
             secret = secretBackup;
             return cryptoData;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -326,12 +290,11 @@ public class SecurityManager {
     public boolean validateFileHash(File file) throws NoSuchAlgorithmException {
         String concatString = file.getAccessDate() + file.getID() + file.getData() + file.getData();
         String hash = SHA256Hash(concatString);
-        if(hash.equals(file.getHash())){
+        if (hash.equals(file.getHash())) {
             return true;
         }
         return false;
     }
-
 
 
 }

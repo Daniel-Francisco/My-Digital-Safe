@@ -18,6 +18,7 @@ public class File {
     public static final String KEY_ACCESS_DATE = "access_date";
     public static final String KEY_DATA = "file_data";
     public static final String KEY_HASH = "file_hash";
+    public static final String KEY_FOLDER = "file_folder";
 
     long _id;
     String file_name;

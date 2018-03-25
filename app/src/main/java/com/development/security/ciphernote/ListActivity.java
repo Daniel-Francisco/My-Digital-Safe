@@ -94,6 +94,16 @@ public class ListActivity extends MenuActivity {
         });
     }
 
+    @Override
+    public void onRestart(){
+        super.onRestart();
+
+        Intent mainActivityIntent = new Intent(applicationContext, MainActivity.class);
+        startActivity(mainActivityIntent);
+
+        finish();
+    }
+
     private int findIndex(String filename) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getFileName().equals(filename)) {
@@ -195,6 +205,8 @@ public class ListActivity extends MenuActivity {
             landingIntent.putExtra("fileObject", json);
 
             startActivity(landingIntent);
+
+            finish();
         } catch (Exception e) {
             e.printStackTrace();
         }

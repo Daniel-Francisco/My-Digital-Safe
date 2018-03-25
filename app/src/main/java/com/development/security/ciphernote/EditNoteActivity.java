@@ -102,7 +102,6 @@ public class EditNoteActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     @Override
@@ -130,6 +129,23 @@ public class EditNoteActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRestart(){
+        super.onRestart();
+
+        Intent mainActivityIntent = new Intent(applicationContext, MainActivity.class);
+        startActivity(mainActivityIntent);
+
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // your code.
+        Intent listIntent = new Intent(applicationContext, ListActivity.class);
+        startActivity(listIntent);
+        finish();
+    }
 
     private void androidDelete(){
         try {

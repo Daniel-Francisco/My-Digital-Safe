@@ -65,6 +65,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 + File.KEY_ID + " INTEGER PRIMARY KEY," + File.KEY_FILE_NAME + " BLOB,"
                 + File.KEY_ACCESS_DATE + " INTEGER,"
                 + File.KEY_HASH + " TEXT,"
+                + File.KEY_FOLDER + " TEXT,"
                 + File.KEY_DATA + " TEXT" + ")";
         sqLiteDatabase.execSQL(CREATE_Files_TABLE);
     }

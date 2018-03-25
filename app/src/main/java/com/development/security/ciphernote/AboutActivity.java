@@ -1,6 +1,7 @@
 package com.development.security.ciphernote;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -65,6 +66,26 @@ public class AboutActivity extends MenuActivity {
         navigationView.setNavigationItemSelectedListener(this);
 
     }
+
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+
+        Intent mainActivityIntent = new Intent(applicationContext, MainActivity.class);
+        startActivity(mainActivityIntent);
+
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // your code.
+        Intent listIntent = new Intent(applicationContext, ListActivity.class);
+        startActivity(listIntent);
+        finish();
+    }
+
 
     public class WebAppInterface {
         Context mContext;

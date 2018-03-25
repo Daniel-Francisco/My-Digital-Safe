@@ -67,7 +67,10 @@
     height: 200px;
     align: middle;
     display: block;
-    margin: 10px auto 10px auto !important;
+    margin: 10px auto 10px auto;
 }
 
+.hide{
+    display:none;
+}
 /*255 255 255*/
