@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -59,6 +60,17 @@ public class ChangePasswordActivity extends MenuActivity {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        browser.setVisibility(View.GONE);
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        browser.setVisibility(View.VISIBLE);
     }
 
     @Override

@@ -21,6 +21,13 @@ $(document).ready(function () {
         Android.createPassword(passwordOne, passwordTwo);
     });
 
+    $("#getStarted").on("click", function (event) {
+        event.preventDefault();
+
+        document.getElementById("welcomeSection").classList.add("hide");
+        document.getElementById("startUpSection").classList.remove("hide");
+    });
+
 
     $("#passwordOne")[0].addEventListener("keyup", function (event) {
         event.preventDefault();
@@ -109,11 +116,7 @@ function clearFields() {
     document.getElementById("loader").classList.add("displayNone");
     document.getElementById("createPassword").classList.remove("displayNone");
 
-    document.getElementById("badLength").classList.add("hide");
-    document.getElementById("badUpperCase").classList.add("hide");
-    document.getElementById("badLowerCase").classList.add("hide");
-    document.getElementById("badNumber").classList.add("hide");
-    document.getElementById("badSymbol").classList.add("hide");
+    clearList();
 
     document.getElementById("password-strength-meter").value = 0;
 }

@@ -29,7 +29,7 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 
 public class AboutActivity extends MenuActivity {
-
+    WebView browser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +37,6 @@ public class AboutActivity extends MenuActivity {
 
         applicationContext = this.getBaseContext();
 
-        WebView browser;
         browser=(WebView)findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new AboutActivity.WebAppInterface(this), "Android");
@@ -45,16 +44,6 @@ public class AboutActivity extends MenuActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-////                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-////                        .setAction("Action", null).show();
-//                androidAddNote("My Secure Note");
-//            }
-//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -67,6 +56,16 @@ public class AboutActivity extends MenuActivity {
 
     }
 
+    @Override
+    public void onPause(){
+        super.onPause();
+        browser.setVisibility(View.GONE);
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        browser.setVisibility(View.VISIBLE);
+    }
 
     @Override
     public void onRestart(){

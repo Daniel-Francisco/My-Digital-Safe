@@ -28,28 +28,36 @@
     <div id="loginForm">
         <div id="passwordCreateArea">
             <img src="images/logo.svg" id="logo"/>
+            <div id="welcomeSection">
+                Hello and welcome to <i>My Digital Safe</i>! My Digital Safe strives to provide you with a easy to
+                understand and operate encrypted notepad app for your Android device. To protect your personal data, we
+                will need to start off by collecting a password from you, which we will use to encrypt your data. Do not
+                worry, all of your information including your password is protected using industry standard encryption.
+                <input id="getStarted" value="Let's get started!" class="primaryButton" type="button">
+            </div>
 
-            <!--<div id="passwordStrengthTitle" class="displayNone">Password Strength:</div>-->
-            <!--<progress id="passwordStrengthBar" value="0" class="displayNone" max="10"></progress>-->
-            <meter max="10" id="password-strength-meter"></meter>
-            <ul id="password-strength-text">
-                <li id="badLength" class="hide">Your password is too short! It should be a minimum of 6 characters!</li>
-                <li id="badUpperCase" class="hide">Add a upper-case letter to improve your password strength!</li>
-                <li id="badLowerCase" class="hide">Add a lower-case letter to improve your password strength!</li>
-                <li id="badNumber" class="hide">Add a number letter to improve your password strength!</li>
-                <li id="badSymbol" class="hide">Add a symbol letter to improve your password strength!</li>
-            </ul>
-            <!--<div id="userPasswordPrompt"></div>-->
 
-            <div>Please create your password!</div>
-            <input name="passwordOne" id="passwordOne" value="" class="input" placeholder="New Password"
-                   type="password">
-            <input name="passwordTwo" id="passwordTwo" value="" class="input" placeholder="Confirm New Password"
-                   type="password"><br>
+            <div id="startUpSection" class="hide">
+                <meter max="10" id="password-strength-meter"></meter>
+                <ul id="password-strength-text">
+                    To strengthen your password, you can add:
+                    <li id="badLength">a minimum of 6 characters</li>
+                    <li id="badUpperCase">a upper-case letter</li>
+                    <li id="badLowerCase">a lower-case letter</li>
+                    <li id="badNumber">a number</li>
+                    <li id="badSymbol">a symbol</li>
+                </ul>
+                <!--<div id="userPasswordPrompt"></div>-->
 
-            <input id="createPassword" value="Create Password!" class="primaryButton" type="button">
-            <div id="loader" class="displayNone loader"></div>
+                <div>Please create your password!</div>
+                <input name="passwordOne" id="passwordOne" value="" class="input" placeholder="New Password"
+                       type="password">
+                <input name="passwordTwo" id="passwordTwo" value="" class="input" placeholder="Confirm New Password"
+                       type="password"><br>
 
+                <input id="createPassword" value="Create Password!" class="primaryButton" type="button">
+                <div id="loader" class="displayNone loader"></div>
+            </div>
         </div>
 
     </div>
@@ -57,7 +65,6 @@
 
 
 <script>
-
 
 
 </script>

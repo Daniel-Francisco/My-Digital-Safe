@@ -71,7 +71,6 @@ function renderList() {
 
     }
 }
-
 $(document).ready(function () {
     noNotesCommentDiv = document.getElementById("noNotesComment");
 

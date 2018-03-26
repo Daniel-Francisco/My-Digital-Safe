@@ -60,7 +60,8 @@
 
     font-size: 16px;
     color: #fff;
-    background-color: #952422
+    background-color: #952422;
+    border:none;
 }
 #logo{
     width: 250px;

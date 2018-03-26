@@ -66,8 +66,6 @@ public class ListActivity extends MenuActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
                 androidAddNote("My Secure Note");
             }
         });
@@ -84,8 +82,15 @@ public class ListActivity extends MenuActivity {
     }
 
     @Override
+    public void onPause(){
+        super.onPause();
+        browser.setVisibility(View.GONE);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
+        browser.setVisibility(View.VISIBLE);
         browser.post(new Runnable() {
             @Override
             public void run() {
@@ -206,7 +211,7 @@ public class ListActivity extends MenuActivity {
 
             startActivity(landingIntent);
 
-            finish();
+//            finish();
         } catch (Exception e) {
             e.printStackTrace();
         }

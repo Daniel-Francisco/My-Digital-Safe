@@ -48,6 +48,7 @@ public class EditNoteActivity extends AppCompatActivity {
     String noteValue = "";
 
     com.development.security.ciphernote.model.File file;
+    WebView browser;
 
     boolean newNoteFlag = false;
 
@@ -75,7 +76,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_landing);
 
-        WebView browser;
+
         browser = (WebView) findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
@@ -127,6 +128,14 @@ public class EditNoteActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        browser.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        browser.setVisibility(View.VISIBLE);
     }
 
     @Override

@@ -17,7 +17,7 @@
 
     <string name="deleteFileFailed">Failed to delete file!</string>
 
-    <string name="deleteFileSuccess">Succeeded to delete file!</string>
+    <string name="deleteFileSuccess">Note deleted successfully!</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
