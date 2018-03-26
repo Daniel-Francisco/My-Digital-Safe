@@ -63,18 +63,19 @@ public class ChangePasswordActivity extends MenuActivity {
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         browser.setVisibility(View.GONE);
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         browser.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onRestart(){
+    public void onRestart() {
         super.onRestart();
 
         Intent mainActivityIntent = new Intent(applicationContext, MainActivity.class);
@@ -93,54 +94,60 @@ public class ChangePasswordActivity extends MenuActivity {
 
 
     private void androidUpdatePassword(String currentPassword, String newPasswordOne, String newPasswordTwo) {
-       passwordCurrent = currentPassword;
-       passwordOne = newPasswordOne;
-       passwordTwo = newPasswordTwo;
+        passwordCurrent = currentPassword;
+        passwordOne = newPasswordOne;
+        passwordTwo = newPasswordTwo;
 
         new ChangePasswordActivity.AsyncChangePassword().execute("");
 
     }
 
     private class AsyncChangePassword extends AsyncTask<String, String, Boolean> {
+        int failCode = 0;
         @Override
         protected Boolean doInBackground(String... strings) {
             try {
-                if (passwordOne.equals(passwordTwo)) {
+                if (passwordOne.equals(passwordTwo) && lastScore > 3) {
                     SecurityManager securityManager = SecurityManager.getInstance();
 //                FileManager fileManager = new FileManager();
                     if (securityManager.authenticateUser(passwordCurrent, context)) {
 
                         DatabaseManager databaseManager = new DatabaseManager(context);
 
-                        if (passwordOne.equals(passwordTwo) && lastScore > 3) {
-                            long start_time = System.nanoTime();
-                            int iterations = 100000;
+                        long start_time = System.nanoTime();
+                        int iterations = 100000;
 
-                            UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
-                            userConfiguration.setIterations(iterations);
-                            userConfiguration.setPassword_hash("");
-                            databaseManager.addUserConfiguration(userConfiguration);
+                        UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+                        userConfiguration.setIterations(iterations);
+                        userConfiguration.setPassword_hash("");
+                        databaseManager.addUserConfiguration(userConfiguration);
 
-                            String saltFromFile =  databaseManager.getUserConfiguration().getSalt();
+                        String saltFromFile = databaseManager.getUserConfiguration().getSalt();
 
-                            byte[] newHash = securityManager.hashPassword(passwordOne, saltFromFile.getBytes(), iterations);
-                            String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);
+                        byte[] newHash = securityManager.hashPassword(passwordOne, saltFromFile.getBytes(), iterations);
+                        String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);
 
-                            userConfiguration.setPassword_hash(newHashString);
-                            databaseManager.addUserConfiguration(userConfiguration);
+                        userConfiguration.setPassword_hash(newHashString);
+                        databaseManager.addUserConfiguration(userConfiguration);
 
-                            long end_time = System.nanoTime();
-                            double difference = (end_time - start_time) / 1e6;
-                            int loginTime = (int) difference;
-                            writeLoginTime(loginTime);
-                        }
+                        long end_time = System.nanoTime();
+                        double difference = (end_time - start_time) / 1e6;
+                        int loginTime = (int) difference;
+                        writeLoginTime(loginTime);
 
 
                         securityManager.changePassword(context, passwordCurrent, passwordOne);
 
                         return true;
+                    }else{
+                        failCode = 2;
                     }
                 } else {
+                    if(lastScore > 3){
+                        failCode = 3;
+                    }else{
+                        failCode = 1;
+                    }
                     return false;
 
                 }
@@ -155,15 +162,28 @@ public class ChangePasswordActivity extends MenuActivity {
         }
 
         protected void onPostExecute(Boolean status) {
-            if(status){
+            if (status) {
                 Intent loginActivity = new Intent(context, LoginActivity.class);
                 startActivity(loginActivity);
                 finish();
-            }else{
-                CharSequence failedAuthenticationString = getString(R.string.failed_login_toast);
+            } else {
+                if(failCode == 1){
+                    CharSequence failedAuthenticationString = getString(R.string.passwordTooShort);
 
-                Toast toast = Toast.makeText(context, failedAuthenticationString, Toast.LENGTH_LONG);
-                toast.show();
+                    Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                    toast.show();
+                }else if(failCode == 3){
+                    CharSequence failedAuthenticationString = getString(R.string.passwordsDoNotMatch);
+
+                    Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                    toast.show();
+                }else{
+                    CharSequence failedAuthenticationString = getString(R.string.failed_login_toast);
+
+                    Toast toast = Toast.makeText(context, failedAuthenticationString, Toast.LENGTH_LONG);
+                    toast.show();
+                }
+
             }
             browser.post(new Runnable() {
                 @Override
@@ -183,7 +203,7 @@ public class ChangePasswordActivity extends MenuActivity {
 
         if (password.length() < 6) {
             return -1;
-        }else{
+        } else {
             browser.post(new Runnable() {
                 @Override
                 public void run() {
@@ -196,7 +216,7 @@ public class ChangePasswordActivity extends MenuActivity {
         }
 
         //if it contains one digit, add 2 to total score
-        if (password.matches("(?=.*[0-9]).*")){
+        if (password.matches("(?=.*[0-9]).*")) {
             browser.post(new Runnable() {
                 @Override
                 public void run() {
@@ -246,7 +266,7 @@ public class ChangePasswordActivity extends MenuActivity {
         return iPasswordScore;
     }
 
-    private void writeLoginTime(int time){
+    private void writeLoginTime(int time) {
         SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt("login_time", time);

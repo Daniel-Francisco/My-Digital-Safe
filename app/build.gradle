@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'fake'
+            keyPassword 'fake'
+            storeFile file('fake')
+            storePassword 'fake'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
     defaultConfig {

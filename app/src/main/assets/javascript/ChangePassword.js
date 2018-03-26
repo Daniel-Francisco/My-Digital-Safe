@@ -84,18 +84,16 @@ function clearList(){
 }
 
 function clearFields() {
-    $("#currentPassword").val("");
     $("#passwordOne").val("");
     $("#passwordTwo").val("");
+    $("#currentPassword").val("");
 
     document.getElementById("loader").classList.add("displayNone");
     document.getElementById("changePassword").classList.remove("displayNone");
 
-    document.getElementById("badLength").classList.add("hide");
-    document.getElementById("badUpperCase").classList.add("hide");
-    document.getElementById("badLowerCase").classList.add("hide");
-    document.getElementById("badNumber").classList.add("hide");
-    document.getElementById("badSymbol").classList.add("hide");
+    clearList();
 
     document.getElementById("password-strength-meter").value = 0;
+
+    document.getElementById("changePassword").classList.remove("displayNone");
 }
