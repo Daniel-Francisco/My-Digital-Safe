@@ -46,13 +46,17 @@
     width: 35px;
     display: block;
     float:right;
+    margin:auto;
     /*margin:15px;*/
 }
 .faqQuestionText{
     display: inline-block;
-    width:80%;
+    width:70%;
+    float:left;
 }
 .faqQuestionArrow{
     display: inline-block;
     width:20%;
+    float:right;
+    align:top;
 }

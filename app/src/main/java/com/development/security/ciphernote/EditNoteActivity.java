@@ -1,21 +1,29 @@
 package com.development.security.ciphernote;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -67,12 +75,9 @@ public class EditNoteActivity extends AppCompatActivity {
         }.getType();
         file = gson.fromJson(jsonForFile, type);
         securityManager = SecurityManager.getInstance();
-        applicationContext = this.getBaseContext();
+        applicationContext = this;
         databaseManager = new DatabaseManager(applicationContext);
         hashedFilename = fileName;
-
-
-        setTitle(fileName);
 
         setContentView(R.layout.activity_landing);
 
@@ -82,32 +87,56 @@ public class EditNoteActivity extends AppCompatActivity {
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/EditNotePage.html");
 
-        setTitle("My Digital Safe");
+
+        android.support.v7.widget.Toolbar myChildToolbar =
+                (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myChildToolbar);
 
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.deleteButton);
-        fab.setOnClickListener(new View.OnClickListener() {
+        setTitle("");
+
+
+        ImageView saveButton = (ImageView) findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                Intent listIntent = new Intent(applicationContext, ListActivity.class);
+                startActivity(listIntent);
+                finish();
+            }
+        });
 
 
-                new android.app.AlertDialog.Builder(fab.getContext())
-                        .setTitle("Delete this note?")
-                        .setMessage("Are you sure you wish to delete this note? This is permanent.")
-                        .setIcon(android.R.drawable.ic_delete)
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                androidDelete();
-                            }})
-                        .setNegativeButton(android.R.string.no, null).show();
+        ImageView deleteButton = (ImageView) findViewById(R.id.deleteNoteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            new android.app.AlertDialog.Builder(applicationContext)
+                    .setTitle("Delete this note?")
+                    .setMessage("Are you sure you wish to delete this note? This is permanent.")
+                    .setIcon(android.R.drawable.ic_delete)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            androidDelete();
+                        }})
+                    .setNegativeButton(android.R.string.no, null).show();
             }
         });
 
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return true;
+    }
+
+
+    @Override
     protected void onPause() {
         super.onPause();
+
+        browser.setVisibility(View.GONE);
+
         try {
             Date date = new Date();
 
@@ -128,8 +157,6 @@ public class EditNoteActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        browser.setVisibility(View.GONE);
     }
 
     @Override

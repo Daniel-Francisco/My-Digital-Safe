@@ -24,7 +24,7 @@
         </activity>
         <activity
             android:name=".EditNoteActivity"
-            android:parentActivityName=".ListActivity" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity android:name=".StartupActivity" />
         <activity android:name=".LoginActivity" />
         <activity

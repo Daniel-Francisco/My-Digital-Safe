@@ -173,18 +173,18 @@ public class ListActivity extends MenuActivity {
 
         String responseString = "";
         if(diffSeconds < 30){
-            responseString = "Last viewed a few moments ago.";
+            responseString = "Last opened a few moments ago.";
         }else if (diffSeconds < 60) {
-            responseString = (diffSeconds + " seconds since last viewed.");
+            responseString = ("Opened " + diffSeconds + " seconds ago.");
         } else if (diffMinutes < 60) {
-            responseString = (diffMinutes + " minutes since last viewed.");
+            responseString = ("Opened " + diffMinutes + " minutes ago.");
         } else if (diffMinutes < 1440) {
             //less than a day
             long hours = diffMinutes / 60;
-            responseString = (hours + " hours since last viewed.");
+            responseString = "Opened " + hours + " hours ago.";
         } else {
             long days = (diffMinutes / 1440);
-            responseString = (days + " days since last viewed.");
+            responseString = "Opened " + days + " days ago.";
         }
         return responseString;
     }
