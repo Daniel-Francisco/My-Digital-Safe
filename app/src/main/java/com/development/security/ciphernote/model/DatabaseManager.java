@@ -42,14 +42,14 @@ public class DatabaseManager extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    SQLiteDatabase writeDatabase = null;
+//    SQLiteDatabase writeDatabase = null;
 
-    public void closeDB(){
-        if(writeDatabase != null){
-            writeDatabase.close();
-            writeDatabase = null;
-        }
-    }
+//    public void closeDB(){
+//        if(writeDatabase != null){
+//            writeDatabase.close();
+//            writeDatabase = null;
+//        }
+//    }
 
 
     @Override
@@ -163,7 +163,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public long addFile(File file) throws ParseException, NoSuchAlgorithmException {
-        validateDB();
+        SQLiteDatabase writeDatabase = this.getWritableDatabase();
         SecurityManager securityManager = SecurityManager.getInstance();
 
         file = securityManager.setFileHash(file);
@@ -175,34 +175,20 @@ public class DatabaseManager extends SQLiteOpenHelper {
         values.put(File.KEY_HASH, file.getHash());
 
         // Inserting Row
-        return writeDatabase.insert(File.TABLE_FILES, null, values);
+        long returnValue = writeDatabase.insert(File.TABLE_FILES, null, values);
+        writeDatabase.close();
+        return returnValue;
     }
 
     public long updateFile(File file) throws NoSuchAlgorithmException {
-        validateDB();
+        SQLiteDatabase writeDatabase = this.getWritableDatabase();
         SecurityManager securityManager = SecurityManager.getInstance();
 
         ContentValues values = new ContentValues();
 
-        String test1 = file.getData();
-        String test2 = new String(file.getData());
-
-
-
-
-
         byte[] fileNameCipher = securityManager.encrypt(file.getFileName());
         String dataString = new String(file.getData());
         byte[] dataCipher = securityManager.encrypt(dataString);
-
-        String testDecrypt = securityManager.decrypt(dataCipher);
-
-        String test3 = securityManager.decrypt(fileNameCipher);
-
-        String testValue = Base64.encodeToString(dataCipher, Base64.DEFAULT);
-        String testDecrypt2 = securityManager.decrypt(Base64.decode(testValue, Base64.DEFAULT));
-
-        String encryptedFileName = Base64.encodeToString(fileNameCipher, Base64.DEFAULT);
 
         file = securityManager.setFileHash(file);
 
@@ -213,11 +199,12 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         // Inserting Row
         long id = writeDatabase.update(File.TABLE_FILES, values, File.KEY_ID + " = ?", new String[] { String.valueOf(file.getID()) });
+        writeDatabase.close();
         return id;
     }
 
     public ArrayList<File> getAllFiles() throws ParseException, NoSuchAlgorithmException {
-        validateDB();
+        SQLiteDatabase writeDatabase = this.getWritableDatabase();
         SecurityManager securityManager = SecurityManager.getInstance();
 
         ArrayList<File> fileList = new ArrayList<File>();
@@ -258,20 +245,22 @@ public class DatabaseManager extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
+        writeDatabase.close();
         // return contact list
         return fileList;
     }
 
     public void deleteFile(File file) throws ParseException, NoSuchAlgorithmException {
-        validateDB();
+        SQLiteDatabase writeDatabase = this.getWritableDatabase();
         writeDatabase.delete(File.TABLE_FILES, File.KEY_ID + " = ?", new String[] { String.valueOf(file.getID()) });
+        writeDatabase.close();
     }
 
-    private void validateDB(){
-        if(writeDatabase == null){
-            writeDatabase = this.getWritableDatabase();
-        }
-    }
+//    private void validateDB(){
+//        if(writeDatabase == null){
+//            writeDatabase = this.getWritableDatabase();
+//        }
+//    }
 
 
 

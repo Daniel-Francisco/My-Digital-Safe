@@ -15,8 +15,8 @@ android {
         applicationId "com.development.security.ciphernote"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 13
-        versionName "1.9"
+        versionCode 14
+        versionName "1.10"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
