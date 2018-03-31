@@ -1,4 +1,4 @@
-package com.development.security.ciphernote;
+package com.development.security.ciphernote.settings;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,21 +8,25 @@ import android.os.AsyncTask;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
-import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.development.security.ciphernote.ListActivity;
+import com.development.security.ciphernote.LoginActivity;
+import com.development.security.ciphernote.MainActivity;
+import com.development.security.ciphernote.MenuActivity;
+import com.development.security.ciphernote.R;
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.UserConfiguration;
+import com.development.security.ciphernote.security.SecurityManager;
 
-public class ChangePasswordActivity extends MenuActivity {
+public class ChangePasswordActivity extends AppCompatActivity {
     Context context;
     WebView browser;
     final SecurityManager securityManager = SecurityManager.getInstance();
@@ -30,6 +34,8 @@ public class ChangePasswordActivity extends MenuActivity {
     String passwordCurrent = null;
     String passwordOne = null;
     String passwordTwo = null;
+
+    private Context applicationContext = null;
 
     int lastScore = 0;
 
@@ -48,17 +54,17 @@ public class ChangePasswordActivity extends MenuActivity {
         browser.addJavascriptInterface(new ChangePasswordActivity.WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/ChangePassword.html");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.addDrawerListener(toggle);
+//        toggle.syncState();
+//
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
 
     }
 
@@ -84,13 +90,13 @@ public class ChangePasswordActivity extends MenuActivity {
         finish();
     }
 
-    @Override
-    public void onBackPressed() {
-        // your code.
-        Intent listIntent = new Intent(applicationContext, ListActivity.class);
-        startActivity(listIntent);
-        finish();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        // your code.
+//        Intent listIntent = new Intent(applicationContext, ListActivity.class);
+//        startActivity(listIntent);
+//        finish();
+//    }
 
 
     private void androidUpdatePassword(String currentPassword, String newPasswordOne, String newPasswordTwo) {

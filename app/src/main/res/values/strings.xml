@@ -20,6 +20,8 @@
     <string name="deleteFileSuccess">Note deleted successfully!</string>
     <string name="title_activity_settings">Settings</string>
 
+    <string name="preferenceChangePassword">changePasswordPreferenceButton</string>
+
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->

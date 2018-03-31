@@ -1,20 +1,13 @@
 package com.development.security.ciphernote;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
@@ -23,6 +16,8 @@ import android.widget.Toast;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
+import com.development.security.ciphernote.security.SecurityManager;
+import com.development.security.ciphernote.settings.ChangePasswordActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

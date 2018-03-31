@@ -1,8 +1,7 @@
-package com.development.security.ciphernote;
+package com.development.security.ciphernote.security;
 
 import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
@@ -10,16 +9,11 @@ import com.development.security.ciphernote.model.UserConfiguration;
 
 import org.json.JSONException;
 
-import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
-import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.Security;
-import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.KeySpec;
 import java.util.Random;
 

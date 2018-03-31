@@ -8,18 +8,13 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
-import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.UserConfiguration;
-
-import org.json.JSONException;
+import com.development.security.ciphernote.security.SecurityManager;
 
 public class StartupActivity extends AppCompatActivity {
     Context applicationContext;

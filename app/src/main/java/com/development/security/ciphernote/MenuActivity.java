@@ -8,7 +8,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+
+import com.development.security.ciphernote.settings.SettingsActivity;
 
 /**
  * Created by danie on 2/18/2018.
@@ -60,10 +61,9 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
             finish();
         }
-
-        else if (id == R.id.changePassword) {
-            Intent changePasswordIntent = new Intent(applicationContext, ChangePasswordActivity.class);
-            startActivity(changePasswordIntent);
+        else if(id == R.id.settings){
+            Intent settingsIntent = new Intent(applicationContext, SettingsActivity.class);
+            startActivity(settingsIntent);
 
             finish();
         } else if (id == R.id.about) {

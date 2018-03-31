@@ -8,8 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
 import android.util.Log;
 
-import com.development.security.ciphernote.DataStructures;
-import com.development.security.ciphernote.SecurityManager;
+import com.development.security.ciphernote.security.SecurityManager;
 
 import org.json.JSONException;
 
@@ -20,11 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 
 /**

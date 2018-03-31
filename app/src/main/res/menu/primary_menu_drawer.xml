@@ -8,15 +8,15 @@
             android:id="@+id/home"
             android:icon="@drawable/home"
             android:title="Home" />
-        <!--<item-->
-            <!--android:id="@+id/settings"-->
-            <!--android:icon="@drawable/ic_menu_manage"-->
-            <!--android:title="Settings" />-->
-
         <item
-            android:id="@+id/changePassword"
-            android:icon="@drawable/change_password_icon"
-            android:title="Change Password" />
+            android:id="@+id/settings"
+            android:icon="@drawable/settings_icon"
+            android:title="Settings" />
+
+        <!--<item-->
+            <!--android:id="@+id/changePassword"-->
+            <!--android:icon="@drawable/change_password_icon"-->
+            <!--android:title="Change Password" />-->
         <item
             android:id="@+id/about"
             android:icon="@drawable/about_icon"

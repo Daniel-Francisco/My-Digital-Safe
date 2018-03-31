@@ -24,7 +24,7 @@
         </activity>
         <activity
             android:name=".EditNoteActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".StartupActivity" />
         <activity android:name=".LoginActivity" />
         <activity
@@ -32,12 +32,16 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowFullscreen="true" />
         <activity
-            android:name=".ChangePasswordActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".settings.ChangePasswordActivity"
+            android:parentActivityName=".settings.SettingsActivity" />
         <activity
             android:name=".AboutActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".FolderListActivity"></activity>
+        <activity android:name=".FolderListActivity" />
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="@string/title_activity_settings" />
     </application>
 
 </manifest>

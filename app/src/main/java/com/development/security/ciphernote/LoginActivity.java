@@ -1,20 +1,16 @@
 package com.development.security.ciphernote;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 import android.webkit.JavascriptInterface;
+
+import com.development.security.ciphernote.security.SecurityManager;
 
 
 public class LoginActivity extends Activity {

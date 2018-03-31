@@ -1,49 +1,26 @@
 package com.development.security.ciphernote;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 import android.content.DialogInterface;
 
 import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.security.SecurityManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
 import java.lang.reflect.Type;
-import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class EditNoteActivity extends AppCompatActivity {
     Context applicationContext;
@@ -74,6 +51,20 @@ public class EditNoteActivity extends AppCompatActivity {
         Type type = new TypeToken<com.development.security.ciphernote.model.File>() {
         }.getType();
         file = gson.fromJson(jsonForFile, type);
+
+
+        if (savedInstanceState != null){
+//            onOrientChange.putString("dataBeforeRotation", file.getData());
+//            onOrientChange.putString("titleBeforeRotation", file.getFileName());
+            if(savedInstanceState.getString("dataBeforeRotation") != null){
+                file.setData(savedInstanceState.getString("dataBeforeRotation"));
+            }
+            if(savedInstanceState.getString("titleBeforeRotation") != null){
+                file.setFileName(savedInstanceState.getString("titleBeforeRotation"));
+            }
+        }
+
+
         securityManager = SecurityManager.getInstance();
         applicationContext = this;
         databaseManager = new DatabaseManager(applicationContext);
@@ -157,6 +148,13 @@ public class EditNoteActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle onOrientChange){
+        super.onSaveInstanceState(onOrientChange);
+        onOrientChange.putString("dataBeforeRotation", file.getData());
+        onOrientChange.putString("titleBeforeRotation", file.getFileName());
     }
 
     @Override
