@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'fake'
-            keyPassword 'fake'
-            storeFile file('fake')
-            storePassword 'fake'
+            keyAlias 'MyAndroidKey'
+            keyPassword 'YodaYoda55'
+            storeFile file('C:/Users/danie/Desktop/myDigitalSafe.jks')
+            storePassword 'Yoda@Java97'
         }
     }
     compileSdkVersion 25

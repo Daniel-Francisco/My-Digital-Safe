@@ -1,20 +1,13 @@
 package com.development.security.ciphernote;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.development.security.ciphernote.model.DatabaseManager;
-
-import java.io.File;
+import com.development.security.ciphernote.security.LoginActivity;
 
 public class MainActivity extends AppCompatActivity {
     WebView webView;

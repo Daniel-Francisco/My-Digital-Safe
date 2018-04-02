@@ -16,6 +16,7 @@ $(document).ready(function () {
             attemptingLogin = true;
             if (loginTime != -1) {
                 $("#loginInfoArea").addClass("hideLoginInfoArea");
+                $("#forgotPasswordLink").addClass("hide");
                 $("#loginProgressArea").addClass("showProgressBar");
                 setTimeout(updateProgressBar, (loginTime / 100));
             }
@@ -24,6 +25,9 @@ $(document).ready(function () {
 
         function danielTestPleaseDontJudge() {
         }
+    });
+    $("#forgotPasswordLink").on("click", function (event) {
+        Android.forgotPassword();
     });
 
     $("#password")[0].addEventListener("keyup", function (event) {
@@ -63,6 +67,7 @@ function failedLogin() {
     }
     $("#loginProgressBar").val(0);
     $("#loginInfoArea").removeClass("hideLoginInfoArea");
+    $("#forgotPasswordLink").removeClass("hide");
     $("#loginProgressArea").removeClass("showProgressBar");
     $("#password").val("");
     percentProgress = 0;

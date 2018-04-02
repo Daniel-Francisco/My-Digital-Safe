@@ -38,15 +38,6 @@ public class DatabaseManager extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-//    SQLiteDatabase writeDatabase = null;
-
-//    public void closeDB(){
-//        if(writeDatabase != null){
-//            writeDatabase.close();
-//            writeDatabase = null;
-//        }
-//    }
-
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
@@ -54,6 +45,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 + UserConfiguration.KEY_ID + " INTEGER PRIMARY KEY," + UserConfiguration.KEY_PASSWORD_HASH + " TEXT,"
                 + UserConfiguration.KEY_ITERATIONS + " INTEGER,"
                 + UserConfiguration.KEY_DEVICE_PASSWORD + " BLOB,"
+                + UserConfiguration.KEY_SECURITY_QUESTION_DEVICE_PASSWORD + " BLOB,"
                 + UserConfiguration.KEY_SALT + " TEXT" + ")";
         sqLiteDatabase.execSQL(CREATE_USERCONFIGURATION_TABLE);
 
@@ -64,6 +56,12 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 + File.KEY_FOLDER + " TEXT,"
                 + File.KEY_DATA + " TEXT" + ")";
         sqLiteDatabase.execSQL(CREATE_Files_TABLE);
+
+        String CREATE_SECURITYQUESTIONS_TABLE = "CREATE TABLE " + SecurityQuestion.TABLE_SECURITYQUESTIONS + "("
+                + SecurityQuestion.KEY_ID + " INTEGER PRIMARY KEY,"
+                + SecurityQuestion.KEY_QUESTION + " TEXT,"
+                + SecurityQuestion.KEY_ANSWER_HASH + " TEXT" + ")";
+        sqLiteDatabase.execSQL(CREATE_SECURITYQUESTIONS_TABLE);
     }
 
     @Override
@@ -71,10 +69,14 @@ public class DatabaseManager extends SQLiteOpenHelper {
         // Drop older table if existed
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + UserConfiguration.TABLE_USERCONFIGURATION);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + File.TABLE_FILES);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SecurityQuestion.TABLE_SECURITYQUESTIONS);
 
         // Create tables again
         onCreate(sqLiteDatabase);
     }
+
+
+    //------------------------------ USER CONFIG -----------------
 
     // Adding new UserConfiguration
     public void addUserConfiguration(UserConfiguration config) {
@@ -88,6 +90,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         values.put(UserConfiguration.KEY_PASSWORD_HASH, config.getPassword_hash());
         values.put(UserConfiguration.KEY_SALT, config.getSalt());
         values.put(UserConfiguration.KEY_DEVICE_PASSWORD, config.getDevicePassword());
+        values.put(UserConfiguration.KEY_SECURITY_QUESTION_DEVICE_PASSWORD, config.getSecurityQuestionDevicePassword());
 
         // Inserting Row
         db.insert(UserConfiguration.TABLE_USERCONFIGURATION, null, values);
@@ -111,6 +114,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         values.put(UserConfiguration.KEY_PASSWORD_HASH, config.getPassword_hash());
         values.put(UserConfiguration.KEY_SALT, config.getSalt());
         values.put(UserConfiguration.KEY_DEVICE_PASSWORD, config.getDevicePassword());
+        values.put(UserConfiguration.KEY_SECURITY_QUESTION_DEVICE_PASSWORD, config.getSecurityQuestionDevicePassword());
 
         // Inserting Row
         db.update(UserConfiguration.TABLE_USERCONFIGURATION, values, UserConfiguration.KEY_ID + " = ?", new String[] { String.valueOf(config.getID()) });
@@ -136,6 +140,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 userConfiguration.setSalt(cursor.getString(cursor.getColumnIndex(UserConfiguration.KEY_SALT)));
                 userConfiguration.setIterations(Integer.parseInt(cursor.getString(cursor.getColumnIndex(UserConfiguration.KEY_ITERATIONS))));
                 userConfiguration.setDevicePassword(cursor.getBlob(cursor.getColumnIndex(UserConfiguration.KEY_DEVICE_PASSWORD)));
+                userConfiguration.setSecurityQuestionDevicePassword(cursor.getBlob(cursor.getColumnIndex(UserConfiguration.KEY_SECURITY_QUESTION_DEVICE_PASSWORD)));
 
                 configurationList.add(userConfiguration);
             } while (cursor.moveToNext());
@@ -155,6 +160,52 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     }
 
+
+    //---------------------------------- SECURITY QUESTIONS -------------------------
+
+    public void addSecurityQuestion(SecurityQuestion securityQuestion) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SecurityQuestion.KEY_ANSWER_HASH, securityQuestion.getAnswerHash());
+        values.put(SecurityQuestion.KEY_QUESTION, securityQuestion.getQuestion());
+
+        // Inserting Row
+        long id = db.insert(SecurityQuestion.TABLE_SECURITYQUESTIONS, null, values);
+        db.close(); // Closing database connection
+    }
+
+    public void deleteSecurityQuestion(SecurityQuestion securityQuestion){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(SecurityQuestion.TABLE_SECURITYQUESTIONS, SecurityQuestion.KEY_ID + " = ?", new String[] { String.valueOf(securityQuestion._id) });
+
+        db.close();
+    }
+
+    public List<SecurityQuestion> getAllSecurityQuestions() {
+        List<SecurityQuestion> securityQuestions = new ArrayList<SecurityQuestion>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + SecurityQuestion.TABLE_SECURITYQUESTIONS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+//                UserConfiguration userConfiguration = new UserConfiguration(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getString(3));
+                SecurityQuestion securityQuestion = new SecurityQuestion();
+                securityQuestion.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(SecurityQuestion.KEY_ID))));
+                securityQuestion.setAnswerHash(cursor.getString(cursor.getColumnIndex(SecurityQuestion.KEY_ANSWER_HASH)));
+                securityQuestion.setQuestion(cursor.getString(cursor.getColumnIndex(SecurityQuestion.KEY_QUESTION)));
+
+                securityQuestions.add(securityQuestion);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return securityQuestions;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

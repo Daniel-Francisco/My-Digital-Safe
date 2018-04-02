@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.development.security.ciphernote.ListActivity;
 import com.development.security.ciphernote.R;
+import com.development.security.ciphernote.security.ConfigureSecurityQuestionsActivity;
 
 public class SettingsActivity extends PreferenceActivity {
     private AppCompatDelegate mDelegate;
@@ -30,6 +31,17 @@ public class SettingsActivity extends PreferenceActivity {
                 //code for what you want it to do
                 Intent changePasswordIntent = new Intent(applicationContext, ChangePasswordActivity.class);
                 startActivity(changePasswordIntent);
+                return true;
+            }
+        });
+
+        Preference configureSecurityQuestionsButton = findPreference(getString(R.string.preferenceConfigureSecurityQuestions));
+        configureSecurityQuestionsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                //code for what you want it to do
+                Intent configureSecurityQuestionsIntent = new Intent(applicationContext, ConfigureSecurityQuestionsActivity.class);
+                startActivity(configureSecurityQuestionsIntent);
                 return true;
             }
         });

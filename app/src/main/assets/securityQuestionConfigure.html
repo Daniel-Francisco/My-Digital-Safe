@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <html lang="en">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </html>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="javascript/securityQuestionConfigure.js"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/securityQuestionConfigure.css">
+
+</head>
+
+<div id="page">
+    <div id="securityQuestionBlurb">
+        Remembering passwords is often a difficult thing to do. This is made more difficult by the use of unique
+        passwords for every application or website you sign up with. One way or another, forgetting passwords is common
+        and My Digital Safe offers a completely local method of resetting your password. Here, you can setup your
+        security questions and their answers. Then, one day if you forget your password, you can use these security
+        questions to reset your password.
+    </div>
+
+    <div id="inputWrapper">
+        <div class="securityQuestionWrapper" id="securityQuestionWrapperOne">
+            <div class="securityQuestionTitle">Security Question:</div>
+            <select class="questionOptions" id="securityQuestionOne">
+                <option value="1">What street did you grow up on?</option>
+                <option value="2">Which is your favorite web browser?</option>
+                <option value="3">What is the name of your favorite pet?</option>
+                <option value="4">What is your mother's maiden name?</option>
+            </select>
+            <div class="securityAnswerTitle">Security Answer:</div>
+            <input type="password" class="securityQuestionAnswers input" value="" placeholder="Response"
+                   id="securityQuestionAnswerOne"/>
+        </div>
+
+        <div class="securityQuestionWrapper hide" id="securityQuestionWrapperTwo">
+            <select class="questionOptions">
+                <option value="1">What street did you grow up on?</option>
+                <option value="2">Which is your favorite web browser?</option>
+                <option value="3">What is the name of your favorite pet?</option>
+                <option value="4">What is your mother's maiden name?</option>
+            </select>
+            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerTwo"/>
+        </div>
+
+        <div class="securityQuestionWrapper hide" id="securityQuestionWrapperThree">
+            <select class="questionOptions">
+                <option value="1">What street did you grow up on?</option>
+                <option value="2">Which is your favorite web browser?</option>
+                <option value="3">What is the name of your favorite pet?</option>
+                <option value="4">What is your mother's maiden name?</option>
+            </select>
+            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerThree"/>
+        </div>
+
+        <div class="securityQuestionWrapper hide" id="securityQuestionWrapperFour">
+            <select class="questionOptions">
+                <option value="1">What street did you grow up on?</option>
+                <option value="2">Which is your favorite web browser?</option>
+                <option value="3">What is the name of your favorite pet?</option>
+                <option value="4">What is your mother's maiden name?</option>
+            </select>
+            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerFour"/>
+        </div>
+
+        <div class="securityQuestionWrapper hide" id="securityQuestionWrapperFive">
+            <select class="questionOptions">
+                <option value="1">What street did you grow up on?</option>
+                <option value="2">Which is your favorite web browser?</option>
+                <option value="3">What is the name of your favorite pet?</option>
+                <option value="4">What is your mother's maiden name?</option>
+            </select>
+            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerFive"/>
+        </div>
+
+
+        <div id="loginPrompt">We need you to confirm you password as well before saving your responses to the security
+            questions.
+        </div>
+        <input name="password" id="password" value="" class="input" placeholder="Password" type="password">
+
+        <!--<input id="newSecurityQuestion" value="+ Add another security question" class="primaryButton" class="hide" type="button">-->
+        <input id="submitSecurityQuestions" value="Submit response" class="primaryButton" type="button">
+    </div>
+    <div id="loader" class="hide loader"></div>
+
+</div>
+<div id="finishedPage" class="hide">
+    <div>
+        Your security questions have been setup! If you ever forget your password you can now reset it. To return to
+        your notes, please click the button below.
+    </div>
+
+    <input id="returnToHome" value="All finished!" class="primaryButton" type="button">
+</div>
+<div id="confirmReplacingSecurityQuestionPage" class="hide">
+    <div>
+        It looks like you already have setup some security questions to recover your password. You can replace your
+        previous responses if you would like, otherwise, you can return home.
+    </div>
+
+    <input id="goHome" value="Return home" class="primaryButton" type="button"> <br>
+    <input id="replaceQuestions" value="Create new security questions" class="primaryButton" type="button">
+</div>
+
+</html>

@@ -1,15 +1,20 @@
-package com.development.security.ciphernote;
+package com.development.security.ciphernote.security;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.widget.Toast;
 import android.webkit.JavascriptInterface;
 
+import com.development.security.ciphernote.ListActivity;
+import com.development.security.ciphernote.MainActivity;
+import com.development.security.ciphernote.R;
 import com.development.security.ciphernote.security.SecurityManager;
 
 
@@ -42,6 +47,12 @@ public class LoginActivity extends Activity {
         new AsyncLogin().execute(password);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            this.finishAffinity();
+        }
+    }
 
     private class AsyncLogin extends AsyncTask<String, String, Boolean> {
         @Override
@@ -114,6 +125,11 @@ public class LoginActivity extends Activity {
         return loginTime;
     }
 
+    private void androidForgotPassword(){
+        Intent forgotPasswordIntent = new Intent(applicationContext, ForgotPasswordActivity.class);
+        startActivity(forgotPasswordIntent);
+    }
+
 
     public class WebAppInterface {
         Context mContext;
@@ -128,6 +144,11 @@ public class LoginActivity extends Activity {
         @JavascriptInterface
         public int getloginTime(){
             return readLoginTime();
+        }
+
+        @JavascriptInterface
+        public void forgotPassword(){
+            androidForgotPassword();
         }
     }
 

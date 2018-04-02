@@ -33,4 +33,8 @@
         android:key="@string/preferenceChangePassword"
         android:summary="Update your login password."/>
 
+    <Preference android:title="Configure Security Questions"
+        android:key="@string/preferenceConfigureSecurityQuestions"
+        android:summary="Add, edit or delete security questions."/>
+
 </PreferenceScreen>

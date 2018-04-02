@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.UserConfiguration;
+import com.development.security.ciphernote.security.LoginActivity;
 import com.development.security.ciphernote.security.SecurityManager;
 
 public class StartupActivity extends AppCompatActivity {

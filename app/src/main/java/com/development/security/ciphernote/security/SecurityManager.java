@@ -5,6 +5,7 @@ import android.util.Base64;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
+import com.development.security.ciphernote.model.SecurityQuestion;
 import com.development.security.ciphernote.model.UserConfiguration;
 
 import org.json.JSONException;
@@ -15,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -38,15 +41,6 @@ public class SecurityManager {
     String salt = "test";
     SecretKey secret = null;
 
-
-//    public byte[] createIV() throws InvalidParameterSpecException {
-//        byte[] iv = new byte[256];
-//        final SecureRandom theRNG = new SecureRandom();
-//        theRNG.nextBytes(iv);
-//        AlgorithmParameterSpec ivParameterSpec = new IvParameterSpec(iv);
-//        iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-//        return iv;
-//    }
 
     public String SHA256Hash(String clearText) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -116,6 +110,86 @@ public class SecurityManager {
         return "";
     }
 
+
+    public UserConfiguration setSecurityQuestion(UserConfiguration userConfiguration, Context context, String password, String question, String response) throws NoSuchAlgorithmException {
+        byte[] devicePassword = userConfiguration.getDevicePassword();
+
+        DatabaseManager databaseManager = new DatabaseManager(context);
+
+        if (devicePassword == null) {
+            devicePassword = new byte[0];
+        }
+
+        byte[] decryptedDevicePassword = encryptWithAlternatePassword(password, devicePassword, userConfiguration.getSalt().getBytes(), userConfiguration.getIterations(), false);
+
+        byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(response, decryptedDevicePassword, userConfiguration.getSalt().getBytes(), userConfiguration.getIterations(), true);
+
+        userConfiguration.setSecurityQuestionDevicePassword(reEncryptedDevicePassword);
+
+
+        byte[] hashedResponse = hashSecurityQuestion(response, userConfiguration.getSalt().getBytes(), userConfiguration.getIterations());
+        String hashString = Base64.encodeToString(hashedResponse, Base64.DEFAULT);
+
+        SecurityQuestion securityQuestion = new SecurityQuestion();
+        securityQuestion.setQuestion(question);
+        securityQuestion.setAnswerHash(hashString);
+
+        List<SecurityQuestion> securityQuestions = databaseManager.getAllSecurityQuestions();
+        for (int i = 0; i < securityQuestions.size(); i++) {
+            databaseManager.deleteSecurityQuestion(securityQuestions.get(i));
+        }
+
+        databaseManager.addSecurityQuestion(securityQuestion);
+
+        return userConfiguration;
+    }
+
+    public void resetPasswordWithSecurityQuestion(String response, String newPassword, Context context) {
+        DatabaseManager databaseManager = new DatabaseManager(context);
+        UserConfiguration configuration = databaseManager.getUserConfiguration();
+        byte[] encryptedDevicePassword = configuration.getSecurityQuestionDevicePassword();
+
+        byte[] decryptedDevicePassword = encryptWithAlternatePassword(response, encryptedDevicePassword, configuration.getSalt().getBytes(), configuration.getIterations(), false);
+
+        byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(newPassword, decryptedDevicePassword, configuration.getSalt().getBytes(), configuration.getIterations(), true);
+
+        configuration.setDevicePassword(reEncryptedDevicePassword);
+
+        byte[] newHash = hashPassword(newPassword, configuration.getSalt().getBytes(), configuration.getIterations());
+        String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);
+
+        configuration.setPassword_hash(newHashString);
+
+        databaseManager.updateUserConfiguration(configuration);
+
+    }
+
+    public boolean compareSecurityQuestionResponse(String response, Context context) {
+        DatabaseManager databaseManager = new DatabaseManager(context);
+
+        UserConfiguration configuration = databaseManager.getUserConfiguration();
+        List<SecurityQuestion> securityQuestions = databaseManager.getAllSecurityQuestions();
+
+        SecurityQuestion securityQuestion = null;
+        if (securityQuestions.size() > 0) {
+            securityQuestion = securityQuestions.get(0);
+        } else {
+            return false;
+        }
+
+        String presetResponse = securityQuestion.getAnswerHash();
+
+        byte[] inputtedResponse = hashSecurityQuestion(response, configuration.getSalt().getBytes(), configuration.getIterations());
+        String responseHashAsString = Base64.encodeToString(inputtedResponse, Base64.DEFAULT);
+
+        if (presetResponse.equals(responseHashAsString)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
     public void changePassword(Context context, String userPassword, String newPassword) {
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
@@ -137,9 +211,6 @@ public class SecurityManager {
 
 
             byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(newPassword, decryptedDevicePassword, config.getSalt().getBytes(), config.getIterations(), true);
-
-            byte[] test = encryptWithAlternatePassword(newPassword, reEncryptedDevicePassword, config.getSalt().getBytes(), config.getIterations(), false);
-            String testString = new String(test);
 
             config.setDevicePassword(reEncryptedDevicePassword);
 
@@ -222,7 +293,28 @@ public class SecurityManager {
         return false;
     }
 
+
+
     private SecretKey userKey = null;
+
+    private byte[] hashSecurityQuestion(String response, byte[] salt, int hashingIterations) {
+        int keyLength = 256;
+        try {
+
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            KeySpec spec = new PBEKeySpec(response.toCharArray(), salt, hashingIterations, keyLength);
+            SecretKey secret = skf.generateSecret(spec);
+            byte[] res = secret.getEncoded();
+
+            String hash = Base64.encodeToString(res, Base64.DEFAULT);
+            String finalHash = SHA256Hash(hash);
+
+            return finalHash.getBytes();
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public byte[] hashPassword(String password, byte[] salt, int hashingIterations) {
         int keyLength = 256;

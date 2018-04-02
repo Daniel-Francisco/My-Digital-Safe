@@ -14,12 +14,14 @@ public class UserConfiguration {
     public static final String KEY_PASSWORD_HASH = "password_hash";
     public static final String KEY_SALT = "salt";
     public static final String KEY_DEVICE_PASSWORD = "device_password";
+    public static final String KEY_SECURITY_QUESTION_DEVICE_PASSWORD = "security_question_d_p";
 
     int _id;
     int iterations;
     String password_hash;
     String salt;
     byte[] devicePassword;
+    byte[] securityQuestionDevicePassword;
 
     public UserConfiguration(){}
     public UserConfiguration(int id, int iterations, String password_hash, String salt){
@@ -70,4 +72,10 @@ public class UserConfiguration {
         return devicePassword;
     }
 
+    public void setSecurityQuestionDevicePassword(byte[] securityQuestionDevicePassword){
+        this.securityQuestionDevicePassword = securityQuestionDevicePassword;
+    }
+    public byte[] getSecurityQuestionDevicePassword(){
+        return securityQuestionDevicePassword;
+    }
 }

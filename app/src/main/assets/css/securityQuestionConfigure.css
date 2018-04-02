@@ -1,0 +1,61 @@
+#page, #finishedPage{
+    text-align:center;
+}
+.securityQuestionWrapper{
+    padding-top:5px;
+    padding-bottom:5px;
+    text-align:center;
+}
+.questionOptions{
+    margin-bottom:12px;
+}
+
+.securityQuestionAnswers{
+    width:80%;
+    margin-left: 10%;
+    margin-right: 10%;
+
+    border: 1px solid #ebeff0;
+    background: #ffffff;
+    color: #181818;
+    margin: 10px auto 10px auto !important;
+    padding: 11px 38px 11px 38px !important;
+    font-family: sans-serif;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 1px;
+    font-size: 13px;
+    line-height: 17px;
+    border-radius: 0px !important;
+}
+.securityAnswerTitle, .securityQuestionTitle{
+    text-align: left!important;
+    font-size: 16px;
+    margin-left: 10%;
+
+}
+
+#securityQuestionBlurb{
+    padding-top: 10px;
+}
+#loginPrompt{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#finishedPage, #confirmReplacingSecurityQuestionPage{
+    padding:10px;
+}
+
+#confirmReplacingSecurityQuestionPage{
+    text-align:center;
+    width:100%;
+    display:inline-block;
+}
+
+#goHome, #replaceQuestions{
+    display:inline-block;
+    margin-top:5px;
+    margin-bottom:5px;
+
+}
