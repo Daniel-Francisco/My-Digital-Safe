@@ -34,6 +34,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new ForgotPasswordActivity.WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/forgotPasswordPage.html");
+
+        setTitle("Reset password");
     }
 
     protected String userResponse = "";
@@ -215,9 +217,29 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         @JavascriptInterface
         public void resetPassword(String password1, String password2){
-            if(password1.equals(password2)){
+            if(password1.equals(password2) && lastScore > 3){
                 newPassword = password1;
                 new AsyncResetPassword().execute();
+            }else{
+                if(!password1.equals(password2)){
+                    CharSequence successToast = "Passwords do not match!";
+
+                    Toast toast = Toast.makeText(applicationContext, successToast, Toast.LENGTH_LONG);
+                    toast.show();
+                }else{
+                    CharSequence successToast = "Password is not complicated enough!";
+
+                    Toast toast = Toast.makeText(applicationContext, successToast, Toast.LENGTH_LONG);
+                    toast.show();
+                }
+
+
+                browser.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        browser.loadUrl("javascript:clearFields()");
+                    }
+                });
             }
         }
 

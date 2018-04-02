@@ -1,12 +1,17 @@
 $(document).ready(function () {
     var securityQuestionJson = Android.fetchQuestions();
-    var securityQuestion = JSON.parse(securityQuestionJson);
 
-    console.log("marker");
-    console.log(securityQuestionJson);
-    console.log(securityQuestion);
+    try{
+        var securityQuestion = JSON.parse(securityQuestionJson);
+        var questionText = securityQuestion.question;
+        document.getElementById("securityQuestionText").innerText = questionText;
 
-    document.getElementById("securityQuestionText").innerText = securityQuestion.question;
+    }catch(exception){
+        document.getElementById("forgotPasswordPage").classList.add("hide");
+        document.getElementById("noQuestionPage").classList.remove("hide");
+        console.error(exception);
+    }
+
     $("#submitResponse").on("click", function (event) {
         var responseValue = document.getElementById("securityQuestionResponse").value;
         document.getElementById("forgotPasswordPage").classList.add("hide");
@@ -100,6 +105,18 @@ function clearBadNumber(){
 }
 function clearBadSymbol(){
     document.getElementById("badSymbol").classList.add("hide");
+}
+
+function clearFields() {
+    $("#passwordOne").val("");
+    $("#passwordTwo").val("");
+
+    document.getElementById("loader").classList.add("hide");
+    document.getElementById("createPasswordPage").classList.remove("hide");
+
+    clearList();
+
+    document.getElementById("password-strength-meter").value = 0;
 }
 
 function clearList(){

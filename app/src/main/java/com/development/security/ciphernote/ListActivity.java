@@ -74,6 +74,8 @@ public class ListActivity extends MenuActivity {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        setTitle("Home");
     }
 
     @Override
