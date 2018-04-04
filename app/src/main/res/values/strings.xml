@@ -22,6 +22,7 @@
 
     <string name="preferenceChangePassword">changePasswordPreferenceButton</string>
     <string name="preferenceConfigureSecurityQuestions">configureSecurityQuestionsPreferenceButton</string>
+    <string name="preferenceSecurityQuestionsToggle">configureSecurityQuestionsToggle</string>
 
     <!-- Strings related to Settings -->
 

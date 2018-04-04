@@ -1,5 +1,6 @@
 package com.development.security.ciphernote.security;
 
+import android.accounts.AuthenticatorException;
 import android.content.Context;
 import android.util.Base64;
 
@@ -10,17 +11,24 @@ import com.development.security.ciphernote.model.UserConfiguration;
 
 import org.json.JSONException;
 
+import java.io.UnsupportedEncodingException;
 import java.security.AlgorithmParameters;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
@@ -55,28 +63,23 @@ public class SecurityManager {
      * @param data is a string
      * @return the encrypted string
      */
-    public byte[] encrypt(String data) {
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secret);
-            AlgorithmParameters params = cipher.getParameters();
+    public byte[] encrypt(String data) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, InvalidParameterSpecException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secret);
+        AlgorithmParameters params = cipher.getParameters();
 
-            byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-            byte[] ciphertext = cipher.doFinal(data.getBytes("UTF-8"));
+        byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+        byte[] ciphertext = cipher.doFinal(data.getBytes("UTF-8"));
 
-            byte[] finalMessage = new byte[ciphertext.length + iv.length];
-            for (int i = 0; i < iv.length; i++) {
-                finalMessage[i] = iv[i];
-            }
-            for (int i = 0; i < ciphertext.length; i++) {
-                finalMessage[i + iv.length] = ciphertext[i];
-            }
-
-            return finalMessage;
-        } catch (Exception e) {
-            e.printStackTrace();
+        byte[] finalMessage = new byte[ciphertext.length + iv.length];
+        for (int i = 0; i < iv.length; i++) {
+            finalMessage[i] = iv[i];
         }
-        return null;
+        for (int i = 0; i < ciphertext.length; i++) {
+            finalMessage[i + iv.length] = ciphertext[i];
+        }
+
+        return finalMessage;
     }
 
     /**
@@ -86,38 +89,39 @@ public class SecurityManager {
      *
      * @return the decrypted string
      */
-    public String decrypt(byte[] data) {
-        try {
-            byte[] iv = new byte[16];
-            byte[] cipherText = new byte[data.length - iv.length];
+    public String decrypt(byte[] data) throws InvalidAlgorithmParameterException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
+        byte[] iv = new byte[16];
+        byte[] cipherText = new byte[data.length - iv.length];
 
-            for (int i = 0; i < 16; i++) {
-                iv[i] = data[i];
-            }
-            for (int i = 0; i < cipherText.length; i++) {
-                cipherText[i] = data[i + iv.length];
-            }
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
-            cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
-            byte[] decryptedText = cipher.doFinal(cipherText);
-
-            String plainText = new String(decryptedText);
-            return plainText;
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (int i = 0; i < 16; i++) {
+            iv[i] = data[i];
         }
-        return "";
+        for (int i = 0; i < cipherText.length; i++) {
+            cipherText[i] = data[i + iv.length];
+        }
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+        cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
+        byte[] decryptedText = cipher.doFinal(cipherText);
+
+        String plainText = new String(decryptedText);
+        return plainText;
+
     }
 
 
-    public UserConfiguration setSecurityQuestion(UserConfiguration userConfiguration, Context context, String password, String question, String response) throws NoSuchAlgorithmException {
+    public UserConfiguration setSecurityQuestion(UserConfiguration userConfiguration, Context context, String password, String question, String response) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidParameterSpecException, JSONException, AuthenticatorException {
         byte[] devicePassword = userConfiguration.getDevicePassword();
 
         DatabaseManager databaseManager = new DatabaseManager(context);
 
         if (devicePassword == null) {
             devicePassword = new byte[0];
+        }
+
+        boolean authentication = authenticateUser(password, context);
+        if(!authentication){
+            throw new AuthenticatorException();
         }
 
         byte[] decryptedDevicePassword = encryptWithAlternatePassword(password, devicePassword, userConfiguration.getSalt().getBytes(), userConfiguration.getIterations(), false);
@@ -144,7 +148,7 @@ public class SecurityManager {
         return userConfiguration;
     }
 
-    public void resetPasswordWithSecurityQuestion(String response, String newPassword, Context context) {
+    public void resetPasswordWithSecurityQuestion(String response, String newPassword, Context context) throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidParameterSpecException {
         DatabaseManager databaseManager = new DatabaseManager(context);
         UserConfiguration configuration = databaseManager.getUserConfiguration();
         byte[] encryptedDevicePassword = configuration.getSecurityQuestionDevicePassword();
@@ -294,7 +298,6 @@ public class SecurityManager {
     }
 
 
-
     private SecretKey userKey = null;
 
     private byte[] hashSecurityQuestion(String response, byte[] salt, int hashingIterations) {
@@ -342,27 +345,23 @@ public class SecurityManager {
         return Base64.encodeToString(salt, Base64.DEFAULT);
     }
 
-    public byte[] encryptWithAlternatePassword(String password, byte[] data, byte[] salt, int hashingIterations, Boolean encryptOrDecryptFlag) {
+    public byte[] encryptWithAlternatePassword(String password, byte[] data, byte[] salt, int hashingIterations, Boolean encryptOrDecryptFlag) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, InvalidParameterSpecException, UnsupportedEncodingException {
         int keyLength = 256;
-        try {
-            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
-            userKey = skf.generateSecret(spec);
-            SecretKey secretBackup = secret;
-            secret = new SecretKeySpec(userKey.getEncoded(), "AES");
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
+        userKey = skf.generateSecret(spec);
+        SecretKey secretBackup = secret;
+        secret = new SecretKeySpec(userKey.getEncoded(), "AES");
 
-            byte[] cryptoData = null;
-            if (encryptOrDecryptFlag) {
-                cryptoData = encrypt(Base64.encodeToString(data, Base64.DEFAULT));
-            } else {
-                cryptoData = Base64.decode(decrypt(data), Base64.DEFAULT);
-            }
-            secret = secretBackup;
-            return cryptoData;
-        } catch (Exception e) {
-            e.printStackTrace();
+        byte[] cryptoData = null;
+        if (encryptOrDecryptFlag) {
+            cryptoData = encrypt(Base64.encodeToString(data, Base64.DEFAULT));
+        } else {
+            cryptoData = Base64.decode(decrypt(data), Base64.DEFAULT);
         }
-        return null;
+        secret = secretBackup;
+        return cryptoData;
+
     }
 
     public File setFileHash(File file) throws NoSuchAlgorithmException {

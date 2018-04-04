@@ -17,10 +17,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidParameterSpecException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 
 /**
@@ -209,7 +217,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public long addFile(File file) throws ParseException, NoSuchAlgorithmException {
+    public long addFile(File file) throws ParseException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException {
         SQLiteDatabase writeDatabase = this.getWritableDatabase();
         SecurityManager securityManager = SecurityManager.getInstance();
 
@@ -227,7 +235,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return returnValue;
     }
 
-    public long updateFile(File file) throws NoSuchAlgorithmException {
+    public long updateFile(File file) throws NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException {
         SQLiteDatabase writeDatabase = this.getWritableDatabase();
         SecurityManager securityManager = SecurityManager.getInstance();
 
@@ -250,7 +258,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return id;
     }
 
-    public ArrayList<File> getAllFiles() throws ParseException, NoSuchAlgorithmException {
+    public ArrayList<File> getAllFiles() throws ParseException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
         SQLiteDatabase writeDatabase = this.getWritableDatabase();
         SecurityManager securityManager = SecurityManager.getInstance();
 

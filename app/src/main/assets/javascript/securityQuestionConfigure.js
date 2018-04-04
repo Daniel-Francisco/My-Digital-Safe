@@ -37,6 +37,7 @@ $(document).ready(function () {
         if (event.keyCode === 13) {
             $("#submitSecurityQuestions").click();
         }
+        Android.keyPressOccured();
     });
 
     $("#password")[0].addEventListener("keyup", function (event) {
@@ -44,6 +45,7 @@ $(document).ready(function () {
         if (event.keyCode === 13) {
             $("#submitSecurityQuestions").click();
         }
+        Android.keyPressOccured();
     });
 
 });
