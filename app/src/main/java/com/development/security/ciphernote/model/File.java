@@ -26,6 +26,7 @@ public class File {
     String data;
     String hash;
 
+
     public File(){}
     public File(int id, String file_name, String access_date, String data){
         _id = id;
@@ -74,18 +75,4 @@ public class File {
         return hash;
     }
 
-//    @Override
-//    public int compareTo(File o) {
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-//        try {
-//            Date thisOne = sdf.parse(this.getAccessDate());
-//            Date thatOne = sdf.parse(o.getAccessDate());
-//            if (thisOne.after(thatOne)) {
-//                return 1;
-//            }
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
-//        return 0;
-//    }
 }

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
+import com.development.security.ciphernote.model.QuickNoteFile;
 import com.development.security.ciphernote.security.SecurityManager;
 import com.development.security.ciphernote.settings.ChangePasswordActivity;
 import com.google.gson.Gson;
@@ -23,7 +24,11 @@ import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidParameterSpecException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,6 +37,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class ListActivity extends MenuActivity {
     ArrayList<File> list;
@@ -48,6 +57,9 @@ public class ListActivity extends MenuActivity {
         applicationContext = this.getBaseContext();
 
         list = new ArrayList<>();
+
+        checkForQuickNotes();
+
 
         browser = (WebView) findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
@@ -78,8 +90,49 @@ public class ListActivity extends MenuActivity {
         setTitle("Home");
     }
 
+    private void checkForQuickNotes() {
+        try {
+            DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+            ArrayList<QuickNoteFile> quickNoteFiles = databaseManager.getAllQuickNoteFiles();
+            for (int i = 0; i < quickNoteFiles.size(); i++) {
+//                File file = new File();
+                File newFile = createEmptyFile(quickNoteFiles.get(i).getQuickNoteFileName());
+
+                long id = databaseManager.addFile(newFile);
+                newFile.setID(id);
+                list.add(newFile);
+
+
+                try {
+
+                    if(newFile.getFileName().equals("") || newFile.getFileName() == null){
+                        newFile.setFileName("My Quick Note");
+                    }
+                    if(newFile.getData().equals("") || newFile.getData().equals(null)){
+                        newFile.setData(" ");
+                    }
+
+                    Date date = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    String dateString = sdf.format(date);
+                    newFile.setAccessDate(dateString);
+                    newFile.setData(quickNoteFiles.get(i).getQuickNoteData());
+                    long idAfter = databaseManager.updateFile(newFile);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                databaseManager.deleteQuickNoteFile(quickNoteFiles.get(i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         browser.setVisibility(View.GONE);
     }
@@ -97,7 +150,7 @@ public class ListActivity extends MenuActivity {
     }
 
     @Override
-    public void onRestart(){
+    public void onRestart() {
         super.onRestart();
 
         Intent mainActivityIntent = new Intent(applicationContext, MainActivity.class);
@@ -169,9 +222,9 @@ public class ListActivity extends MenuActivity {
         long diffMinutes = getDateDiff(then, now, TimeUnit.MINUTES);//diff / (60 * 1000) % 60;
 
         String responseString = "";
-        if(diffSeconds < 30){
+        if (diffSeconds < 30) {
             responseString = "Last opened a few moments ago.";
-        }else if (diffSeconds < 60) {
+        } else if (diffSeconds < 60) {
             responseString = ("Opened " + diffSeconds + " seconds ago.");
         } else if (diffMinutes < 60) {
             responseString = ("Opened " + diffMinutes + " minutes ago.");
@@ -219,16 +272,22 @@ public class ListActivity extends MenuActivity {
         startActivity(landingIntent);
     }
 
+    private File createEmptyFile(String name){
+        File newFile = new File();
+        Date date = new Date();
+        newFile.setFileName(name);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        newFile.setAccessDate(dateFormat.format(date));
+        newFile.setData(" ");
+        return newFile;
+    }
+
     protected void androidAddNote(String name) {
         try {
-            File newFile = new File();
-            Date date = new Date();
-            newFile.setFileName(name);
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-            newFile.setAccessDate(dateFormat.format(date));
-            newFile.setData("");
+
             DatabaseManager databaseManager = new DatabaseManager(applicationContext);
 
+            File newFile = createEmptyFile(name);
 
             long id = databaseManager.addFile(newFile);
             newFile.setID(id);

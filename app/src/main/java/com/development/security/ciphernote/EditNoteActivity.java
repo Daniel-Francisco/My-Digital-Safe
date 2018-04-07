@@ -129,10 +129,6 @@ public class EditNoteActivity extends AppCompatActivity {
         browser.setVisibility(View.GONE);
 
         try {
-            Date date = new Date();
-
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
             if(file.getFileName().equals("") || file.getFileName() == null){
                 file.setFileName("My Secure Note");
@@ -141,6 +137,8 @@ public class EditNoteActivity extends AppCompatActivity {
                 file.setData(" ");
             }
 
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             String dateString = sdf.format(date);
             file.setAccessDate(dateString);
             long id = databaseManager.updateFile(file);

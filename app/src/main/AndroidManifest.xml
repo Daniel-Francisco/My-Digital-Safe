@@ -42,10 +42,13 @@
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".security.ForgotPasswordActivity"
-            android:parentActivityName=".security.LoginActivity"/>
+        <activity
+            android:name=".security.ForgotPasswordActivity"
+            android:parentActivityName=".security.LoginActivity" />
         <activity
             android:name=".security.ConfigureSecurityQuestionsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".QuickNoteEdit"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 

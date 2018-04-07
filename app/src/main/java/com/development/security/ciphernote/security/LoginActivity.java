@@ -8,14 +8,28 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.Toast;
 import android.webkit.JavascriptInterface;
 
+import com.development.security.ciphernote.EditNoteActivity;
 import com.development.security.ciphernote.ListActivity;
 import com.development.security.ciphernote.MainActivity;
+import com.development.security.ciphernote.QuickNoteEdit;
 import com.development.security.ciphernote.R;
+import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.model.File;
+import com.development.security.ciphernote.model.QuickNoteFile;
 import com.development.security.ciphernote.security.SecurityManager;
+import com.google.gson.Gson;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 
 public class LoginActivity extends Activity {
@@ -40,6 +54,16 @@ public class LoginActivity extends Activity {
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/loginPage.html");
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent quickNoteEditIntent = new Intent(applicationContext, QuickNoteEdit.class);
+                startActivity(quickNoteEditIntent);
+            }
+        });
+
     }
 
     public void androidAuthenticateUser(String password){

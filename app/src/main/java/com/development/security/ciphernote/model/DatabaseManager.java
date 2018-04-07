@@ -37,7 +37,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class DatabaseManager extends SQLiteOpenHelper {
     // Database Version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Database Name
     private static final String DATABASE_NAME = "ciphernote_db";
@@ -65,6 +65,12 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 + File.KEY_DATA + " TEXT" + ")";
         sqLiteDatabase.execSQL(CREATE_Files_TABLE);
 
+        String CREATE_QUICK_NOTE_FILES_TABLE = "CREATE TABLE " + QuickNoteFile.TABLE_QUICK_NOTE_FILES + "("
+                + QuickNoteFile.KEY_ID + " INTEGER PRIMARY KEY,"
+                + QuickNoteFile.KEY_QUICK_NOTE_FILE_NAME + " TEXT,"
+                + QuickNoteFile.KEY_QUICK_NOTE_DATA + " TEXT" + ")";
+        sqLiteDatabase.execSQL(CREATE_QUICK_NOTE_FILES_TABLE);
+
         String CREATE_SECURITYQUESTIONS_TABLE = "CREATE TABLE " + SecurityQuestion.TABLE_SECURITYQUESTIONS + "("
                 + SecurityQuestion.KEY_ID + " INTEGER PRIMARY KEY,"
                 + SecurityQuestion.KEY_QUESTION + " TEXT,"
@@ -78,6 +84,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + UserConfiguration.TABLE_USERCONFIGURATION);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + File.TABLE_FILES);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SecurityQuestion.TABLE_SECURITYQUESTIONS);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + QuickNoteFile.TABLE_QUICK_NOTE_FILES);
 
         // Create tables again
         onCreate(sqLiteDatabase);
@@ -215,6 +222,69 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return securityQuestions;
     }
 
+    //---------------Quick Notes begin ---------------------------------------------------------
+
+
+
+    public long addQuickNoteFile(QuickNoteFile quickNoteFile) throws ParseException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException {
+        SQLiteDatabase writeDatabase = this.getWritableDatabase();
+
+
+        ContentValues values = new ContentValues();
+        values.put(QuickNoteFile.KEY_QUICK_NOTE_DATA, quickNoteFile.getQuickNoteData());
+        values.put(QuickNoteFile.KEY_QUICK_NOTE_FILE_NAME, quickNoteFile.getQuickNoteFileName());
+
+        // Inserting Row
+        long returnValue = writeDatabase.insert(QuickNoteFile.TABLE_QUICK_NOTE_FILES, null, values);
+        writeDatabase.close();
+        return returnValue;
+    }
+
+
+    public ArrayList<QuickNoteFile> getAllQuickNoteFiles() {
+        SQLiteDatabase writeDatabase = this.getWritableDatabase();
+
+        ArrayList<QuickNoteFile> quickNoteFiles = new ArrayList<QuickNoteFile>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + QuickNoteFile.TABLE_QUICK_NOTE_FILES + ";";
+
+        Cursor cursor = writeDatabase.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                QuickNoteFile quickNoteFile = new QuickNoteFile();
+                quickNoteFile.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(QuickNoteFile.KEY_ID))));
+
+
+                quickNoteFile.setQuickNoteFileName(cursor.getString(cursor.getColumnIndex(QuickNoteFile.KEY_QUICK_NOTE_FILE_NAME)));
+                quickNoteFile.setQuickNoteData(cursor.getString(cursor.getColumnIndex(QuickNoteFile.KEY_QUICK_NOTE_DATA)));
+
+                quickNoteFiles.add(quickNoteFile);
+            } while (cursor.moveToNext());
+        }
+
+        writeDatabase.close();
+        // return contact list
+        return quickNoteFiles;
+    }
+
+
+    public void deleteQuickNoteFile(QuickNoteFile quickNoteFile){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(QuickNoteFile.TABLE_QUICK_NOTE_FILES, QuickNoteFile.KEY_ID + " = ?", new String[] { String.valueOf(quickNoteFile.getID()) });
+
+        db.close();
+    }
+
+
+
+
+
+
+    //---------------Quick Notes ends ---------------------------------------------------------
+
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public long addFile(File file) throws ParseException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException {
@@ -290,11 +360,11 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
                 file.setHash(cursor.getString(cursor.getColumnIndex(File.KEY_HASH)));
 
-                boolean fileStatus = securityManager.validateFileHash(file);
+//                boolean fileStatus = securityManager.validateFileHash(file);
 
-                if(!fileStatus){
-                    file = null;
-                }
+//                if(!fileStatus){
+//                    file = null;
+//                }
 
                 fileList.add(file);
             } while (cursor.moveToNext());
@@ -310,6 +380,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
         writeDatabase.delete(File.TABLE_FILES, File.KEY_ID + " = ?", new String[] { String.valueOf(file.getID()) });
         writeDatabase.close();
     }
+
+
 
 //    private void validateDB(){
 //        if(writeDatabase == null){
