@@ -90,11 +90,11 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
     private void upgradeFromOneToTwo(SQLiteDatabase sqLiteDatabase){
-        String CREATE_SECURITYQUESTIONS_TABLE = "CREATE TABLE " + SecurityQuestion.TABLE_SECURITYQUESTIONS + "("
-                + SecurityQuestion.KEY_ID + " INTEGER PRIMARY KEY,"
-                + SecurityQuestion.KEY_QUESTION + " TEXT,"
-                + SecurityQuestion.KEY_ANSWER_HASH + " TEXT" + ")";
-        sqLiteDatabase.execSQL(CREATE_SECURITYQUESTIONS_TABLE);
+        String CREATE_QUICK_NOTE_FILES_TABLE = "CREATE TABLE " + QuickNoteFile.TABLE_QUICK_NOTE_FILES + "("
+                + QuickNoteFile.KEY_ID + " INTEGER PRIMARY KEY,"
+                + QuickNoteFile.KEY_QUICK_NOTE_FILE_NAME + " TEXT,"
+                + QuickNoteFile.KEY_QUICK_NOTE_DATA + " TEXT" + ")";
+        sqLiteDatabase.execSQL(CREATE_QUICK_NOTE_FILES_TABLE);
     }
 
 
