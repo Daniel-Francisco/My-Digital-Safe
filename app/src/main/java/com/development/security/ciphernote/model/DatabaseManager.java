@@ -79,15 +79,22 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        // Drop older table if existed
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + UserConfiguration.TABLE_USERCONFIGURATION);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + File.TABLE_FILES);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SecurityQuestion.TABLE_SECURITYQUESTIONS);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + QuickNoteFile.TABLE_QUICK_NOTE_FILES);
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        switch(oldVersion){
+            case 1:
+                upgradeFromOneToTwo(sqLiteDatabase);
+                break;
+            default:
+                throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
+        }
+    }
 
-        // Create tables again
-        onCreate(sqLiteDatabase);
+    private void upgradeFromOneToTwo(SQLiteDatabase sqLiteDatabase){
+        String CREATE_SECURITYQUESTIONS_TABLE = "CREATE TABLE " + SecurityQuestion.TABLE_SECURITYQUESTIONS + "("
+                + SecurityQuestion.KEY_ID + " INTEGER PRIMARY KEY,"
+                + SecurityQuestion.KEY_QUESTION + " TEXT,"
+                + SecurityQuestion.KEY_ANSWER_HASH + " TEXT" + ")";
+        sqLiteDatabase.execSQL(CREATE_SECURITYQUESTIONS_TABLE);
     }
 
 
