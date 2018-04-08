@@ -37,7 +37,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class DatabaseManager extends SQLiteOpenHelper {
     // Database Version
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Database Name
     private static final String DATABASE_NAME = "ciphernote_db";
@@ -54,6 +54,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 + UserConfiguration.KEY_ITERATIONS + " INTEGER,"
                 + UserConfiguration.KEY_DEVICE_PASSWORD + " BLOB,"
                 + UserConfiguration.KEY_SECURITY_QUESTION_DEVICE_PASSWORD + " BLOB,"
+                + UserConfiguration.KEY_LOCKOUT_FLAG + " INTEGER,"
+                + UserConfiguration.KEY_LOCKOUT_TIME + " INTEGER,"
+                + UserConfiguration.KEY_ALLOWED_NUMBER_OF_FAILED_LOGINS + " INTEGER,"
+                + UserConfiguration.KEY_FAILED_LOGIN_COUNT + " INTEGER,"
                 + UserConfiguration.KEY_SALT + " TEXT" + ")";
         sqLiteDatabase.execSQL(CREATE_USERCONFIGURATION_TABLE);
 
@@ -83,6 +87,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
         switch(oldVersion){
             case 1:
                 upgradeFromOneToTwo(sqLiteDatabase);
+            case 2:
+                upgradeFromTwoToThree(sqLiteDatabase);
                 break;
             default:
                 throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
@@ -95,6 +101,16 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 + QuickNoteFile.KEY_QUICK_NOTE_FILE_NAME + " TEXT,"
                 + QuickNoteFile.KEY_QUICK_NOTE_DATA + " TEXT" + ")";
         sqLiteDatabase.execSQL(CREATE_QUICK_NOTE_FILES_TABLE);
+    }
+    private void upgradeFromTwoToThree(SQLiteDatabase sqLiteDatabase){
+        String ADD_LOCKOUT_TIME_COLUMN = "ALTER TABLE " + UserConfiguration.TABLE_USERCONFIGURATION + " ADD " + UserConfiguration.KEY_LOCKOUT_TIME + " INTEGER;";
+        String ADD_LOCKOUT_FLAG_COLUMN = "ALTER TABLE " + UserConfiguration.TABLE_USERCONFIGURATION + " ADD " + UserConfiguration.KEY_LOCKOUT_FLAG + " INTEGER;";
+        String ADD_ALLOWED_LOGIN_FAIL_COUNT = "ALTER TABLE " + UserConfiguration.TABLE_USERCONFIGURATION + " ADD " + UserConfiguration.KEY_ALLOWED_NUMBER_OF_FAILED_LOGINS + " INTEGER;";
+        String ADD_FAILED_LOGIN_COUNT = "ALTER TABLE " + UserConfiguration.TABLE_USERCONFIGURATION + " ADD " + UserConfiguration.KEY_FAILED_LOGIN_COUNT + " INTEGER;";
+        sqLiteDatabase.execSQL(ADD_LOCKOUT_TIME_COLUMN);
+        sqLiteDatabase.execSQL(ADD_LOCKOUT_FLAG_COLUMN);
+        sqLiteDatabase.execSQL(ADD_ALLOWED_LOGIN_FAIL_COUNT);
+        sqLiteDatabase.execSQL(ADD_FAILED_LOGIN_COUNT);
     }
 
 
@@ -113,6 +129,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
         values.put(UserConfiguration.KEY_SALT, config.getSalt());
         values.put(UserConfiguration.KEY_DEVICE_PASSWORD, config.getDevicePassword());
         values.put(UserConfiguration.KEY_SECURITY_QUESTION_DEVICE_PASSWORD, config.getSecurityQuestionDevicePassword());
+        values.put(UserConfiguration.KEY_LOCKOUT_TIME, config.getLockoutTime());
+        values.put(UserConfiguration.KEY_LOCKOUT_FLAG, config.getLockoutFlag());
+        values.put(UserConfiguration.KEY_ALLOWED_NUMBER_OF_FAILED_LOGINS, config.getAllowedFailedLoginCount());
+        values.put(UserConfiguration.KEY_FAILED_LOGIN_COUNT, config.getFailedLoginCount());
 
         // Inserting Row
         db.insert(UserConfiguration.TABLE_USERCONFIGURATION, null, values);
@@ -137,6 +157,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
         values.put(UserConfiguration.KEY_SALT, config.getSalt());
         values.put(UserConfiguration.KEY_DEVICE_PASSWORD, config.getDevicePassword());
         values.put(UserConfiguration.KEY_SECURITY_QUESTION_DEVICE_PASSWORD, config.getSecurityQuestionDevicePassword());
+        values.put(UserConfiguration.KEY_LOCKOUT_TIME, config.getLockoutTime());
+        values.put(UserConfiguration.KEY_LOCKOUT_FLAG, config.getLockoutFlag());
+        values.put(UserConfiguration.KEY_ALLOWED_NUMBER_OF_FAILED_LOGINS, config.getAllowedFailedLoginCount());
+        values.put(UserConfiguration.KEY_FAILED_LOGIN_COUNT, config.getFailedLoginCount());
 
         // Inserting Row
         db.update(UserConfiguration.TABLE_USERCONFIGURATION, values, UserConfiguration.KEY_ID + " = ?", new String[] { String.valueOf(config.getID()) });
@@ -163,6 +187,11 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 userConfiguration.setIterations(Integer.parseInt(cursor.getString(cursor.getColumnIndex(UserConfiguration.KEY_ITERATIONS))));
                 userConfiguration.setDevicePassword(cursor.getBlob(cursor.getColumnIndex(UserConfiguration.KEY_DEVICE_PASSWORD)));
                 userConfiguration.setSecurityQuestionDevicePassword(cursor.getBlob(cursor.getColumnIndex(UserConfiguration.KEY_SECURITY_QUESTION_DEVICE_PASSWORD)));
+                userConfiguration.setKeyLockoutTime(cursor.getString(cursor.getColumnIndex(UserConfiguration.KEY_LOCKOUT_TIME)));
+                userConfiguration.setLockoutFlag(cursor.getInt(cursor.getColumnIndex(UserConfiguration.KEY_LOCKOUT_FLAG)));
+                userConfiguration.setAllowedFailedLoginCount(cursor.getInt(cursor.getColumnIndex(UserConfiguration.KEY_ALLOWED_NUMBER_OF_FAILED_LOGINS)));
+                userConfiguration.setFailedLoginCount(cursor.getInt(cursor.getColumnIndex(UserConfiguration.KEY_FAILED_LOGIN_COUNT)));
+
 
                 configurationList.add(userConfiguration);
             } while (cursor.moveToNext());

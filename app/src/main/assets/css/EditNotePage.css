@@ -29,3 +29,20 @@ input:focus::-webkit-input-placeholder {
     float:none;
     color:red;
 }
+
+
+
+/*div#banner {*/
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*left: 0;*/
+/**/
+/*}*/
+div#banner {
+    background-color: #DDEEEE;
+    width: 100%;
+    text-align: center;
+    margin: 0 auto;
+    padding: 10px;
+    border: 1px solid #000;
+}

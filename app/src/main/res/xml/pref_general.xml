@@ -40,4 +40,18 @@
         android:summary="Add, edit or delete security questions."
         android:title="Configure Security Questions" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/preferenceSecurityExponentialLockout"
+        android:summary="Enabling failed login lockout protects your from an intruder trying to guess your password."
+        android:title="Enable failed login lockout" />
+
+    <ListPreference
+        android:key="@string/preferenceExponentialLockoutAllowedFails"
+        android:entries="@array/exponentialLockoutOptions"
+        android:entryValues="@array/exponentialLockoutValues"
+        android:defaultValue="5"
+        android:summary="You can customize how many failed logins will be allowed before lockout."
+        android:title="Allowed number of failed login in attempts:" />
+
 </PreferenceScreen>

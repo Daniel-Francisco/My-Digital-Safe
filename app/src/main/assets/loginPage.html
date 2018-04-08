@@ -25,11 +25,13 @@
 <div class="container">
     <div id="loginForm">
         <img src="images/logo.svg" id="loginLogo"/>
+
         <div id="loginProgressArea">
             <div class="progressTitle">Logging in!</div>
             <progress id="loginProgressBar" value="0" max="100"></progress>
             <div id="percentageText"></div>
         </div>
+        <div id="lockoutSection" class="hide"></div>
         <div id="loginInfoArea">
             <input name="password" id="password" value="" class="input" placeholder="Password"
                    type="password">

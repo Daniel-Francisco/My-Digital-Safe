@@ -26,7 +26,8 @@
             android:name=".EditNoteActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".StartupActivity" />
-        <activity android:name=".security.LoginActivity" />
+        <activity android:name=".security.LoginActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ListActivity"
             android:theme="@style/AppTheme.NoActionBar"

@@ -23,6 +23,8 @@
     <string name="preferenceChangePassword">changePasswordPreferenceButton</string>
     <string name="preferenceConfigureSecurityQuestions">configureSecurityQuestionsPreferenceButton</string>
     <string name="preferenceSecurityQuestionsToggle">configureSecurityQuestionsToggle</string>
+    <string name="preferenceSecurityExponentialLockout">configureSecurityExponentialLockout</string>
+    <string name="preferenceExponentialLockoutAllowedFails">configureSecurityExponentialLockoutAllowedFails</string>
 
     <!-- Strings related to Settings -->
 

@@ -15,6 +15,10 @@ public class UserConfiguration {
     public static final String KEY_SALT = "salt";
     public static final String KEY_DEVICE_PASSWORD = "device_password";
     public static final String KEY_SECURITY_QUESTION_DEVICE_PASSWORD = "security_question_d_p";
+    public static final String KEY_LOCKOUT_TIME = "lockout_time";
+    public static final String KEY_LOCKOUT_FLAG = "lockout_flag";
+    public static final String KEY_ALLOWED_NUMBER_OF_FAILED_LOGINS = "allowed_failed_login_count";
+    public static final String KEY_FAILED_LOGIN_COUNT = "failed_login_count";
 
     int _id;
     int iterations;
@@ -22,6 +26,10 @@ public class UserConfiguration {
     String salt;
     byte[] devicePassword;
     byte[] securityQuestionDevicePassword;
+    String lockoutTime;
+    int lockoutFlag;
+    int allowedFailedLoginCount;
+    int failedLoginCount;
 
     public UserConfiguration(){}
     public UserConfiguration(int id, int iterations, String password_hash, String salt){
@@ -77,5 +85,33 @@ public class UserConfiguration {
     }
     public byte[] getSecurityQuestionDevicePassword(){
         return securityQuestionDevicePassword;
+    }
+
+    public void setLockoutFlag(int lockoutFlag){
+        this.lockoutFlag = lockoutFlag;
+    }
+    public int getLockoutFlag(){
+        return lockoutFlag;
+    }
+
+    public void setKeyLockoutTime(String lockoutTime){
+        this.lockoutTime = lockoutTime;
+    }
+    public String getLockoutTime(){
+        return lockoutTime;
+    }
+
+    public void setAllowedFailedLoginCount(int allowedFailedLoginCount){
+        this.allowedFailedLoginCount = allowedFailedLoginCount;
+    }
+    public int getAllowedFailedLoginCount(){
+        return allowedFailedLoginCount;
+    }
+
+    public void setFailedLoginCount(int failedLoginCount){
+        this.failedLoginCount = failedLoginCount;
+    }
+    public int getFailedLoginCount(){
+        return failedLoginCount;
     }
 }

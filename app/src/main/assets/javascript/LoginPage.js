@@ -11,16 +11,19 @@ $(document).ready(function () {
     $("#signIn").on("click", function (event) {
         loginTime = Android.getloginTime();
         event.preventDefault();
+        document.getElementById("lockoutSection").classList.add("hide");
         if (!attemptingLogin) {
             var password = $("#password").val().trim();
-            attemptingLogin = true;
-            if (loginTime != -1) {
-                $("#loginInfoArea").addClass("hideLoginInfoArea");
-                $("#forgotPasswordLink").addClass("hide");
-                $("#loginProgressArea").addClass("showProgressBar");
-                setTimeout(updateProgressBar, (loginTime / 100));
+            if(password != ""){
+                attemptingLogin = true;
+                if (loginTime != -1) {
+                    $("#loginInfoArea").addClass("hideLoginInfoArea");
+                    $("#forgotPasswordLink").addClass("hide");
+                    $("#loginProgressArea").addClass("showProgressBar");
+                    setTimeout(updateProgressBar, (loginTime / 100));
+                }
+                Android.authenticateUser(password);
             }
-            Android.authenticateUser(password);
         }
 
         function danielTestPleaseDontJudge() {
@@ -71,4 +74,14 @@ function failedLogin() {
     $("#loginProgressArea").removeClass("showProgressBar");
     $("#password").val("");
     percentProgress = 0;
+}
+
+function lockedOutLogin(){
+    failedLogin();
+
+    var lockoutMessage = Android.getLockoutString();
+
+    var lockoutArea = document.getElementById("lockoutSection");
+    lockoutArea.classList.remove("hide");
+    lockoutArea.innerText = lockoutMessage;
 }

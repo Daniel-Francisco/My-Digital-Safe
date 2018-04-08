@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.development.security.ciphernote.ListActivity;
 import com.development.security.ciphernote.R;
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.SecurityQuestion;
+import com.development.security.ciphernote.model.UserConfiguration;
 import com.development.security.ciphernote.security.ConfigureSecurityQuestionsActivity;
 
 import java.util.List;
@@ -24,7 +26,12 @@ import java.util.List;
 public class SettingsActivity extends PreferenceActivity {
     private AppCompatDelegate mDelegate;
     private Context applicationContext;
+
     private boolean criticalChangesMadeFlag = false;
+    private Boolean exponentialLockoutEnableFlag = null;
+    private Boolean securityQuestionsEnableFlag = null;
+    private Integer exponentialLockoutAllowedFails = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +75,67 @@ public class SettingsActivity extends PreferenceActivity {
             public boolean onPreferenceChange(Preference arg0, Object isVibrateOnObject) {
                 criticalChangesMadeFlag = true;
                 boolean isSecurityQuestionResetOn = (Boolean) isVibrateOnObject;
-                configureSecurityQuestionsButton.setEnabled(isSecurityQuestionResetOn);
-                prefs.edit().putBoolean("passwordResetToggle", isSecurityQuestionResetOn).commit();
-                Log.d("valueThing", String.valueOf(isSecurityQuestionResetOn));
+
+                securityQuestionsEnableFlag = isSecurityQuestionResetOn;
+                configureSecurityQuestionsButton.setEnabled(securityQuestionsEnableFlag);
+
+//                configureSecurityQuestionsButton.setEnabled(isSecurityQuestionResetOn);
+//                prefs.edit().putBoolean("passwordResetToggle", isSecurityQuestionResetOn).commit();
+//                Log.d("valueThing", String.valueOf(isSecurityQuestionResetOn));
+                return true;
+            }
+        });
+
+
+        final ListPreference allowedFailList = (ListPreference) findPreference(getString(R.string.preferenceExponentialLockoutAllowedFails));
+
+        allowedFailList.setEnabled(prefs.getBoolean("exponentialLockoutFlag", false));
+        allowedFailList.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String listValue = (String) newValue;
+                int listValueInt = Integer.parseInt(listValue);
+                exponentialLockoutAllowedFails = listValueInt;
+
+                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+                UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+
+                userConfiguration.setAllowedFailedLoginCount(exponentialLockoutAllowedFails);
+
+                databaseManager.updateUserConfiguration(userConfiguration);
+                return true;
+            }
+        });
+
+
+        Preference enableExponentialLockoutPreference = findPreference(getString(R.string.preferenceSecurityExponentialLockout));
+        enableExponentialLockoutPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference arg0, Object isExponentialLockoutObject) {
+                criticalChangesMadeFlag = true;
+                boolean isExponentialLockoutEnabled = (Boolean) isExponentialLockoutObject;
+
+                exponentialLockoutEnableFlag = isExponentialLockoutEnabled;
+                allowedFailList.setEnabled(exponentialLockoutEnableFlag);
+
+                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+                UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+                prefs.edit().putBoolean("exponentialLockoutFlag", exponentialLockoutEnableFlag).commit();
+
+
+                if (exponentialLockoutEnableFlag) {
+                    userConfiguration.setLockoutFlag(1);
+                } else {
+                    userConfiguration.setLockoutFlag(0);
+                }
+
+                if(exponentialLockoutAllowedFails != null){
+                    userConfiguration.setAllowedFailedLoginCount(exponentialLockoutAllowedFails);
+
+                }
+
+                databaseManager.updateUserConfiguration(userConfiguration);
+
                 return true;
             }
         });
@@ -81,40 +146,39 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public void onClick(View v) {
                 //save stuff
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-                if (!prefs.getBoolean("passwordResetToggle", false)) {
-                    DatabaseManager databaseManager = new DatabaseManager(applicationContext);
-                    List<SecurityQuestion> securityQuestionList = databaseManager.getAllSecurityQuestions();
-                    for (int i = 0; i < securityQuestionList.size(); i++) {
-                        databaseManager.deleteSecurityQuestion(securityQuestionList.get(i));
-                    }
-                }
-
                 Intent listIntent = new Intent(applicationContext, ListActivity.class);
                 startActivity(listIntent);
                 finish();
             }
         });
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        if (securityQuestionsEnableFlag != null) {
+            prefs.edit().putBoolean("passwordResetToggle", securityQuestionsEnableFlag).commit();
+            Log.d("valueThing", String.valueOf(securityQuestionsEnableFlag));
+
+            if (!securityQuestionsEnableFlag) {
+                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+                List<SecurityQuestion> securityQuestionList = databaseManager.getAllSecurityQuestions();
+                for (int i = 0; i < securityQuestionList.size(); i++) {
+                    databaseManager.deleteSecurityQuestion(securityQuestionList.get(i));
+                }
+            }
+        }
+
+
     }
 
     @Override
     public void onBackPressed() {
-        if (criticalChangesMadeFlag) {
-            new android.app.AlertDialog.Builder(applicationContext)
-                    .setTitle("Cancel changes?")
-                    .setMessage("Are you sure you want to throw away any changes? To save your changes, click the save button in the toolbar.")
-                    .setIcon(android.R.drawable.ic_delete)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            Intent listIntent = new Intent(applicationContext, ListActivity.class);
-                            startActivity(listIntent);
-                            finish();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, null).show();
-        }else{
-            finish();
-        }
+        Intent listIntent = new Intent(applicationContext, ListActivity.class);
+        startActivity(listIntent);
+        finish();
     }
 
 //    @Override

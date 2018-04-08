@@ -27,7 +27,8 @@ $(document).ready(function () {
 
     var documentHeight = $(document).height();
     var height = $("#editNoteTitle").height();
-    document.getElementById('page').style.height = (documentHeight - height) + 'px';
+    var bannerHeight = $("#banner").height();
+    document.getElementById('page').style.height = (documentHeight - height - bannerHeight - 20) + 'px';
 
     editText = document.getElementById("noteArea");
     title = document.getElementById("editNoteTitle");
