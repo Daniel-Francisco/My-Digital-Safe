@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'MyAndroidKey'
-            keyPassword 'YodaYoda55'
-            storeFile file('C:/Users/danie/Desktop/myDigitalSafe.jks')
-            storePassword 'Yoda@Java97'
+            keyAlias 'fake'
+            keyPassword 'fake'
+            storeFile file('fake')
+            storePassword 'fake'
         }
     }
     compileSdkVersion 25
@@ -15,7 +15,7 @@ android {
         applicationId "com.development.security.ciphernote"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 18
+        versionCode 19
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
