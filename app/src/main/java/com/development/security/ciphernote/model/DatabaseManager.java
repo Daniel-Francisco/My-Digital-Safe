@@ -37,7 +37,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class DatabaseManager extends SQLiteOpenHelper {
     // Database Version
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Database Name
     private static final String DATABASE_NAME = "ciphernote_db";
@@ -75,11 +75,12 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 + QuickNoteFile.KEY_QUICK_NOTE_DATA + " TEXT" + ")";
         sqLiteDatabase.execSQL(CREATE_QUICK_NOTE_FILES_TABLE);
 
-        String CREATE_SECURITYQUESTIONS_TABLE = "CREATE TABLE " + SecurityQuestion.TABLE_SECURITYQUESTIONS + "("
+        String CREATE_SECURITY_QUESTIONS_TABLE = "CREATE TABLE " + SecurityQuestion.TABLE_SECURITYQUESTIONS + "("
                 + SecurityQuestion.KEY_ID + " INTEGER PRIMARY KEY,"
                 + SecurityQuestion.KEY_QUESTION + " TEXT,"
+                + SecurityQuestion.KEY_QUESTION_ORDER + " INTEGER,"
                 + SecurityQuestion.KEY_ANSWER_HASH + " TEXT" + ")";
-        sqLiteDatabase.execSQL(CREATE_SECURITYQUESTIONS_TABLE);
+        sqLiteDatabase.execSQL(CREATE_SECURITY_QUESTIONS_TABLE);
     }
 
     @Override
@@ -89,6 +90,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 upgradeFromOneToTwo(sqLiteDatabase);
             case 2:
                 upgradeFromTwoToThree(sqLiteDatabase);
+            case 3:
+                upgradeFromThreeToFour(sqLiteDatabase);
                 break;
             default:
                 throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
@@ -111,6 +114,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(ADD_LOCKOUT_FLAG_COLUMN);
         sqLiteDatabase.execSQL(ADD_ALLOWED_LOGIN_FAIL_COUNT);
         sqLiteDatabase.execSQL(ADD_FAILED_LOGIN_COUNT);
+    }
+    private void upgradeFromThreeToFour(SQLiteDatabase sqLiteDatabase){
+        String ADD_QUESTION_ORDER_COLUMN = "ALTER TABLE " + SecurityQuestion.TABLE_SECURITYQUESTIONS + " ADD " + SecurityQuestion.KEY_QUESTION_ORDER + " INTEGER;";
+        sqLiteDatabase.execSQL(ADD_QUESTION_ORDER_COLUMN);
     }
 
 
@@ -219,6 +226,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(SecurityQuestion.KEY_ANSWER_HASH, securityQuestion.getAnswerHash());
         values.put(SecurityQuestion.KEY_QUESTION, securityQuestion.getQuestion());
+        values.put(SecurityQuestion.KEY_QUESTION_ORDER, securityQuestion.getQuestionOrder());
 
         // Inserting Row
         long id = db.insert(SecurityQuestion.TABLE_SECURITYQUESTIONS, null, values);
@@ -249,6 +257,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 securityQuestion.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(SecurityQuestion.KEY_ID))));
                 securityQuestion.setAnswerHash(cursor.getString(cursor.getColumnIndex(SecurityQuestion.KEY_ANSWER_HASH)));
                 securityQuestion.setQuestion(cursor.getString(cursor.getColumnIndex(SecurityQuestion.KEY_QUESTION)));
+                securityQuestion.setQuestionOrder(cursor.getInt(cursor.getColumnIndex(SecurityQuestion.KEY_QUESTION_ORDER)));
 
                 securityQuestions.add(securityQuestion);
             } while (cursor.moveToNext());

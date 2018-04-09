@@ -125,7 +125,7 @@ public class LoginActivity extends Activity {
             if (userConfigurationCheck.getLockoutFlag() == 1) {
                 try {
                     String lockoutDate = userConfigurationCheck.getLockoutTime();
-                    boolean dateFlag = checkIfPastDate(lockoutDate);
+                    boolean dateFlag = securityManager.checkIfPastDate(lockoutDate);
                     if (!dateFlag) {
                         //locked out
 
@@ -166,7 +166,7 @@ public class LoginActivity extends Activity {
                     if (userConfiguration.getLockoutFlag() == 1) {
                         int failedCount = userConfiguration.getFailedLoginCount() + 1;
                         userConfiguration.setFailedLoginCount(failedCount);
-                        userConfiguration = generateUnlockString(userConfiguration, failedCount);
+                        userConfiguration = securityManager.generateUnlockString(userConfiguration, failedCount);
                         databaseManager.updateUserConfiguration(userConfiguration);
                     }
                 } else {
@@ -188,54 +188,7 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private UserConfiguration generateUnlockString(UserConfiguration userConfiguration, int failCount) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-        int allowedFails = userConfiguration.getAllowedFailedLoginCount();
-        Log.d("allowedFails", String.valueOf(allowedFails));
-        if (allowedFails == 0) {
-            allowedFails = 5;
-        }
-        if (failCount >= allowedFails) {
-            int difference = failCount - allowedFails;
-            int checkInt = (difference % 3);
-            if (difference == 0) {
-                Calendar c = Calendar.getInstance();
-                c.setTime(new Date()); // Now use today date.
-                c.add(Calendar.MINUTE, 1);
-                Date date = c.getTime();
-                userConfiguration.setKeyLockoutTime(sdf.format(date));
-                return userConfiguration;
-            } else if (checkInt == 0) {
-                int failLevel = difference / 3;
-                double lockoutMinutes = Math.pow(2, failLevel);
-                int lockoutMinutesInt = (int) lockoutMinutes;
-                Calendar c = Calendar.getInstance();
-                c.setTime(new Date()); // Now use today date.
-                c.add(Calendar.MINUTE, lockoutMinutesInt);
-                Date date = c.getTime();
-                userConfiguration.setKeyLockoutTime(sdf.format(date));
-                return userConfiguration;
-            }
-        }
-        userConfiguration.setKeyLockoutTime(null);
-        return userConfiguration;
-    }
-
-    private boolean checkIfPastDate(String dateString) throws ParseException {
-        if (dateString != null && !dateString.equals("")) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-            Date date = sdf.parse(dateString);
-            Date now = new Date();
-            if (now.after(date)) {
-                return true;
-            }
-        } else {
-            return true;
-        }
-
-        return false;
-    }
 
     private void writeLoginTime(int time) {
         SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);

@@ -1,17 +1,20 @@
-#page, #finishedPage{
-    text-align:center;
-}
-.securityQuestionWrapper{
-    padding-top:5px;
-    padding-bottom:5px;
-    text-align:center;
-}
-.questionOptions{
-    margin-bottom:12px;
+#page, #finishedPage {
+    text-align: center; width: 100%;
 }
 
-.securityQuestionAnswers{
-    width:80%;
+.securityQuestionWrapper {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+.questionOptions {
+    margin-bottom: 12px;
+    width: 75%;
+}
+
+.securityQuestionAnswers {
+    width: 80%;
     margin-left: 10%;
     margin-right: 10%;
 
@@ -28,34 +31,55 @@
     line-height: 17px;
     border-radius: 0px !important;
 }
-.securityAnswerTitle, .securityQuestionTitle{
-    text-align: left!important;
+
+.securityAnswerTitle, .securityQuestionTitle {
+    text-align: left !important;
     font-size: 16px;
     margin-left: 10%;
 
 }
 
-#securityQuestionBlurb{
+#securityQuestionBlurb {
     padding-top: 10px;
 }
-#loginPrompt{
+
+#loginPrompt {
     padding-left: 10px;
     padding-right: 10px;
 }
 
-#finishedPage, #confirmReplacingSecurityQuestionPage{
-    padding:10px;
+#finishedPage, #confirmReplacingSecurityQuestionPage {
+    padding: 10px;
 }
 
-#confirmReplacingSecurityQuestionPage{
-    text-align:center;
-    width:100%;
-    display:inline-block;
+#confirmReplacingSecurityQuestionPage {
+    text-align: center;
+    width: 100%;
+    display: inline-block;
 }
 
-#goHome, #replaceQuestions{
-    display:inline-block;
-    margin-top:5px;
-    margin-bottom:5px;
+#goHome, #replaceQuestions {
+    display: inline-block;
+    margin-top: 5px;
+    margin-bottom: 5px;
 
+}
+
+#newSecurityQuestion {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.securityQuestionLineDivider{
+    width:80%;
+    height:1px;
+    background: lightgrey;
+    padding-left:10%;
+    padding-right:10%;
+}
+#removeSecurityQuestion{
+    margin-bottom:10px;
+}
+#submitSecurityQuestions{
+    margin-bottom: 25px;
 }

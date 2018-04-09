@@ -11,10 +11,12 @@ public class SecurityQuestion {
     public static final String KEY_ID = "id";
     public static final String KEY_QUESTION = "question";
     public static final String KEY_ANSWER_HASH = "answer_hash";
+    public static final String KEY_QUESTION_ORDER = "question_order";
 
     int _id;
     String question;
     String answerHash;
+    int questionOrder;
 
     public SecurityQuestion(){}
     public SecurityQuestion(int id, String question, String answerHash){
@@ -42,6 +44,13 @@ public class SecurityQuestion {
     }
     public String getQuestion(){
         return question;
+    }
+
+    public void setQuestionOrder(int questionOrder){
+        this.questionOrder = questionOrder;
+    }
+    public int getQuestionOrder(){
+        return questionOrder;
     }
 
 

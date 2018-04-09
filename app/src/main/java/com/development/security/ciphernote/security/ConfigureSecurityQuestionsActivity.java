@@ -69,7 +69,7 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
                                 }
                             })
                             .setNegativeButton(android.R.string.no, null).show();
-                }else{
+                } else {
                     finish();
                 }
             }
@@ -77,24 +77,35 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
 
     }
 
-    private void setSecurityQuestion(String password, String securityQuestionResponse) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException, JSONException, AuthenticatorException {
+    private void setSecurityQuestion(String password) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException, JSONException, AuthenticatorException {
         DatabaseManager databaseManager = new DatabaseManager(applicationContext);
         UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
 
         SecurityManager securityManager = new SecurityManager();
-        userConfiguration = securityManager.setSecurityQuestion(userConfiguration, applicationContext, password, question, securityQuestionResponse);
+        userConfiguration = securityManager.setSecurityQuestion(userConfiguration, applicationContext, password, securityQuestionCount,
+                questionOneP, answerOneP, questionTwoP, answerTwoP, questionThreeP, answerThreeP,
+                questionFourP, answerFourP, questionFiveP, answerFiveP);
         databaseManager.updateUserConfiguration(userConfiguration);
     }
 
     protected String userPassword = "";
-    protected String response = "";
-    protected String question = "";
+    protected String questionOneP = "";
+    protected String answerOneP = "";
+    protected String questionTwoP = "";
+    protected String answerTwoP = "";
+    protected String questionThreeP = "";
+    protected String answerThreeP = "";
+    protected String questionFourP = "";
+    protected String answerFourP = "";
+    protected String questionFiveP = "";
+    protected String answerFiveP = "";
+    protected int securityQuestionCount = 0;
 
     private class AsyncSetSecurityQuestion extends AsyncTask<String, String, Boolean> {
         @Override
         protected Boolean doInBackground(String... strings) {
             try {
-                setSecurityQuestion(userPassword, response);
+                setSecurityQuestion(userPassword);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -149,7 +160,7 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
                         }
                     })
                     .setNegativeButton(android.R.string.no, null).show();
-        }else{
+        } else {
             finish();
         }
     }
@@ -160,13 +171,28 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
         WebAppInterface(Context c) {
             mContext = c;
         }
-
+//answer
 
         @JavascriptInterface
-        public void setSecurityQuestion(String password, String securityQuestion, String securityQuestionResponse) {
+        public void setSecurityQuestion(String password, int numberOfSecurityQuestions, String questionOne, String answerOne,
+                                        String questionTwo, String answerTwo, String questionThree,
+                                        String answerThree, String questionFour, String answerFour,
+                                        String questionFive, String answerFive) {
             userPassword = password;
-            response = securityQuestionResponse;
-            question = securityQuestion;
+            questionOneP = questionOne;
+            questionTwoP = questionTwo;
+            questionThreeP = questionThree;
+            questionFourP = questionFour;
+            questionFiveP = questionFive;
+
+            answerOneP = answerOne;
+            answerTwoP = answerTwo;
+            answerThreeP = answerThree;
+            answerFourP = answerFour;
+            answerFiveP = answerFive;
+
+            securityQuestionCount = numberOfSecurityQuestions;
+
             new AsyncSetSecurityQuestion().execute();
         }
 

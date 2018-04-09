@@ -3,6 +3,7 @@ package com.development.security.ciphernote.security;
 import android.accounts.AuthenticatorException;
 import android.content.Context;
 import android.util.Base64;
+import android.util.Log;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
@@ -11,7 +12,9 @@ import com.development.security.ciphernote.model.UserConfiguration;
 
 import org.json.JSONException;
 
+import java.io.SequenceInputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -21,7 +24,11 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.KeySpec;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -110,7 +117,10 @@ public class SecurityManager {
     }
 
 
-    public UserConfiguration setSecurityQuestion(UserConfiguration userConfiguration, Context context, String password, String question, String response) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidParameterSpecException, JSONException, AuthenticatorException {
+    public UserConfiguration setSecurityQuestion(UserConfiguration userConfiguration, Context context,
+                                                 String password, int numberOfQuestions, String q1,
+                                                 String r1, String q2, String r2, String q3, String r3,
+                                                 String q4, String r4, String q5, String r5) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidParameterSpecException, JSONException, AuthenticatorException {
         byte[] devicePassword = userConfiguration.getDevicePassword();
 
         DatabaseManager databaseManager = new DatabaseManager(context);
@@ -124,13 +134,52 @@ public class SecurityManager {
             throw new AuthenticatorException();
         }
 
+        String recoveryKey = "";
+        ArrayList<SecurityQuestion> questionList = new ArrayList<>();
+        if(numberOfQuestions > 0){
+            recoveryKey = recoveryKey + r1;
+            questionList.add(generateQuestion(userConfiguration, q1, r1));
+        }
+        if(numberOfQuestions > 1){
+            recoveryKey = recoveryKey + r2;
+            questionList.add(generateQuestion(userConfiguration, q2, r2));
+        }
+        if(numberOfQuestions > 2){
+            recoveryKey = recoveryKey + r3;
+            questionList.add(generateQuestion(userConfiguration, q3, r3));
+        }
+        if(numberOfQuestions > 3){
+            recoveryKey = recoveryKey + r4;
+            questionList.add(generateQuestion(userConfiguration, q4, r4));
+        }
+        if(numberOfQuestions > 4){
+            recoveryKey = recoveryKey + r5;
+            questionList.add(generateQuestion(userConfiguration, q5, r5));
+        }
         byte[] decryptedDevicePassword = encryptWithAlternatePassword(password, devicePassword, userConfiguration.getSalt().getBytes(), userConfiguration.getIterations(), false);
 
-        byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(response, decryptedDevicePassword, userConfiguration.getSalt().getBytes(), userConfiguration.getIterations(), true);
+        byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(recoveryKey, decryptedDevicePassword, userConfiguration.getSalt().getBytes(), userConfiguration.getIterations(), true);
 
         userConfiguration.setSecurityQuestionDevicePassword(reEncryptedDevicePassword);
 
 
+
+
+        List<SecurityQuestion> securityQuestions = databaseManager.getAllSecurityQuestions();
+        for (int i = 0; i < securityQuestions.size(); i++) {
+            databaseManager.deleteSecurityQuestion(securityQuestions.get(i));
+        }
+
+        for(int i = 0; i<questionList.size(); i++){
+            SecurityQuestion securityQuestion = questionList.get(i);
+            securityQuestion.setQuestionOrder(i+1);
+            databaseManager.addSecurityQuestion(securityQuestion);
+        }
+
+        return userConfiguration;
+    }
+
+    private SecurityQuestion generateQuestion(UserConfiguration userConfiguration, String question, String response){
         byte[] hashedResponse = hashSecurityQuestion(response, userConfiguration.getSalt().getBytes(), userConfiguration.getIterations());
         String hashString = Base64.encodeToString(hashedResponse, Base64.DEFAULT);
 
@@ -138,22 +187,22 @@ public class SecurityManager {
         securityQuestion.setQuestion(question);
         securityQuestion.setAnswerHash(hashString);
 
-        List<SecurityQuestion> securityQuestions = databaseManager.getAllSecurityQuestions();
-        for (int i = 0; i < securityQuestions.size(); i++) {
-            databaseManager.deleteSecurityQuestion(securityQuestions.get(i));
-        }
-
-        databaseManager.addSecurityQuestion(securityQuestion);
-
-        return userConfiguration;
+        return securityQuestion;
     }
 
-    public void resetPasswordWithSecurityQuestion(String response, String newPassword, Context context) throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidParameterSpecException {
+    public void resetPasswordWithSecurityQuestion(List<String> responses, String newPassword, Context context) throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidParameterSpecException {
         DatabaseManager databaseManager = new DatabaseManager(context);
         UserConfiguration configuration = databaseManager.getUserConfiguration();
+
+        String responseKey = "";
+        for(int i = 0; i<responses.size(); i++){
+            responseKey = responseKey + responses.get(i);
+        }
+
+
         byte[] encryptedDevicePassword = configuration.getSecurityQuestionDevicePassword();
 
-        byte[] decryptedDevicePassword = encryptWithAlternatePassword(response, encryptedDevicePassword, configuration.getSalt().getBytes(), configuration.getIterations(), false);
+        byte[] decryptedDevicePassword = encryptWithAlternatePassword(responseKey, encryptedDevicePassword, configuration.getSalt().getBytes(), configuration.getIterations(), false);
 
         byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(newPassword, decryptedDevicePassword, configuration.getSalt().getBytes(), configuration.getIterations(), true);
 
@@ -168,29 +217,29 @@ public class SecurityManager {
 
     }
 
-    public boolean compareSecurityQuestionResponse(String response, Context context) {
+    public boolean compareSecurityQuestionResponse(List<String> responses, Context context) {
         DatabaseManager databaseManager = new DatabaseManager(context);
 
         UserConfiguration configuration = databaseManager.getUserConfiguration();
         List<SecurityQuestion> securityQuestions = databaseManager.getAllSecurityQuestions();
 
-        SecurityQuestion securityQuestion = null;
         if (securityQuestions.size() > 0) {
-            securityQuestion = securityQuestions.get(0);
+            for(int i = 0; i<securityQuestions.size(); i++){
+                SecurityQuestion securityQuestion = securityQuestions.get(i);
+                String presetResponse = securityQuestion.getAnswerHash();
+
+                byte[] inputtedResponse = hashSecurityQuestion(responses.get(i), configuration.getSalt().getBytes(), configuration.getIterations());
+                String responseHashAsString = Base64.encodeToString(inputtedResponse, Base64.DEFAULT);
+
+                if (!presetResponse.equals(responseHashAsString)) {
+                    return false;
+                }
+            }
         } else {
             return false;
         }
 
-        String presetResponse = securityQuestion.getAnswerHash();
-
-        byte[] inputtedResponse = hashSecurityQuestion(response, configuration.getSalt().getBytes(), configuration.getIterations());
-        String responseHashAsString = Base64.encodeToString(inputtedResponse, Base64.DEFAULT);
-
-        if (presetResponse.equals(responseHashAsString)) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
 
@@ -382,4 +431,52 @@ public class SecurityManager {
     }
 
 
+    public UserConfiguration generateUnlockString(UserConfiguration userConfiguration, int failCount) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+        int allowedFails = userConfiguration.getAllowedFailedLoginCount();
+        Log.d("allowedFails", String.valueOf(allowedFails));
+        if (allowedFails == 0) {
+            allowedFails = 5;
+        }
+        if (failCount >= allowedFails) {
+            int difference = failCount - allowedFails;
+            int checkInt = (difference % 3);
+            if (difference == 0) {
+                Calendar c = Calendar.getInstance();
+                c.setTime(new Date()); // Now use today date.
+                c.add(Calendar.MINUTE, 1);
+                Date date = c.getTime();
+                userConfiguration.setKeyLockoutTime(sdf.format(date));
+                return userConfiguration;
+            } else if (checkInt == 0) {
+                int failLevel = difference / 3;
+                double lockoutMinutes = Math.pow(2, failLevel);
+                int lockoutMinutesInt = (int) lockoutMinutes;
+                Calendar c = Calendar.getInstance();
+                c.setTime(new Date()); // Now use today date.
+                c.add(Calendar.MINUTE, lockoutMinutesInt);
+                Date date = c.getTime();
+                userConfiguration.setKeyLockoutTime(sdf.format(date));
+                return userConfiguration;
+            }
+        }
+        userConfiguration.setKeyLockoutTime(null);
+        return userConfiguration;
+    }
+
+    public boolean checkIfPastDate(String dateString) throws ParseException {
+        if (dateString != null && !dateString.equals("")) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            Date date = sdf.parse(dateString);
+            Date now = new Date();
+            if (now.after(date)) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -1,25 +1,85 @@
 $(document).ready(function () {
     var securityQuestionJson = Android.fetchQuestions();
-
+    console.log(securityQuestionJson);
     try{
-        var securityQuestion = JSON.parse(securityQuestionJson);
-        var questionText = securityQuestion.question;
-        document.getElementById("securityQuestionText").innerText = questionText;
+        var securityQuestions = JSON.parse(securityQuestionJson);
 
+        for(var i = 0; i<securityQuestions.length; i++){
+            console.log("here");
+            if(i == 0){
+                document.getElementById("questionOne").innerText = securityQuestions[i].question;
+            }else if(i == 1){
+                document.getElementById("questionTwo").innerText = securityQuestions[i].question;
+                document.getElementById("questionTwo").classList.remove("hide");
+                document.getElementById("responseTwo").classList.remove("hide");
+                document.getElementById("questionTwoDivide").classList.remove("hide");
+            }else if(i == 2){
+                document.getElementById("questionThree").innerText = securityQuestions[i].question;
+                document.getElementById("questionThree").classList.remove("hide");
+                document.getElementById("responseThree").classList.remove("hide");
+                document.getElementById("questionThreeDivide").classList.remove("hide");
+            }else if(i == 3){
+                document.getElementById("questionFour").innerText = securityQuestions[i].question;
+                document.getElementById("questionFour").classList.remove("hide");
+                document.getElementById("responseFour").classList.remove("hide");
+                document.getElementById("questionFourDivide").classList.remove("hide");
+            }else if(i == 4){
+                document.getElementById("questionFive").innerText = securityQuestions[i].question;
+                document.getElementById("questionFive").classList.remove("hide");
+                document.getElementById("responseFive").classList.remove("hide");
+                document.getElementById("questionFiveDivide").classList.remove("hide");
+            }
+        }
     }catch(exception){
         document.getElementById("forgotPasswordPage").classList.add("hide");
         document.getElementById("noQuestionPage").classList.remove("hide");
         console.error(exception);
     }
 
+    var checkForLockout = Android.getLockoutString();
+    if(checkForLockout != ""){
+        document.getElementById("forgotPasswordPage").classList.add("hide");
+        document.getElementById("lockoutSection").classList.remove("hide");
+        document.getElementById("lockoutSection").innerText = checkForLockout;
+    }
+
     $("#submitResponse").on("click", function (event) {
-        var responseValue = document.getElementById("securityQuestionResponse").value;
+        var responseOne = document.getElementById("responseOne").value;
+        var responseTwo = document.getElementById("responseTwo").value;
+        var responseThree = document.getElementById("responseThree").value;
+        var responseFour = document.getElementById("responseFour").value;
+        var responseFive = document.getElementById("responseFive").value;
+
         document.getElementById("forgotPasswordPage").classList.add("hide");
         document.getElementById("loader").classList.remove("hide");
-        Android.checkSecurityQuestion(responseValue);
+        Android.checkSecurityQuestion(responseOne, responseTwo, responseThree, responseFour, responseFive);
     });
 
-    $("#securityQuestionResponse")[0].addEventListener("keyup", function (event) {
+    $("#questionOne")[0].addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            $("#submitResponse").click();
+        }
+    });
+    $("#questionTwo")[0].addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            $("#submitResponse").click();
+        }
+    });
+    $("#questionThree")[0].addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            $("#submitResponse").click();
+        }
+    });
+    $("#questionFour")[0].addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            $("#submitResponse").click();
+        }
+    });
+    $("#questionFive")[0].addEventListener("keyup", function (event) {
         event.preventDefault();
         if (event.keyCode === 13) {
             $("#submitResponse").click();

@@ -75,3 +75,18 @@
     display:none;
 }
 /*255 255 255*/
+
+#lockoutSection{
+    width:75%;
+    padding:15px;
+    background-color: #952422;
+    margin:auto;
+    color:white;
+}
+hr {
+    height: 1px;
+    border: 0;
+    color: #333;
+    background-color: #333;
+    width: 80%;
+}

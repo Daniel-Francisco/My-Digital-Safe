@@ -31,6 +31,6 @@
         android:tint="@color/white"
         app:borderWidth="0dp"
         android:backgroundTint="@color/black"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/add_note_icon" />
 
 </android.support.design.widget.CoordinatorLayout>

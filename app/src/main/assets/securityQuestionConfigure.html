@@ -40,6 +40,12 @@
                 <option value="2">Which is your favorite web browser?</option>
                 <option value="3">What is the name of your favorite pet?</option>
                 <option value="4">What is your mother's maiden name?</option>
+                <option value="5">Who was your childhood hero?</option>
+                <option value="6">Where were you when you had your first alcoholic drink (or cigarette)?</option>
+                <option value="7">In what town or city was your first full time job?</option>
+                <option value="8">What were the last four digits of your childhood telephone number?</option>
+                <option value="9">What was the house number and street name you lived in as a child?</option>
+                <option value="10">What primary school did you attend?</option>
             </select>
             <div class="securityAnswerTitle">Security Answer:</div>
             <input type="password" class="securityQuestionAnswers input" value="" placeholder="Response"
@@ -47,44 +53,84 @@
         </div>
 
         <div class="securityQuestionWrapper hide" id="securityQuestionWrapperTwo">
-            <select class="questionOptions">
+            <hr>
+            <div class="securityQuestionTitle">Security Question:</div>
+            <select class="questionOptions" id="securityQuestionTwo">
                 <option value="1">What street did you grow up on?</option>
                 <option value="2">Which is your favorite web browser?</option>
                 <option value="3">What is the name of your favorite pet?</option>
                 <option value="4">What is your mother's maiden name?</option>
+                <option value="5">Who was your childhood hero?</option>
+                <option value="6">Where were you when you had your first alcoholic drink (or cigarette)?</option>
+                <option value="7">In what town or city was your first full time job?</option>
+                <option value="8">What were the last four digits of your childhood telephone number?</option>
+                <option value="9">What was the house number and street name you lived in as a child?</option>
+                <option value="10">What primary school did you attend?</option>
             </select>
-            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerTwo"/>
+            <div class="securityAnswerTitle">Security Answer:</div>
+            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerTwo" placeholder="Response"/>
         </div>
 
         <div class="securityQuestionWrapper hide" id="securityQuestionWrapperThree">
-            <select class="questionOptions">
+            <hr>
+            <div class="securityQuestionTitle">Security Question:</div>
+            <select class="questionOptions" id="securityQuestionThree">
                 <option value="1">What street did you grow up on?</option>
                 <option value="2">Which is your favorite web browser?</option>
                 <option value="3">What is the name of your favorite pet?</option>
                 <option value="4">What is your mother's maiden name?</option>
+                <option value="5">Who was your childhood hero?</option>
+                <option value="6">Where were you when you had your first alcoholic drink (or cigarette)?</option>
+                <option value="7">In what town or city was your first full time job?</option>
+                <option value="8">What were the last four digits of your childhood telephone number?</option>
+                <option value="9">What was the house number and street name you lived in as a child?</option>
+                <option value="10">What primary school did you attend?</option>
             </select>
-            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerThree"/>
+            <div class="securityAnswerTitle">Security Answer:</div>
+            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerThree" placeholder="Response"/>
         </div>
 
         <div class="securityQuestionWrapper hide" id="securityQuestionWrapperFour">
-            <select class="questionOptions">
+            <hr>
+            <div class="securityQuestionTitle">Security Question:</div>
+            <select class="questionOptions" id="securityQuestionFour">
                 <option value="1">What street did you grow up on?</option>
                 <option value="2">Which is your favorite web browser?</option>
                 <option value="3">What is the name of your favorite pet?</option>
                 <option value="4">What is your mother's maiden name?</option>
+                <option value="5">Who was your childhood hero?</option>
+                <option value="6">Where were you when you had your first alcoholic drink (or cigarette)?</option>
+                <option value="7">In what town or city was your first full time job?</option>
+                <option value="8">What were the last four digits of your childhood telephone number?</option>
+                <option value="9">What was the house number and street name you lived in as a child?</option>
+                <option value="10">What primary school did you attend?</option>
             </select>
-            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerFour"/>
+            <div class="securityAnswerTitle">Security Answer:</div>
+            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerFour" placeholder="Response"/>
         </div>
 
         <div class="securityQuestionWrapper hide" id="securityQuestionWrapperFive">
-            <select class="questionOptions">
+            <hr>
+            <div class="securityQuestionTitle">Security Question:</div>
+            <select class="questionOptions" id="securityQuestionFive">
                 <option value="1">What street did you grow up on?</option>
                 <option value="2">Which is your favorite web browser?</option>
                 <option value="3">What is the name of your favorite pet?</option>
                 <option value="4">What is your mother's maiden name?</option>
+                <option value="5">Who was your childhood hero?</option>
+                <option value="6">Where were you when you had your first alcoholic drink (or cigarette)?</option>
+                <option value="7">In what town or city was your first full time job?</option>
+                <option value="8">What were the last four digits of your childhood telephone number?</option>
+                <option value="9">What was the house number and street name you lived in as a child?</option>
+                <option value="10">What primary school did you attend?</option>
             </select>
-            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerFive"/>
+            <div class="securityAnswerTitle">Security Answer:</div>
+            <input type="password" class="securityQuestionAnswers" id="securityQuestionAnswerFive" placeholder="Response"/>
         </div>
+
+
+        <input id="newSecurityQuestion" value="+ Add another security question" class="primaryButton" type="button" />
+        <input id="removeSecurityQuestion" class="hide primaryButton" value="- Remove a security question" type="button" />
 
 
         <div id="loginPrompt">We need you to confirm you password as well before saving your responses to the security
@@ -92,7 +138,6 @@
         </div>
         <input name="password" id="password" value="" class="input" placeholder="Password" type="password">
 
-        <!--<input id="newSecurityQuestion" value="+ Add another security question" class="primaryButton" class="hide" type="button">-->
         <input id="submitSecurityQuestions" value="Submit response" class="primaryButton" type="button">
     </div>
     <div id="loader" class="hide loader"></div>

@@ -14,9 +14,15 @@ import com.development.security.ciphernote.ListActivity;
 import com.development.security.ciphernote.R;
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.SecurityQuestion;
+import com.development.security.ciphernote.model.UserConfiguration;
 import com.google.gson.Gson;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
     Context applicationContext = null;
@@ -38,7 +44,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         setTitle("Reset password");
     }
 
-    protected String userResponse = "";
+    protected String r1 = "";
+    protected String r2 = "";
+    protected String r3 = "";
+    protected String r4 = "";
+    protected String r5 = "";
     protected String newPassword = "";
 
     private class AsyncCheckSecurityQuestion extends AsyncTask<String, String, Boolean> {
@@ -46,7 +56,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... strings) {
             try {
                 SecurityManager securityManager = new SecurityManager();
-                return securityManager.compareSecurityQuestionResponse(userResponse, applicationContext);
+                ArrayList<String> responses = new ArrayList<>();
+                responses.add(r1);
+                responses.add(r2);
+                responses.add(r3);
+                responses.add(r4);
+                responses.add(r5);
+                return securityManager.compareSecurityQuestionResponse(responses, applicationContext);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -65,7 +81,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         browser.loadUrl("javascript:successfulResponse()");
                     }
                 });
-            }else{
+            } else {
                 Log.d("status", "bad");
                 browser.post(new Runnable() {
                     @Override
@@ -87,7 +103,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... strings) {
             try {
                 SecurityManager securityManager = new SecurityManager();
-                securityManager.resetPasswordWithSecurityQuestion(userResponse, newPassword, applicationContext);
+                ArrayList<String> responses = new ArrayList<>();
+                responses.add(r1);
+                responses.add(r2);
+                responses.add(r3);
+                responses.add(r4);
+                responses.add(r5);
+                securityManager.resetPasswordWithSecurityQuestion(responses, newPassword, applicationContext);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -108,7 +130,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 Intent loginActivity = new Intent(applicationContext, LoginActivity.class);
                 startActivity(loginActivity);
                 finish();
-            }else{
+            } else {
                 CharSequence successToast = "Something went wrong!";
 
                 Toast toast = Toast.makeText(applicationContext, successToast, Toast.LENGTH_LONG);
@@ -119,7 +141,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     int lastScore = 0;
-    private int androidCheckPasswordStrength(String password){
+
+    private int androidCheckPasswordStrength(String password) {
         password = password.trim();
 
         //total score of password
@@ -127,7 +150,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         if (password.length() < 6) {
             return -1;
-        }else{
+        } else {
             browser.post(new Runnable() {
                 @Override
                 public void run() {
@@ -140,7 +163,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         }
 
         //if it contains one digit, add 2 to total score
-        if (password.matches("(?=.*[0-9]).*")){
+        if (password.matches("(?=.*[0-9]).*")) {
             browser.post(new Runnable() {
                 @Override
                 public void run() {
@@ -190,6 +213,34 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         return iPasswordScore;
     }
 
+    private String beautifyLockoutDateString() throws ParseException {
+        DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+        UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+
+        String lockoutDate = userConfiguration.getLockoutTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Date unlockTime = sdf.parse(lockoutDate);
+        Date now = new Date();
+        long minutes = getDateDiff(now, unlockTime, TimeUnit.MINUTES);
+        long seconds = getDateDiff(now, unlockTime, TimeUnit.SECONDS);
+
+        if (seconds < 60) {
+            return "Due to an excessive number of failed login attempts, we have locked your safe. Your Digital Safe unlocks in " + seconds + " second(s).";
+        } else if (minutes < 60) {
+            return "Due to an excessive number of failed login attempts, we have locked your safe. Your Digital Safe unlocks in " + minutes + " minute(s).";
+        } else if (minutes < 1440) {
+            long hourDiff = getDateDiff(unlockTime, now, TimeUnit.HOURS);
+            return "Due to an excessive number of failed login attempts, we have locked your safe. Your Digital Safe unlocks in " + hourDiff + " hour(s).";
+        } else {
+            return "Due to an excessive number of failed login attempts, we have locked your safe. Your Digital Safe unlocks at " + lockoutDate;
+        }
+    }
+
+    private long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        long diffInMillies = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
+    }
+
     public class WebAppInterface {
         Context mContext;
 
@@ -201,32 +252,36 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         public String fetchQuestions() {
             DatabaseManager databaseManager = new DatabaseManager(applicationContext);
             List<SecurityQuestion> securityQuestions = databaseManager.getAllSecurityQuestions();
-            if(securityQuestions.size() > 0){
-                SecurityQuestion securityQuestion = securityQuestions.get(0);
+            if (securityQuestions.size() > 0) {
                 Gson gson = new Gson();
-                return gson.toJson(securityQuestion);
+                return gson.toJson(securityQuestions);
             }
             return "";
         }
 
         @JavascriptInterface
-        public void checkSecurityQuestion(String response) {
-            userResponse = response;
+        public void checkSecurityQuestion(String responseOne, String responseTwo, String responseThree,
+                                          String responseFour, String responseFive) {
+            r1 = responseOne;
+            r2 = responseTwo;
+            r3 = responseThree;
+            r4 = responseFour;
+            r5 = responseFive;
             new AsyncCheckSecurityQuestion().execute();
         }
 
         @JavascriptInterface
-        public void resetPassword(String password1, String password2){
-            if(password1.equals(password2) && lastScore > 3){
+        public void resetPassword(String password1, String password2) {
+            if (password1.equals(password2) && lastScore > 3) {
                 newPassword = password1;
                 new AsyncResetPassword().execute();
-            }else{
-                if(!password1.equals(password2)){
+            } else {
+                if (!password1.equals(password2)) {
                     CharSequence successToast = "Passwords do not match!";
 
                     Toast toast = Toast.makeText(applicationContext, successToast, Toast.LENGTH_LONG);
                     toast.show();
-                }else{
+                } else {
                     CharSequence successToast = "Password is not complicated enough!";
 
                     Toast toast = Toast.makeText(applicationContext, successToast, Toast.LENGTH_LONG);
@@ -244,8 +299,24 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         }
 
         @JavascriptInterface
-        public int checkPasswordStrength(String password){
+        public int checkPasswordStrength(String password) {
             return androidCheckPasswordStrength(password);
+        }
+
+        @JavascriptInterface
+        public String getLockoutString() {
+            try {
+                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+                UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+                String lockoutDate = userConfiguration.getLockoutTime();
+                SecurityManager securityManager = new SecurityManager();
+                boolean dateFlag = securityManager.checkIfPastDate(lockoutDate);
+                if (!dateFlag)
+                    return beautifyLockoutDateString();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return "";
         }
     }
 }
