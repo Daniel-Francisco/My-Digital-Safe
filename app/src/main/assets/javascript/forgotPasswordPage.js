@@ -55,31 +55,31 @@ $(document).ready(function () {
         Android.checkSecurityQuestion(responseOne, responseTwo, responseThree, responseFour, responseFive);
     });
 
-    $("#questionOne")[0].addEventListener("keyup", function (event) {
+    $("#responseOne")[0].addEventListener("keyup", function (event) {
         event.preventDefault();
         if (event.keyCode === 13) {
             $("#submitResponse").click();
         }
     });
-    $("#questionTwo")[0].addEventListener("keyup", function (event) {
+    $("#responseTwo")[0].addEventListener("keyup", function (event) {
         event.preventDefault();
         if (event.keyCode === 13) {
             $("#submitResponse").click();
         }
     });
-    $("#questionThree")[0].addEventListener("keyup", function (event) {
+    $("#responseThree")[0].addEventListener("keyup", function (event) {
         event.preventDefault();
         if (event.keyCode === 13) {
             $("#submitResponse").click();
         }
     });
-    $("#questionFour")[0].addEventListener("keyup", function (event) {
+    $("#responseFour")[0].addEventListener("keyup", function (event) {
         event.preventDefault();
         if (event.keyCode === 13) {
             $("#submitResponse").click();
         }
     });
-    $("#questionFive")[0].addEventListener("keyup", function (event) {
+    $("#responseFive")[0].addEventListener("keyup", function (event) {
         event.preventDefault();
         if (event.keyCode === 13) {
             $("#submitResponse").click();

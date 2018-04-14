@@ -19,6 +19,7 @@ import com.development.security.ciphernote.R;
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.SecurityQuestion;
 import com.development.security.ciphernote.model.UserConfiguration;
+import com.development.security.ciphernote.security.AdjustSecurityLevel;
 import com.development.security.ciphernote.security.ConfigureSecurityQuestionsActivity;
 
 import java.util.List;
@@ -68,6 +69,17 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+
+//        final Preference adjustSecurityLevelButton = findPreference(getString(R.string.preferenceAdjustSecurityLevel));
+//        adjustSecurityLevelButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//            @Override
+//            public boolean onPreferenceClick(Preference preference) {
+//                //code for what you want it to do
+//                Intent adjustSecurityLevel = new Intent(applicationContext, AdjustSecurityLevel.class);
+//                startActivity(adjustSecurityLevel);
+//                return true;
+//            }
+//        });
 
         Preference enableForgotPasswordPreference = findPreference(getString(R.string.preferenceSecurityQuestionsToggle));
         enableForgotPasswordPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

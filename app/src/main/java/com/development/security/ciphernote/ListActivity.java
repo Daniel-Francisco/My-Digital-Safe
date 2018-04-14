@@ -1,7 +1,9 @@
 package com.development.security.ciphernote;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -85,6 +87,29 @@ public class ListActivity extends MenuActivity {
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
+//        SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);
+//        boolean firstNoteFlag = sp.getBoolean("first_note_add_flag", true);
+//        if(firstNoteFlag){
+//            try {
+//                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+//                File firstNote = new File();
+//                firstNote.setData("First note what we recommend you do note. Test new line");
+//                firstNote.setFileName("Welcome to My Digital Safe!");
+//                Date date = new Date();
+//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//                String dateString = sdf.format(date);
+//                firstNote.setAccessDate(dateString);
+//                databaseManager.addFile(firstNote);
+//            }catch(Exception e){
+//                e.printStackTrace();
+//            }
+//            SharedPreferences.Editor editor = sp.edit();
+//            editor.putBoolean("first_note_add_flag", false);
+//            editor.commit();
+//        }
 
 
         setTitle("Home");

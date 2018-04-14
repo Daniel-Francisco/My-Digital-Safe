@@ -1,50 +1,31 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--&lt;!&ndash; NOTE: EditTextPreference accepts EditText attributes. &ndash;&gt;-->
-    <!--&lt;!&ndash; NOTE: EditTextPreference's summary should be set to its value by the activity code. &ndash;&gt;-->
-    <!--<EditTextPreference-->
-    <!--android:capitalize="words"-->
-    <!--android:defaultValue="@string/pref_default_display_name"-->
-    <!--android:inputType="textCapWords"-->
-    <!--android:key="example_text"-->
-    <!--android:maxLines="1"-->
-    <!--android:selectAllOnFocus="true"-->
-    <!--android:singleLine="true"-->
-    <!--android:title="@string/pref_title_display_name" />-->
-
-    <!--&lt;!&ndash; NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to-->
-    <!--dismiss it. &ndash;&gt;-->
-    <!--&lt;!&ndash; NOTE: ListPreference's summary should be set to its value by the activity code. &ndash;&gt;-->
-    <!--<ListPreference-->
-    <!--android:defaultValue="-1"-->
-    <!--android:entries="@array/pref_example_list_titles"-->
-    <!--android:entryValues="@array/pref_example_list_values"-->
-    <!--android:key="example_list"-->
-    <!--android:negativeButtonText="@null"-->
-    <!--android:positiveButtonText="@null"-->
-    <!--android:title="@string/pref_title_add_friends_to_messages" />-->
-
     <Preference
         android:key="@string/preferenceChangePassword"
         android:summary="Update your login password."
         android:title="Change Password" />
 
+    <!--<Preference-->
+        <!--android:key="@string/preferenceAdjustSecurityLevel"-->
+        <!--android:summary="Here you can change the level of your password security."-->
+        <!--android:title="Password Security Level" />-->
+
     <SwitchPreference
         android:defaultValue="false"
         android:key="@string/preferenceSecurityQuestionsToggle"
-        android:summary="Security questions and responses can be setup to enable a forgot password fail-safe."
-        android:title="Enable forgot password" />
+        android:summary="Security questions can be created to reset your password in case you forget it."
+        android:title="Enable Password Reset" />
 
     <Preference
         android:key="@string/preferenceConfigureSecurityQuestions"
-        android:summary="Add, edit or delete security questions."
-        android:title="Configure Security Questions" />
+        android:summary="Manage the security questions for your password reset."
+        android:title="Your Security Questions" />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="@string/preferenceSecurityExponentialLockout"
-        android:summary="Enabling failed login lockout protects your from an intruder trying to guess your password."
-        android:title="Enable failed login lockout" />
+        android:summary="This protects against an excessive number of failed password attempts."
+        android:title="Enable Lockout" />
 
     <ListPreference
         android:key="@string/preferenceExponentialLockoutAllowedFails"
@@ -52,6 +33,6 @@
         android:entryValues="@array/exponentialLockoutValues"
         android:defaultValue="5"
         android:summary="You can customize how many failed logins will be allowed before lockout."
-        android:title="Allowed number of failed login in attempts:" />
+        android:title="Number of Failed Login Attempts:" />
 
 </PreferenceScreen>

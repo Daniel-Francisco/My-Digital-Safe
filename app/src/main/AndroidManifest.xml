@@ -26,7 +26,8 @@
             android:name=".EditNoteActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".StartupActivity" />
-        <activity android:name=".security.LoginActivity"
+        <activity
+            android:name=".security.LoginActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ListActivity"
@@ -49,8 +50,11 @@
         <activity
             android:name=".security.ConfigureSecurityQuestionsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".QuickNoteEdit"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".QuickNoteEdit"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".security.AdjustSecurityLevel"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

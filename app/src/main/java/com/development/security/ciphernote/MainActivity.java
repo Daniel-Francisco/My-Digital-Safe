@@ -7,7 +7,11 @@ import android.os.Bundle;
 import android.webkit.WebView;
 
 import com.development.security.ciphernote.model.DatabaseManager;
+import com.development.security.ciphernote.model.File;
 import com.development.security.ciphernote.security.LoginActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     WebView webView;

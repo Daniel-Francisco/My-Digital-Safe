@@ -41,11 +41,11 @@
 
 .loader {
     border: 6px solid #f3f3f3; /* Light grey */
-    border-top: 6px solid #3498db; /* Blue */
+    border-top: 6px solid #952422; /* Blue */
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
+    width: 50px;
+    height: 50px;
+    animation: spin 0.75s linear infinite;
 
     margin: 10px auto 10px auto !important;
 }
@@ -89,4 +89,12 @@ hr {
     color: #333;
     background-color: #333;
     width: 80%;
+}
+
+#recommendationArea{
+    padding-top:10px;
+    font-size:14px;
+    width:100%;
+    padding-left:20%;
+    padding-right:20%;
 }

@@ -104,6 +104,38 @@ $(document).ready(function () {
         Android.keyPressOccured();
     });
 
+    $("#securityQuestionAnswerTwo")[0].addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            $("#submitSecurityQuestions").click();
+        }
+        Android.keyPressOccured();
+    });
+
+    $("#securityQuestionAnswerThree")[0].addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            $("#submitSecurityQuestions").click();
+        }
+        Android.keyPressOccured();
+    });
+
+    $("#securityQuestionAnswerFour")[0].addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            $("#submitSecurityQuestions").click();
+        }
+        Android.keyPressOccured();
+    });
+
+    $("#securityQuestionAnswerFive")[0].addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            $("#submitSecurityQuestions").click();
+        }
+        Android.keyPressOccured();
+    });
+
     $("#password")[0].addEventListener("keyup", function (event) {
         event.preventDefault();
         if (event.keyCode === 13) {

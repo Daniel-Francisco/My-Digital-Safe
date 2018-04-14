@@ -20,6 +20,7 @@ import com.development.security.ciphernote.ListActivity;
 import com.development.security.ciphernote.MainActivity;
 import com.development.security.ciphernote.QuickNoteEdit;
 import com.development.security.ciphernote.R;
+import com.development.security.ciphernote.UIHelper;
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
 import com.development.security.ciphernote.model.QuickNoteFile;
@@ -43,7 +44,7 @@ public class LoginActivity extends Activity {
 
 
     final SecurityManager securityManager = SecurityManager.getInstance();
-    WebView browser;
+    WebView browser = null;
 
 
     @Override
@@ -188,7 +189,18 @@ public class LoginActivity extends Activity {
         }
     }
 
-
+    @Override
+    protected void onResume(){
+        super.onResume();
+        if(browser != null){
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:clearLockout()");
+                }
+            });
+        }
+    }
 
     private void writeLoginTime(int time) {
         SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);
@@ -257,6 +269,12 @@ public class LoginActivity extends Activity {
         @JavascriptInterface
         public void forgotPassword() {
             androidForgotPassword();
+        }
+
+        @JavascriptInterface
+        public String getRecommendation() {
+            UIHelper uiHelper = new UIHelper();
+            return uiHelper.randomlyGenerateRecommendation();
         }
 
         @JavascriptInterface

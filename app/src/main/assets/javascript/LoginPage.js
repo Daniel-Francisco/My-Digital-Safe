@@ -6,7 +6,8 @@ var currentTimer = null;
 $(document).ready(function () {
 
     // $("#passwordStrengthBar").val(80);
-
+    var recommendation = Android.getRecommendation();
+    document.getElementById("recommendationArea").innerText = recommendation;
 
     $("#signIn").on("click", function (event) {
         loginTime = Android.getloginTime();
@@ -84,4 +85,10 @@ function lockedOutLogin(){
     var lockoutArea = document.getElementById("lockoutSection");
     lockoutArea.classList.remove("hide");
     lockoutArea.innerText = lockoutMessage;
+}
+
+function clearLockout(){
+    var lockoutArea = document.getElementById("lockoutSection");
+    lockoutArea.classList.add("hide");
+    lockoutArea.innerText = "";
 }

@@ -25,6 +25,7 @@
     <string name="preferenceSecurityQuestionsToggle">configureSecurityQuestionsToggle</string>
     <string name="preferenceSecurityExponentialLockout">configureSecurityExponentialLockout</string>
     <string name="preferenceExponentialLockoutAllowedFails">configureSecurityExponentialLockoutAllowedFails</string>
+    <string name="preferenceAdjustSecurityLevel">configureAdjustSecurityLevel</string>
 
     <!-- Strings related to Settings -->
 

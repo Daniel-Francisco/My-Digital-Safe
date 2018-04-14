@@ -242,6 +242,35 @@ public class SecurityManager {
         return true;
     }
 
+    public boolean changePasswordSecurityLevel(Context context, String password, int newIterations){
+        DatabaseManager databaseManager = new DatabaseManager(context);
+
+        UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+        String userSalt = userConfiguration.getSalt();
+        byte[] userSaltBytes;
+
+        userSaltBytes = userSalt.getBytes();
+        int iterations = userConfiguration.getIterations();
+        byte[] hash = hashPassword(password, userSaltBytes, iterations);
+
+        String hashInFile = databaseManager.getUserConfiguration().getPassword_hash();
+        String userHashEncoded = Base64.encodeToString(hash, Base64.DEFAULT);
+
+
+        if (userHashEncoded.equals(hashInFile)) {
+            byte[] newHash = hashPassword(password, userSaltBytes, newIterations);
+            String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);
+
+            userConfiguration.setIterations(newIterations);
+            userConfiguration.setPassword_hash(newHashString);
+
+            databaseManager.updateUserConfiguration(userConfiguration);
+
+            changePassword(context, password, password);
+            return true;
+        }
+        return false;
+    }
 
     public void changePassword(Context context, String userPassword, String newPassword) {
         try {
@@ -257,10 +286,7 @@ public class SecurityManager {
             if (passwordBytes == null) {
                 passwordBytes = new byte[0];
             }
-            String passwordString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
-            String passwordValue;
             byte[] decryptedDevicePassword = encryptWithAlternatePassword(userPassword, passwordBytes, config.getSalt().getBytes(), config.getIterations(), false);
-            passwordValue = new String(decryptedDevicePassword);
 
 
             byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(newPassword, decryptedDevicePassword, config.getSalt().getBytes(), config.getIterations(), true);
@@ -268,10 +294,7 @@ public class SecurityManager {
             config.setDevicePassword(reEncryptedDevicePassword);
 
             databaseManager.addUserConfiguration(config);
-//            UserConfiguration config = databaseManager.getUserConfiguration(1);
-//            byte[] encryptedNewPassword = encrypt(passwordValue);
-//            config.setDevicePassword(encryptedNewPassword);
-//            databaseManager.addUserConfiguration(config);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

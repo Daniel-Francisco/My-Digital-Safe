@@ -51,7 +51,9 @@
     margin-right:10%;
     margin-top:15px;
 }
-
+#listWrapper{
+    width:100%;
+}
 .hide{
     display:none;
 }

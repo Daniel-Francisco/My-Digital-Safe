@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <html lang="en">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </html>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="./javascript/AdjustSecurityLevel.js"></script>
+
+    <link rel="stylesheet" href="./css/style.css">
+
+    <link rel="stylesheet" href="./css/AdjustSecurityLevel.css">
+
+</head>
+
+<body>
+<div class="container">
+
+
+    <div id="startupForm">
+        <img src="images/logo.svg" id="logo"/>
+
+        <div id="generalInfo">
+            Text and stuff
+        </div>
+        <div id="mainArea">
+            <div class="checkBoxWrapper">
+                <div class="checkBoxBlurb">
+                    Large security
+                </div>
+                <input type="checkbox" id="highSecurityCheckbox" onclick="highSecurityCheckboxClick()"/>
+            </div>
+
+            <div class="checkBoxWrapper">
+                <div class="checkBoxBlurb">
+                    Medium security
+                </div>
+                <input type="checkbox" id="mediumSecurityCheckbox" onclick="mediumSecurityCheckboxClick()"/>
+            </div>
+
+            <div class="checkBoxWrapper">
+                <div class="checkBoxBlurb">
+                    Low security
+                </div>
+                <input type="checkbox" id="lowSecurityCheckbox" onclick="lowSecurityCheckboxClick()"/>
+            </div>
+
+            <input name="currentPassword" id="currentPassword" value="" class="input" placeholder="Current password"
+                   type="password">
+
+            <input id="updateSecurityLevel" value="Change Security Level!" class="primaryButton" type="button">
+        </div>
+        <div id="loader" class="hide loader"></div>
+
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
