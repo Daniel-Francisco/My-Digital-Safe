@@ -26,6 +26,9 @@ import com.development.security.ciphernote.model.File;
 import com.development.security.ciphernote.model.QuickNoteFile;
 import com.development.security.ciphernote.model.UserConfiguration;
 import com.development.security.ciphernote.security.SecurityManager;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 
 import java.text.DateFormat;
@@ -41,6 +44,7 @@ public class LoginActivity extends Activity {
     Context applicationContext;
     SharedPreferences prefs = null;
     int loginTime = -1;
+    private AdView mAdView;
 
 
     final SecurityManager securityManager = SecurityManager.getInstance();
@@ -180,8 +184,6 @@ public class LoginActivity extends Activity {
                     Intent landingIntent = new Intent(applicationContext, ListActivity.class);
                     startActivity(landingIntent);
                     finish();
-
-
                 }
             }
 

@@ -15,6 +15,9 @@ import android.content.DialogInterface;
 
 import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.security.SecurityManager;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -29,6 +32,7 @@ public class EditNoteActivity extends AppCompatActivity {
     String fileName;
     String hashedFilename = "";
     DatabaseManager databaseManager;
+    private AdView mAdView;
 
     String noteValue = "";
 

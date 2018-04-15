@@ -21,6 +21,10 @@ import com.development.security.ciphernote.model.File;
 import com.development.security.ciphernote.model.QuickNoteFile;
 import com.development.security.ciphernote.security.SecurityManager;
 import com.development.security.ciphernote.settings.ChangePasswordActivity;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -47,6 +51,7 @@ import javax.crypto.NoSuchPaddingException;
 public class ListActivity extends MenuActivity {
     ArrayList<File> list;
     WebView browser;
+    private AdView mAdView;
 
     File selectedFile;
 
@@ -111,7 +116,12 @@ public class ListActivity extends MenuActivity {
 //            editor.commit();
 //        }
 
+        MobileAds.initialize(this,
+                "ca-app-pub-3940256099942544~3347511713");
 
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
         setTitle("Home");
     }
 

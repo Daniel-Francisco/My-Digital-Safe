@@ -89,9 +89,22 @@ public class StartupActivity extends AppCompatActivity {
 
         protected void onPostExecute(Boolean status) {
             if(status){
-                Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
-                startActivity(loginIntent);
-                finish();
+                boolean authenticate = false;
+                try{
+                   authenticate = securityManager.authenticateUser(firstPassword, applicationContext);
+                    securityManager.generateKey(applicationContext);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                if(authenticate){
+                    Intent landingIntent = new Intent(applicationContext, ListActivity.class);
+                    startActivity(landingIntent);
+                    finish();
+                }else{
+                    Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
+                    startActivity(loginIntent);
+                    finish();
+                }
             }else{
                 if(firstPassword.equals(secondPassword)){
                     CharSequence failedAuthenticationString = getString(R.string.passwordTooShort);

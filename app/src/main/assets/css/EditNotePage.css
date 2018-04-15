@@ -3,6 +3,7 @@
     font-size: 25px;
     font-weight: bold;
     text-align: center;
+    padding-left:10px;
 }
 ::placeholder{
     color: black;
@@ -21,6 +22,7 @@ input:focus::-webkit-input-placeholder {
     width:100%;
     font-size: 18px;
     height: 100%;
+    padding-left:10px;
 }
 #deleteNote{
     display: block;

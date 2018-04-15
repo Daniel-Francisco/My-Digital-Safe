@@ -16,6 +16,9 @@ import com.development.security.ciphernote.model.DatabaseManager;
 import com.development.security.ciphernote.model.File;
 import com.development.security.ciphernote.model.QuickNoteFile;
 import com.development.security.ciphernote.security.SecurityManager;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -24,6 +27,7 @@ import java.lang.reflect.Type;
 public class QuickNoteEdit extends AppCompatActivity {
     Context applicationContext;
     DatabaseManager databaseManager;
+    private AdView mAdView;
 
     QuickNoteFile quickNoteFile = new QuickNoteFile();
     WebView browser;
@@ -78,8 +82,6 @@ public class QuickNoteEdit extends AppCompatActivity {
                         .setNegativeButton(android.R.string.no, null).show();
             }
         });
-
-
     }
 
     @Override

@@ -151,10 +151,8 @@ function clearInputs(){
     document.getElementById("inputWrapper").classList.remove("hide");
 
     var passwordField = document.getElementById("password");
-    var responseField = document.getElementById("securityQuestionAnswerOne");
 
     passwordField.value = "";
-    responseField.value = "";
 }
 
 function wrapUp(){

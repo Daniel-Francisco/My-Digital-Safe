@@ -7,7 +7,7 @@
     android:windowSoftInputMode="adjustPan"
     tools:context="com.development.security.ciphernote.QuickNoteEdit">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
@@ -69,9 +69,9 @@
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:fillViewport="true"
+            android:layout_above="@+id/adView"
             android:windowSoftInputMode="adjustPan" />
-
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </android.support.constraint.ConstraintLayout>

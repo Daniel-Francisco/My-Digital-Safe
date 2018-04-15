@@ -13,6 +13,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.development.security.ciphernote.ListActivity;
 import com.development.security.ciphernote.security.LoginActivity;
 import com.development.security.ciphernote.MainActivity;
 import com.development.security.ciphernote.R;
@@ -163,8 +164,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         protected void onPostExecute(Boolean status) {
             if (status) {
-                Intent loginActivity = new Intent(context, LoginActivity.class);
-                startActivity(loginActivity);
+                Intent listActivity = new Intent(context, ListActivity.class);
+                startActivity(listActivity);
                 finish();
             } else {
                 if(failCode == 1){

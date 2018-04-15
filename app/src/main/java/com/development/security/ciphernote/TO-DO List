@@ -1,8 +1,0 @@
-A TO-DO List to keep track of work that needs to be done:
-    - Un-hard code password and password creation process
-    - Update login to use multiple threads while hashing occurs
-    - Create password quality validation
-    - Create tool to judge users password quality (even if it qualifies)
-    - Create activity for individual notes
-
-    Create file management system that leverages JSON
