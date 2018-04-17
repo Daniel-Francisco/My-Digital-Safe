@@ -1,3 +1,20 @@
+/*
+ * My Digital Safe, the secure notepad Android app.
+ * Copyright (C) 2018 Security First Designs
+ *
+ * My Digital Safe is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
+ */
+
 package com.development.security.ciphernote.security;
 
 import android.app.Activity;
@@ -18,6 +35,7 @@ import android.webkit.JavascriptInterface;
 import com.development.security.ciphernote.EditNoteActivity;
 import com.development.security.ciphernote.ListActivity;
 import com.development.security.ciphernote.MainActivity;
+import com.development.security.ciphernote.PrivacyPolicyActivity;
 import com.development.security.ciphernote.QuickNoteEdit;
 import com.development.security.ciphernote.R;
 import com.development.security.ciphernote.UIHelper;
@@ -161,10 +179,6 @@ public class LoginActivity extends Activity {
                             browser.loadUrl("javascript:failedLogin()");
                         }
                     });
-                    CharSequence failedAuthenticationString = getString(R.string.failed_login_toast);
-
-                    Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
-                    toast.show();
 
                     DatabaseManager databaseManager = new DatabaseManager(applicationContext);
                     UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
@@ -173,6 +187,13 @@ public class LoginActivity extends Activity {
                         userConfiguration.setFailedLoginCount(failedCount);
                         userConfiguration = securityManager.generateUnlockString(userConfiguration, failedCount);
                         databaseManager.updateUserConfiguration(userConfiguration);
+
+                        displayLockoutCountdown();
+                    }else{
+                        CharSequence failedAuthenticationString = getString(R.string.failed_login_toast);
+
+                        Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
+                        toast.show();
                     }
                 } else {
                     DatabaseManager databaseManager = new DatabaseManager(applicationContext);
@@ -223,6 +244,34 @@ public class LoginActivity extends Activity {
         startActivity(forgotPasswordIntent);
     }
 
+    private void displayLockoutCountdown(){
+        DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+        UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+        int currentFails = userConfiguration.getFailedLoginCount();
+        int allowedFails = userConfiguration.getAllowedFailedLoginCount();
+        int failsLeft = allowedFails - currentFails;
+
+        if(currentFails > allowedFails){
+            failsLeft = (3 - ((currentFails - allowedFails) % 3));
+        }
+
+        if(failsLeft != 0){
+            CharSequence failsLeftToast = "Incorrect password! You will be locked out in " + failsLeft + " more failed attempts!";
+
+            Toast toast = Toast.makeText(applicationContext, failsLeftToast, Toast.LENGTH_LONG);
+            toast.show();
+        }else{
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:userLockedOut()");
+                }
+            });
+
+        }
+
+    }
+
     private String beautifyLockoutDateString() throws ParseException {
         DatabaseManager databaseManager = new DatabaseManager(applicationContext);
         UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
@@ -266,6 +315,12 @@ public class LoginActivity extends Activity {
         @JavascriptInterface
         public int getloginTime() {
             return readLoginTime();
+        }
+
+        @JavascriptInterface
+        public void goToPrivacyPolicy() {
+            Intent privacyPolicyIntent = new Intent(applicationContext, PrivacyPolicyActivity.class);
+            startActivity(privacyPolicyIntent);
         }
 
         @JavascriptInterface

@@ -1,3 +1,20 @@
+/*
+ * My Digital Safe, the secure notepad Android app.
+ * Copyright (C) 2018 Security First Designs
+ *
+ * My Digital Safe is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
+ */
+
 package com.development.security.ciphernote.security;
 
 import android.accounts.AuthenticatorException;
@@ -276,8 +293,6 @@ public class SecurityManager {
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
-            secret = new SecretKeySpec(userKey.getEncoded(), "AES");
-
             DatabaseManager databaseManager = new DatabaseManager(context);
             UserConfiguration config = databaseManager.getUserConfiguration();
 
@@ -348,15 +363,7 @@ public class SecurityManager {
 
         userSaltBytes = userSalt.getBytes();
 
-
-        long startTime = System.nanoTime();
-
         byte[] hash = hashPassword(password, userSaltBytes, iterations);
-
-        String hashString = Base64.encodeToString(hash, Base64.DEFAULT);
-
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
 
         String hashInFile = databaseManager.getUserConfiguration().getPassword_hash();
         String userHashEncoded = Base64.encodeToString(hash, Base64.DEFAULT);
@@ -422,6 +429,7 @@ public class SecurityManager {
         SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
         userKey = skf.generateSecret(spec);
+        SecretKey userKeyBackup = userKey;
         SecretKey secretBackup = secret;
         secret = new SecretKeySpec(userKey.getEncoded(), "AES");
 
@@ -432,6 +440,7 @@ public class SecurityManager {
             cryptoData = Base64.decode(decrypt(data), Base64.DEFAULT);
         }
         secret = secretBackup;
+        userKey = userKeyBackup;
         return cryptoData;
 
     }

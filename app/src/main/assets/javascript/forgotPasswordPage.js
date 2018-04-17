@@ -1,3 +1,19 @@
+/*
+ * My Digital Safe, the secure notepad Android app.
+ * Copyright (C) 2018 Security First Designs
+ *
+ * My Digital Safe is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
+ */
 $(document).ready(function () {
     var securityQuestionJson = Android.fetchQuestions();
     console.log(securityQuestionJson);
@@ -141,7 +157,11 @@ $(document).ready(function () {
 
 });
 function failedResponse(){
-    document.getElementById("securityQuestionResponse").value = "";
+    document.getElementById("responseOne").value = "";
+    document.getElementById("responseTwo").value = "";
+    document.getElementById("responseThree").value = "";
+    document.getElementById("responseFour").value = "";
+    document.getElementById("responseFive").value = "";
     document.getElementById("forgotPasswordPage").classList.remove("hide");
     document.getElementById("loader").classList.add("hide");
 }
@@ -186,3 +206,4 @@ function clearList(){
     document.getElementById("badNumber").classList.remove("hide");
     document.getElementById("badSymbol").classList.remove("hide");
 }
+
