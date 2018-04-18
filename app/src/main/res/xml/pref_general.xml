@@ -50,6 +50,6 @@
         android:entryValues="@array/exponentialLockoutValues"
         android:defaultValue="5"
         android:summary="You can customize how many failed logins will be allowed before lockout."
-        android:title="Number of Failed Login Attempts:" />
+        android:title="Number of Failed Login Attempts" />
 
 </PreferenceScreen>

@@ -42,6 +42,7 @@ $(document).ready(function () {
 
         document.getElementById("welcomeSection").classList.add("hide");
         document.getElementById("startUpSection").classList.remove("hide");
+        document.getElementById("privacyPolicyBlurb").classList.remove("hide");
     });
 
     $("#privacyPolicyLink").on("click", function (event) {

@@ -125,7 +125,7 @@ public class EditNoteActivity extends AppCompatActivity {
             public void onClick(View v) {
             new android.app.AlertDialog.Builder(applicationContext)
                     .setTitle("Delete this note?")
-                    .setMessage("Are you sure you want to delete this note? You will cannot get it back.")
+                    .setMessage("Are you sure you want to delete this note? You cannot get it back.")
                     .setIcon(android.R.drawable.ic_delete)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {

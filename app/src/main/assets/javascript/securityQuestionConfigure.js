@@ -15,8 +15,6 @@
  * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
  */
 $(document).ready(function () {
-    var numberOfSecurityQuestions = 1;
-
     $("#newSecurityQuestion").on("click", function (event) {
        numberOfSecurityQuestions++;
        if(numberOfSecurityQuestions == 2){
