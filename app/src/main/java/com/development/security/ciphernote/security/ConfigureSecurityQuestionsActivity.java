@@ -48,7 +48,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -210,7 +212,36 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
 
             securityQuestionCount = numberOfSecurityQuestions;
 
-            new AsyncSetSecurityQuestion().execute();
+            Set<String> questionSet = new HashSet<>();
+            if(numberOfSecurityQuestions > 0){
+                questionSet.add(questionOne);
+            }
+            if(numberOfSecurityQuestions > 1){
+                questionSet.add(questionTwo);
+            }
+            if(numberOfSecurityQuestions > 2){
+                questionSet.add(questionThree);
+            }
+            if(numberOfSecurityQuestions > 3){
+                questionSet.add(questionFour);
+            }
+            if(numberOfSecurityQuestions > 4){
+                questionSet.add(questionFive);
+            }
+            if(numberOfSecurityQuestions == questionSet.size()){
+                new AsyncSetSecurityQuestion().execute();
+            }else{
+                browser.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        browser.loadUrl("javascript:clearInputs()");
+                    }
+                });
+                CharSequence failedToast = "Duplicate questions not allowed!";
+
+                Toast toast = Toast.makeText(applicationContext, failedToast, Toast.LENGTH_LONG);
+                toast.show();
+            }
         }
 
         @JavascriptInterface
