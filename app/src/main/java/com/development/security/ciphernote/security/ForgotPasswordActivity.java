@@ -110,8 +110,43 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
                 Toast toast = Toast.makeText(applicationContext, successToast, Toast.LENGTH_LONG);
                 toast.show();
+
+                SecurityManager securityManager = new SecurityManager();
+                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+                UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+                if (userConfiguration.getLockoutFlag() == 1) {
+                    int failedCount = userConfiguration.getFailedLoginCount() + 1;
+                    userConfiguration.setFailedLoginCount(failedCount);
+                    userConfiguration = securityManager.generateUnlockString(userConfiguration, failedCount);
+                    databaseManager.updateUserConfiguration(userConfiguration);
+
+                    displayLockoutCountdown();
+                }
+
             }
 
+        }
+    }
+
+    private void displayLockoutCountdown(){
+        DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+        UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
+        int currentFails = userConfiguration.getFailedLoginCount();
+        int allowedFails = userConfiguration.getAllowedFailedLoginCount();
+        int failsLeft = allowedFails - currentFails;
+
+        if(currentFails >= allowedFails){
+//            failsLeft = (1 - ((currentFails - allowedFails) % 1));
+            browser.post(new Runnable() {
+                @Override
+                public void run() {
+                    browser.loadUrl("javascript:userLockedOut()");
+                }
+            });
+        } else {
+            CharSequence failsLeftToast = "Incorrect password! You will be locked out in " + failsLeft + " more failed attempts!";
+            Toast toast = Toast.makeText(applicationContext, failsLeftToast, Toast.LENGTH_LONG);
+            toast.show();
         }
     }
 

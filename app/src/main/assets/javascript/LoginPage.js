@@ -43,8 +43,6 @@ $(document).ready(function () {
             }
         }
 
-        function danielTestPleaseDontJudge() {
-        }
     });
     $("#forgotPasswordLink").on("click", function (event) {
         Android.forgotPassword();
