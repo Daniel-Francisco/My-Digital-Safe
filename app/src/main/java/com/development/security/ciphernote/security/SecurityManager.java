@@ -315,6 +315,11 @@ public class SecurityManager {
         }
     }
 
+    public byte[] startup(Context context, String password, byte[] salt, int hashingIterations){
+        byte[] hashedPassword = hashPassword(password, salt, hashingIterations);
+        generateKey(context);
+        return hashedPassword;
+    }
 
     /**
      * Generate a new encryption key.
@@ -354,6 +359,24 @@ public class SecurityManager {
             e.printStackTrace();
         }
     }
+    public byte[] hashPassword(String password, byte[] salt, int hashingIterations) {
+        int keyLength = 256;
+        try {
+
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
+            userKey = skf.generateSecret(spec);
+            byte[] res = userKey.getEncoded();
+
+            String hash = Base64.encodeToString(res, Base64.DEFAULT);
+            String finalHash = SHA256Hash(hash);
+
+            return finalHash.getBytes();
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public Boolean authenticateUser(String password, Context context) throws JSONException {
         DatabaseManager databaseManager = new DatabaseManager(context);
@@ -370,7 +393,6 @@ public class SecurityManager {
 
 
         if (userHashEncoded.equals(hashInFile)) {
-
             return true;
         }
         return false;
@@ -387,25 +409,6 @@ public class SecurityManager {
             KeySpec spec = new PBEKeySpec(response.toCharArray(), salt, hashingIterations, keyLength);
             SecretKey secret = skf.generateSecret(spec);
             byte[] res = secret.getEncoded();
-
-            String hash = Base64.encodeToString(res, Base64.DEFAULT);
-            String finalHash = SHA256Hash(hash);
-
-            return finalHash.getBytes();
-
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public byte[] hashPassword(String password, byte[] salt, int hashingIterations) {
-        int keyLength = 256;
-        try {
-
-            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
-            userKey = skf.generateSecret(spec);
-            byte[] res = userKey.getEncoded();
 
             String hash = Base64.encodeToString(res, Base64.DEFAULT);
             String finalHash = SHA256Hash(hash);
