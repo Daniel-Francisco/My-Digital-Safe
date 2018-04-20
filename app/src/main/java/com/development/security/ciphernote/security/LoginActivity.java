@@ -189,7 +189,7 @@ public class LoginActivity extends Activity {
                         databaseManager.updateUserConfiguration(userConfiguration);
 
                         displayLockoutCountdown();
-                    }else{
+                    } else {
                         CharSequence failedAuthenticationString = getString(R.string.failed_login_toast);
 
                         Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
@@ -213,9 +213,9 @@ public class LoginActivity extends Activity {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
-        if(browser != null){
+        if (browser != null) {
             browser.post(new Runnable() {
                 @Override
                 public void run() {
@@ -244,32 +244,25 @@ public class LoginActivity extends Activity {
         startActivity(forgotPasswordIntent);
     }
 
-    private void displayLockoutCountdown(){
+    private void displayLockoutCountdown() {
         DatabaseManager databaseManager = new DatabaseManager(applicationContext);
         UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
         int currentFails = userConfiguration.getFailedLoginCount();
         int allowedFails = userConfiguration.getAllowedFailedLoginCount();
         int failsLeft = allowedFails - currentFails;
 
-        if(currentFails > allowedFails){
-            failsLeft = (3 - ((currentFails - allowedFails) % 3));
-        }
-
-        if(failsLeft != 0){
-            CharSequence failsLeftToast = "Incorrect password! You will be locked out in " + failsLeft + " more failed attempts!";
-
-            Toast toast = Toast.makeText(applicationContext, failsLeftToast, Toast.LENGTH_LONG);
-            toast.show();
-        }else{
+        if (currentFails >= allowedFails) {
             browser.post(new Runnable() {
                 @Override
                 public void run() {
                     browser.loadUrl("javascript:userLockedOut()");
                 }
             });
-
+        } else {
+            CharSequence failsLeftToast = "Incorrect password! You will be locked out in " + failsLeft + " more failed attempts!";
+            Toast toast = Toast.makeText(applicationContext, failsLeftToast, Toast.LENGTH_LONG);
+            toast.show();
         }
-
     }
 
     private String beautifyLockoutDateString() throws ParseException {
@@ -283,14 +276,14 @@ public class LoginActivity extends Activity {
         long minutes = getDateDiff(now, unlockTime, TimeUnit.MINUTES);
         long seconds = getDateDiff(now, unlockTime, TimeUnit.SECONDS);
 
-        if(seconds < 60){
+        if (seconds < 60) {
             return "Due to an excessive number of failed login attempts, we have locked your safe. Your Digital Safe unlocks in " + seconds + " second(s).";
-        }else if(minutes < 60){
+        } else if (minutes < 60) {
             return "Due to an excessive number of failed login attempts, we have locked your safe. Your Digital Safe unlocks in " + minutes + " minute(s).";
-        }else if(minutes < 1440){
+        } else if (minutes < 1440) {
             long hourDiff = getDateDiff(unlockTime, now, TimeUnit.HOURS);
             return "Due to an excessive number of failed login attempts, we have locked your safe. Your Digital Safe unlocks in " + hourDiff + " hour(s).";
-        }else{
+        } else {
             return "Due to an excessive number of failed login attempts, we have locked your safe. Your Digital Safe unlocks at " + lockoutDate;
         }
     }
