@@ -81,9 +81,9 @@
     margin: 0px auto 10px auto!important;
 }
 
-#password-strength-text{
-    text-align: left!important;
-}
+/*#password-strength-text{*/
+    /*text-align: left!important;*/
+/*}*/
 li{
     display:list-item;
     margin-left:25px;
