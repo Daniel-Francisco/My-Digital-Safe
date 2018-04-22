@@ -68,11 +68,11 @@ public class StartupActivity extends AppCompatActivity {
                         "\n" +
                         "My Digital Safe commits to striking the perfect balance between securing your data and allowing you to customize your own experience to suit your needs.\n" +
                         "\n" +
-                        "We recomend you visit the Setting page to browse configure the app to your likings. By default, the app does not have a Forget Password method in place. By visiting the Settings page, you can enable the password reset feature and configure as few as one and as many as five security questions. My Digital Safe will require the correct response of all security questions to allow you to reset your password.\n" +
+                        "We recommend you visit the Setting page to browse configure the app to your likings. By default, the app does not have a Forget Password method in place. By visiting the Settings page, you can enable the password reset feature and configure as few as one and as many as five security questions. My Digital Safe will require the correct response of all security questions to allow you to reset your password.\n" +
                         "\n" +
                         "You can also configure you digital safe to lock itself after too many failed login attempts. If you are concerned about friends, family or other people trying to guess your My Digital Safe password, this feature can help protect you.\n" +
                         "\n" +
-                        "Lastly, don't forget to checkout the \"Quick Note\" feature on the login page. My Digital Safe understands it can be painful to have to login everytime you wanna write down a quick thought. To solve this problem, we allow you to create a note from your login page that will be kept hidden once saved and encrypted the next time you login.\n" +
+                        "Lastly, don't forget to checkout the \"Quick Note\" feature on the login page. My Digital Safe understands it can be painful to have to login everytime you want to write down a quick thought. To solve this problem, we allow you to create a note from your login page that will be kept hidden once saved and encrypted the next time you login.\n" +
                         "\n" +
                         "Enjoy the app!\n" +
                         "- My Digital Safe team.");
@@ -96,24 +96,25 @@ public class StartupActivity extends AppCompatActivity {
 
                     String salt = securityManager.generateSalt();
 
-                    UserConfiguration userConfig = new UserConfiguration();
-                    userConfig.setPassword_hash("");
-                    userConfig.setSalt(salt);
-                    userConfig.setIterations(iterations);
-
+                    DataStructures.UserConfiguration userConfiguration = new DataStructures.UserConfiguration();
+                    userConfiguration.setPasswordHash("");
+                    userConfiguration.setSalt(salt);
+                    userConfiguration.setIterations(iterations);
                     DatabaseManager databaseManager = new DatabaseManager(applicationContext);
+                    databaseManager.addUserConfiguration(new UserConfiguration(userConfiguration.getIterations(), userConfiguration.getPasswordHash(), userConfiguration.getSalt()));
 
-                    String saltFromFile = userConfig.getSalt();
+                    String saltFromFile = databaseManager.getUserConfiguration().getSalt();
 
-                    byte[] newHash = securityManager.startup(applicationContext, firstPassword, saltFromFile.getBytes(), iterations);
+                    byte[] newHash = securityManager.hashPassword(firstPassword, saltFromFile.getBytes(), iterations);
 
                     databaseManager.checkConfigDirectory(applicationContext);
                     databaseManager.writeToDataFile(applicationContext, "started".getBytes(), "startup", true);
 
 
+                    UserConfiguration currentUserConfig = databaseManager.getUserConfiguration();
                     String hash = Base64.encodeToString(newHash, Base64.DEFAULT);
-                    userConfig.setPassword_hash(hash);
-                    databaseManager.addUserConfiguration(userConfig);
+                    currentUserConfig.setPassword_hash(hash);
+                    databaseManager.addUserConfiguration(currentUserConfig);
 
                     long end_time = System.nanoTime();
                     double difference = (end_time - start_time) / 1e6;
@@ -135,9 +136,22 @@ public class StartupActivity extends AppCompatActivity {
 
         protected void onPostExecute(Boolean status) {
             if(status){
-                Intent landingIntent = new Intent(applicationContext, ListActivity.class);
-                startActivity(landingIntent);
-                finish();
+                boolean authenticate = false;
+                try{
+                    authenticate = securityManager.authenticateUser(firstPassword, applicationContext);
+                    securityManager.generateKey(applicationContext);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                if(authenticate){
+                    Intent landingIntent = new Intent(applicationContext, ListActivity.class);
+                    startActivity(landingIntent);
+                    finish();
+                }else{
+                    Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
+                    startActivity(loginIntent);
+                    finish();
+                }
             }else{
                 if(firstPassword.equals(secondPassword)){
                     CharSequence failedAuthenticationString = getString(R.string.passwordTooShort);
@@ -157,10 +171,6 @@ public class StartupActivity extends AppCompatActivity {
                     browser.loadUrl("javascript:clearFields()");
                 }
             });
-
-            stopTime = System.currentTimeMillis();
-            long elapsedTime = stopTime - startTime;
-            Log.d("timing", String.valueOf(elapsedTime));
         }
     }
 
@@ -253,8 +263,6 @@ public class StartupActivity extends AppCompatActivity {
     }
 
 
-    long startTime = 0;
-    long stopTime = 0;
     public class WebAppInterface {
         Context mContext;
         WebAppInterface(Context c) {
@@ -262,7 +270,6 @@ public class StartupActivity extends AppCompatActivity {
         }
         @JavascriptInterface
         public void createPassword(String passwordOne, String passwordTwo) {
-            startTime = System.currentTimeMillis();
             androidCreatePassword(passwordOne, passwordTwo);
         }
 

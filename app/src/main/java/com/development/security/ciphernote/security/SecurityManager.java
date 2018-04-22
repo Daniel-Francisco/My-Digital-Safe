@@ -147,29 +147,29 @@ public class SecurityManager {
         }
 
         boolean authentication = authenticateUser(password, context);
-        if (!authentication) {
+        if(!authentication){
             throw new AuthenticatorException();
         }
 
         String recoveryKey = "";
         ArrayList<SecurityQuestion> questionList = new ArrayList<>();
-        if (numberOfQuestions > 0) {
+        if(numberOfQuestions > 0){
             recoveryKey = recoveryKey + r1;
             questionList.add(generateQuestion(userConfiguration, q1, r1));
         }
-        if (numberOfQuestions > 1) {
+        if(numberOfQuestions > 1){
             recoveryKey = recoveryKey + r2;
             questionList.add(generateQuestion(userConfiguration, q2, r2));
         }
-        if (numberOfQuestions > 2) {
+        if(numberOfQuestions > 2){
             recoveryKey = recoveryKey + r3;
             questionList.add(generateQuestion(userConfiguration, q3, r3));
         }
-        if (numberOfQuestions > 3) {
+        if(numberOfQuestions > 3){
             recoveryKey = recoveryKey + r4;
             questionList.add(generateQuestion(userConfiguration, q4, r4));
         }
-        if (numberOfQuestions > 4) {
+        if(numberOfQuestions > 4){
             recoveryKey = recoveryKey + r5;
             questionList.add(generateQuestion(userConfiguration, q5, r5));
         }
@@ -180,21 +180,23 @@ public class SecurityManager {
         userConfiguration.setSecurityQuestionDevicePassword(reEncryptedDevicePassword);
 
 
+
+
         List<SecurityQuestion> securityQuestions = databaseManager.getAllSecurityQuestions();
         for (int i = 0; i < securityQuestions.size(); i++) {
             databaseManager.deleteSecurityQuestion(securityQuestions.get(i));
         }
 
-        for (int i = 0; i < questionList.size(); i++) {
+        for(int i = 0; i<questionList.size(); i++){
             SecurityQuestion securityQuestion = questionList.get(i);
-            securityQuestion.setQuestionOrder(i + 1);
+            securityQuestion.setQuestionOrder(i+1);
             databaseManager.addSecurityQuestion(securityQuestion);
         }
 
         return userConfiguration;
     }
 
-    private SecurityQuestion generateQuestion(UserConfiguration userConfiguration, String question, String response) {
+    private SecurityQuestion generateQuestion(UserConfiguration userConfiguration, String question, String response){
         byte[] hashedResponse = hashSecurityQuestion(response, userConfiguration.getSalt().getBytes(), userConfiguration.getIterations());
         String hashString = Base64.encodeToString(hashedResponse, Base64.DEFAULT);
 
@@ -210,7 +212,7 @@ public class SecurityManager {
         UserConfiguration configuration = databaseManager.getUserConfiguration();
 
         String responseKey = "";
-        for (int i = 0; i < responses.size(); i++) {
+        for(int i = 0; i<responses.size(); i++){
             responseKey = responseKey + responses.get(i);
         }
 
@@ -239,7 +241,7 @@ public class SecurityManager {
         List<SecurityQuestion> securityQuestions = databaseManager.getAllSecurityQuestions();
 
         if (securityQuestions.size() > 0) {
-            for (int i = 0; i < securityQuestions.size(); i++) {
+            for(int i = 0; i<securityQuestions.size(); i++){
                 SecurityQuestion securityQuestion = securityQuestions.get(i);
                 String presetResponse = securityQuestion.getAnswerHash();
 
@@ -257,7 +259,7 @@ public class SecurityManager {
         return true;
     }
 
-    public boolean changePasswordSecurityLevel(Context context, String password, int newIterations) {
+    public boolean changePasswordSecurityLevel(Context context, String password, int newIterations){
         DatabaseManager databaseManager = new DatabaseManager(context);
 
         UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
@@ -313,11 +315,6 @@ public class SecurityManager {
         }
     }
 
-    public byte[] startup(Context context, String password, byte[] salt, int hashingIterations){
-        byte[] hashedPassword = hashPassword(password, salt, hashingIterations);
-        generateKey(context);
-        return hashedPassword;
-    }
 
     /**
      * Generate a new encryption key.
@@ -357,24 +354,6 @@ public class SecurityManager {
             e.printStackTrace();
         }
     }
-    public byte[] hashPassword(String password, byte[] salt, int hashingIterations) {
-        int keyLength = 256;
-        try {
-
-            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
-            userKey = skf.generateSecret(spec);
-            byte[] res = userKey.getEncoded();
-
-            String hash = Base64.encodeToString(res, Base64.DEFAULT);
-            String finalHash = SHA256Hash(hash);
-
-            return finalHash.getBytes();
-
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public Boolean authenticateUser(String password, Context context) throws JSONException {
         DatabaseManager databaseManager = new DatabaseManager(context);
@@ -391,6 +370,7 @@ public class SecurityManager {
 
 
         if (userHashEncoded.equals(hashInFile)) {
+
             return true;
         }
         return false;
@@ -407,6 +387,25 @@ public class SecurityManager {
             KeySpec spec = new PBEKeySpec(response.toCharArray(), salt, hashingIterations, keyLength);
             SecretKey secret = skf.generateSecret(spec);
             byte[] res = secret.getEncoded();
+
+            String hash = Base64.encodeToString(res, Base64.DEFAULT);
+            String finalHash = SHA256Hash(hash);
+
+            return finalHash.getBytes();
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public byte[] hashPassword(String password, byte[] salt, int hashingIterations) {
+        int keyLength = 256;
+        try {
+
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
+            userKey = skf.generateSecret(spec);
+            byte[] res = userKey.getEncoded();
 
             String hash = Base64.encodeToString(res, Base64.DEFAULT);
             String finalHash = SHA256Hash(hash);
@@ -474,17 +473,25 @@ public class SecurityManager {
         }
         if (failCount >= allowedFails) {
             int difference = failCount - allowedFails;
-
-            int failLevel = difference++;
-            double lockoutMinutes = Math.pow(2, failLevel);
-            int lockoutMinutesInt = (int) lockoutMinutes;
-            Calendar c = Calendar.getInstance();
-            c.setTime(new Date()); // Now use today date.
-            c.add(Calendar.MINUTE, lockoutMinutesInt);
-            Date date = c.getTime();
-            userConfiguration.setKeyLockoutTime(sdf.format(date));
-            return userConfiguration;
-
+            int checkInt = (difference % 3);
+            if (difference == 0) {
+                Calendar c = Calendar.getInstance();
+                c.setTime(new Date()); // Now use today date.
+                c.add(Calendar.MINUTE, 1);
+                Date date = c.getTime();
+                userConfiguration.setKeyLockoutTime(sdf.format(date));
+                return userConfiguration;
+            } else if (checkInt == 0) {
+                int failLevel = difference / 3;
+                double lockoutMinutes = Math.pow(2, failLevel);
+                int lockoutMinutesInt = (int) lockoutMinutes;
+                Calendar c = Calendar.getInstance();
+                c.setTime(new Date()); // Now use today date.
+                c.add(Calendar.MINUTE, lockoutMinutesInt);
+                Date date = c.getTime();
+                userConfiguration.setKeyLockoutTime(sdf.format(date));
+                return userConfiguration;
+            }
         }
         userConfiguration.setKeyLockoutTime(null);
         return userConfiguration;
