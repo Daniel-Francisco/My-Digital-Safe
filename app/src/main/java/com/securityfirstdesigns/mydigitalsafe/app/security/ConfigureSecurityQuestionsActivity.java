@@ -32,10 +32,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.securityfirstdesigns.mydigitalsafe.app.ListActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.MainActivity;
 import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
 import com.securityfirstdesigns.mydigitalsafe.app.model.SecurityQuestion;
 import com.securityfirstdesigns.mydigitalsafe.app.model.UserConfiguration;
+import com.securityfirstdesigns.mydigitalsafe.app.settings.SettingsActivity;
 
 import org.json.JSONException;
 
@@ -81,16 +83,30 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
                             .setIcon(android.R.drawable.ic_delete)
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
+                                    Intent settingsIntent = new Intent(applicationContext, SettingsActivity.class);
+                                    startActivity(settingsIntent);
                                     finish();
                                 }
                             })
                             .setNegativeButton(android.R.string.no, null).show();
                 } else {
+                    Intent settingsIntent = new Intent(applicationContext, SettingsActivity.class);
+                    startActivity(settingsIntent);
                     finish();
                 }
             }
         });
 
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+
+        Intent mainActivityIntent = new Intent(applicationContext, MainActivity.class);
+        startActivity(mainActivityIntent);
+
+        finish();
     }
 
     private void setSecurityQuestion(String password) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException, JSONException, AuthenticatorException {
@@ -172,11 +188,15 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
                     .setIcon(android.R.drawable.ic_delete)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
+                            Intent settingsIntent = new Intent(applicationContext, SettingsActivity.class);
+                            startActivity(settingsIntent);
                             finish();
                         }
                     })
                     .setNegativeButton(android.R.string.no, null).show();
         } else {
+            Intent settingsIntent = new Intent(applicationContext, SettingsActivity.class);
+            startActivity(settingsIntent);
             finish();
         }
     }
@@ -243,9 +263,8 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
 
         @JavascriptInterface
         public void goHome() {
-            Intent listActivityIntent = new Intent(applicationContext, ListActivity.class);
-            startActivity(listActivityIntent);
-
+            Intent settingsIntent = new Intent(applicationContext, SettingsActivity.class);
+            startActivity(settingsIntent);
             finish();
         }
 

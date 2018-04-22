@@ -83,3 +83,8 @@
 #submitSecurityQuestions{
     margin-bottom: 25px;
 }
+
+#securityQuestionBlurb{
+    padding-left:10px;
+    padding-right:10px;
+}

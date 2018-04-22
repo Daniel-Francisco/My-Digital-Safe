@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -88,39 +89,40 @@ public class StartupActivity extends AppCompatActivity {
     private class AsyncAccountCreation extends AsyncTask<String, String, Boolean> {
         @Override
         protected Boolean doInBackground(String... strings) {
+            Log.d("stuff", "1");
             try {
                 if (firstPassword.equals(secondPassword) && lastScore > 3) {
                     long start_time = System.nanoTime();
                     int iterations = 100000;
 
                     String salt = securityManager.generateSalt();
-
+                    Log.d("stuff", "2");
                     DataStructures.UserConfiguration userConfiguration = new DataStructures.UserConfiguration();
                     userConfiguration.setPasswordHash("");
                     userConfiguration.setSalt(salt);
                     userConfiguration.setIterations(iterations);
                     DatabaseManager databaseManager = new DatabaseManager(applicationContext);
                     databaseManager.addUserConfiguration(new UserConfiguration(userConfiguration.getIterations(), userConfiguration.getPasswordHash(), userConfiguration.getSalt()));
-
+                    Log.d("stuff", "3");
                     String saltFromFile = databaseManager.getUserConfiguration().getSalt();
 
                     byte[] newHash = securityManager.hashPassword(firstPassword, saltFromFile.getBytes(), iterations);
-
+                    Log.d("stuff", "4");
                     databaseManager.checkConfigDirectory(applicationContext);
                     databaseManager.writeToDataFile(applicationContext, "started".getBytes(), "startup", true);
-
+                    Log.d("stuff", "5");
 
                     UserConfiguration currentUserConfig = databaseManager.getUserConfiguration();
                     String hash = Base64.encodeToString(newHash, Base64.DEFAULT);
                     currentUserConfig.setPassword_hash(hash);
                     databaseManager.addUserConfiguration(currentUserConfig);
-
+                    Log.d("stuff", "6");
                     long end_time = System.nanoTime();
                     double difference = (end_time - start_time) / 1e6;
                     int loginTime = (int) difference;
                     writeLoginTime(loginTime);
 
-
+                    Log.d("stuff", "7");
                     return true;
                 }
             }catch(Exception e){
@@ -134,30 +136,38 @@ public class StartupActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(Boolean status) {
+            Log.d("stuff", "8");
             if(status){
                 boolean authenticate = false;
                 try{
+                    Log.d("stuff", "9");
                     authenticate = securityManager.authenticateUser(firstPassword, applicationContext);
                     securityManager.generateKey(applicationContext);
+                    Log.d("stuff", "10");
                 }catch (Exception e){
                     e.printStackTrace();
                 }
                 if(authenticate){
+                    Log.d("stuff", "11");
                     Intent landingIntent = new Intent(applicationContext, ListActivity.class);
                     startActivity(landingIntent);
                     finish();
                 }else{
+                    Log.d("stuff", "12");
                     Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
                     startActivity(loginIntent);
                     finish();
                 }
             }else{
+                Log.d("stuff", "13");
                 if(firstPassword.equals(secondPassword)){
+                    Log.d("stuff", "14");
                     CharSequence failedAuthenticationString = getString(R.string.passwordTooShort);
 
                     Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
                     toast.show();
                 }else{
+                    Log.d("stuff", "15");
                     CharSequence failedAuthenticationString = getString(R.string.passwordsDoNotMatch);
 
                     Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);

@@ -65,18 +65,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
         browser.addJavascriptInterface(new ChangePasswordActivity.WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/ChangePassword.html");
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.addDrawerListener(toggle);
-//        toggle.syncState();
-//
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
-
     }
 
     @Override
@@ -101,13 +89,12 @@ public class ChangePasswordActivity extends AppCompatActivity {
         finish();
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        // your code.
-//        Intent listIntent = new Intent(applicationContext, ListActivity.class);
-//        startActivity(listIntent);
-//        finish();
-//    }
+    @Override
+    public void onBackPressed() {
+        Intent settingsIntent = new Intent(applicationContext, SettingsActivity.class);
+        startActivity(settingsIntent);
+        finish();
+    }
 
 
     private void androidUpdatePassword(String currentPassword, String newPasswordOne, String newPasswordTwo) {

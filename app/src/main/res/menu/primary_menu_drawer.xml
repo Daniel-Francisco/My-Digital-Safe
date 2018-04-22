@@ -32,7 +32,7 @@
         <item
             android:id="@+id/about"
             android:icon="@drawable/about_icon"
-            android:title="About Digital Safe" />
+            android:title="About My Digital Safe" />
         <item
             android:id="@+id/settings"
             android:icon="@drawable/settings_icon"
