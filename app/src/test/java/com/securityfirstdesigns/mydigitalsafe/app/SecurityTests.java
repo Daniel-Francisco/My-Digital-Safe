@@ -16,6 +16,9 @@ public class SecurityTests {
         String testData = generateRandomString();
         SecurityManager securityManager = new SecurityManager();
 
+        StartupActivity startupActivity = new StartupActivity();
+
+
     }
 
     protected String generateRandomString() {
@@ -31,4 +34,5 @@ public class SecurityTests {
         return returnString;
 
     }
+
 }
