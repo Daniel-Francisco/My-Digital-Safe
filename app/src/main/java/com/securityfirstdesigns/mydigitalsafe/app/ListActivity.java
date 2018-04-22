@@ -19,12 +19,14 @@ package com.securityfirstdesigns.mydigitalsafe.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
@@ -63,14 +65,17 @@ public class ListActivity extends MenuActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("stuff", "1.1");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         applicationContext = this.getBaseContext();
 
-        list = new ArrayList<>();
+        new AsyncInitalizeAds().execute();
 
+        list = new ArrayList<>();
+        Log.d("stuff", "1.2");
         checkForQuickNotes();
 
 
@@ -78,7 +83,7 @@ public class ListActivity extends MenuActivity {
         browser.getSettings().setJavaScriptEnabled(true);
         browser.addJavascriptInterface(new ListActivity.WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/ListPage.html");
-
+        Log.d("stuff", "1.3");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -95,40 +100,40 @@ public class ListActivity extends MenuActivity {
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
+        Log.d("stuff", "1.4");
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        Log.d("stuff", "1.4.1");
 
 
+        Log.d("stuff", "1.5");
 
-//        SharedPreferences sp = getSharedPreferences("digital_safe", Activity.MODE_PRIVATE);
-//        boolean firstNoteFlag = sp.getBoolean("first_note_add_flag", true);
-//        if(firstNoteFlag){
-//            try {
-//                DatabaseManager databaseManager = new DatabaseManager(applicationContext);
-//                File firstNote = new File();
-//                firstNote.setData("First note what we recommend you do note. Test new line");
-//                firstNote.setFileName("Welcome to My Digital Safe!");
-//                Date date = new Date();
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-//                String dateString = sdf.format(date);
-//                firstNote.setAccessDate(dateString);
-//                databaseManager.addFile(firstNote);
-//            }catch(Exception e){
-//                e.printStackTrace();
-//            }
-//            SharedPreferences.Editor editor = sp.edit();
-//            editor.putBoolean("first_note_add_flag", false);
-//            editor.commit();
-//        }
 
-        MobileAds.initialize(this,
-                "ca-app-pub-3940256099942544~3347511713");
-
-        mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
         setTitle("Home");
+        Log.d("stuff", "1.6");
+
+    }
+
+    private class AsyncInitalizeAds extends AsyncTask<String, String, Boolean> {
+        AdRequest adRequest;
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            MobileAds.initialize(applicationContext,
+                    "ca-app-pub-4110180846755816/8049816693");
+
+            mAdView = findViewById(R.id.adView);
+            adRequest = new AdRequest.Builder().build();
+
+            return true;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+        }
+
+        protected void onPostExecute(Boolean status) {
+            Log.d("stuff", "8");
+            mAdView.loadAd(adRequest);
+        }
     }
 
     private void checkForQuickNotes() {
