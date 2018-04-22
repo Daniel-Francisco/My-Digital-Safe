@@ -21,7 +21,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    tools:context="com.development.security.ciphernote.security.LoginActivity">
+    tools:context="com.securityfirstdesigns.mydigitalsafe.app.security.LoginActivity">
 
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
