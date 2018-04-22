@@ -31,6 +31,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.securityfirstdesigns.mydigitalsafe.app.ListActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.MainActivity;
 import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
 import com.securityfirstdesigns.mydigitalsafe.app.model.SecurityQuestion;
@@ -85,16 +86,7 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-//        final Preference adjustSecurityLevelButton = findPreference(getString(R.string.preferenceAdjustSecurityLevel));
-//        adjustSecurityLevelButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-//            @Override
-//            public boolean onPreferenceClick(Preference preference) {
-//                //code for what you want it to do
-//                Intent adjustSecurityLevel = new Intent(applicationContext, AdjustSecurityLevel.class);
-//                startActivity(adjustSecurityLevel);
-//                return true;
-//            }
-//        });
+//        configureSecurityQuestionsButton.setC
 
         Preference enableForgotPasswordPreference = findPreference(getString(R.string.preferenceSecurityQuestionsToggle));
         enableForgotPasswordPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -184,6 +176,16 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+
+        Intent mainActivityIntent = new Intent(applicationContext, MainActivity.class);
+        startActivity(mainActivityIntent);
+
+        finish();
     }
 
     @Override
