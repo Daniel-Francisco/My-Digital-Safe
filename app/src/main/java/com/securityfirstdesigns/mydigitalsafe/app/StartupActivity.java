@@ -68,11 +68,11 @@ public class StartupActivity extends AppCompatActivity {
                         "\n" +
                         "My Digital Safe commits to striking the perfect balance between securing your data and allowing you to customize your own experience to suit your needs.\n" +
                         "\n" +
-                        "We recommend you visit the Setting page to browse configure the app to your likings. By default, the app does not have a Forget Password method in place. By visiting the Settings page, you can enable the password reset feature and configure as few as one and as many as five security questions. My Digital Safe will require the correct response of all security questions to allow you to reset your password.\n" +
+                        "We recommend you visit the Setting's page to browse configure the app to your likings. By default, the app does not have a Forget Password method in place. By visiting the Settings page, you can enable the password reset feature and configure as few as one and as many as five security questions. My Digital Safe will require the correct response of all security questions to allow you to reset your password.\n" +
                         "\n" +
-                        "You can also configure you digital safe to lock itself after too many failed login attempts. If you are concerned about friends, family or other people trying to guess your My Digital Safe password, this feature can help protect you.\n" +
+                        "You can also configure your Digital Safe to lock itself after too many failed login attempts. If you are concerned about friends, family or other people trying to guess your My Digital Safe password, this feature can help protect you.\n" +
                         "\n" +
-                        "Lastly, don't forget to checkout the \"Quick Note\" feature on the login page. My Digital Safe understands it can be painful to have to login everytime you want to write down a quick thought. To solve this problem, we allow you to create a note from your login page that will be kept hidden once saved and encrypted the next time you login.\n" +
+                        "Lastly, don't forget to check out the \"Quick Note\" feature on the login page. My Digital Safe understands it can be painful to have to login everytime you want to write down a quick thought. To solve this problem, we allow you to create a note from your login page that will be kept hidden once saved and encrypted the next time you login.\n" +
                         "\n" +
                         "Enjoy the app!\n" +
                         "- My Digital Safe team.");
