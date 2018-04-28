@@ -15,7 +15,7 @@
  * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
  */
 
-package com.securityfirstdesigns.mydigitalsafe.app;
+package com.securityfirstdesigns.mydigitalsafe.app.notes;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,6 +26,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
+import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
 import com.securityfirstdesigns.mydigitalsafe.app.model.QuickNoteFile;
 import com.google.android.gms.ads.AdView;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
  */
 
-package com.securityfirstdesigns.mydigitalsafe.app;
+package com.securityfirstdesigns.mydigitalsafe.app.core;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +29,8 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
+import com.securityfirstdesigns.mydigitalsafe.app.R;
+
 public class AboutActivity extends MenuActivity {
     WebView browser;
     @Override
@@ -38,9 +40,8 @@ public class AboutActivity extends MenuActivity {
 
         applicationContext = this.getBaseContext();
 
-        browser=(WebView)findViewById(R.id.webkit);
+        browser = (WebView)findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
-        browser.addJavascriptInterface(new AboutActivity.WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/AboutPage.html");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -81,21 +82,9 @@ public class AboutActivity extends MenuActivity {
     @Override
     public void onBackPressed() {
         // your code.
-        Intent listIntent = new Intent(applicationContext, ListActivity.class);
+        Intent listIntent = new Intent(applicationContext, HomeActivity.class);
         startActivity(listIntent);
         finish();
     }
 
-
-    public class WebAppInterface {
-        Context mContext;
-        WebAppInterface(Context c) {
-            mContext = c;
-        }
-        @JavascriptInterface
-        public void deleteNote(){
-            Log.d("help", "test");
-        }
-
-    }
 }

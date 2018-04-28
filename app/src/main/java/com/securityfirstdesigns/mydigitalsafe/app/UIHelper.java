@@ -28,7 +28,7 @@ public class UIHelper {
             "Have you configured your Forgot Password security questions yet?",
             "Enjoying the app? Give us a great rating! We'd appreciate it!",
             "To protect access to your notes, you can setup My Digital Safe to lock your data from excessive failed login attempts.",
-            "Remember,'Quick Notes' from the login page will not be encrypted until the next time you login.",
+            "Remember, 'Quick Notes' from the login page will not be encrypted until the next time you login.",
             "We do not use servers or clouds. We proudly keep all your data on your phone."    };
 
     public String randomlyGenerateRecommendation() {

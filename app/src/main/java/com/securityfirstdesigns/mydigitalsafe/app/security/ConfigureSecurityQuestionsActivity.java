@@ -24,15 +24,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.securityfirstdesigns.mydigitalsafe.app.ListActivity;
-import com.securityfirstdesigns.mydigitalsafe.app.MainActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.core.MainActivity;
 import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
 import com.securityfirstdesigns.mydigitalsafe.app.model.SecurityQuestion;
@@ -113,8 +111,8 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
         DatabaseManager databaseManager = new DatabaseManager(applicationContext);
         UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
 
-        SecurityManager securityManager = new SecurityManager();
-        userConfiguration = securityManager.setSecurityQuestion(userConfiguration, applicationContext, password, securityQuestionCount,
+        SecurityService securityService = new SecurityService();
+        userConfiguration = securityService.setSecurityQuestion(userConfiguration, applicationContext, password, securityQuestionCount,
                 questionOneP, answerOneP, questionTwoP, answerTwoP, questionThreeP, answerThreeP,
                 questionFourP, answerFourP, questionFiveP, answerFiveP);
         databaseManager.updateUserConfiguration(userConfiguration);
@@ -150,7 +148,6 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
 
         protected void onPostExecute(Boolean status) {
             if (status) {
-                Log.d("status", "good");
                 browser.post(new Runnable() {
                     @Override
                     public void run() {
@@ -162,7 +159,6 @@ public class ConfigureSecurityQuestionsActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(applicationContext, successToast, Toast.LENGTH_LONG);
                 toast.show();
             } else {
-                Log.d("status", "bad");
                 browser.post(new Runnable() {
                     @Override
                     public void run() {

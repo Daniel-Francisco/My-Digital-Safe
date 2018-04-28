@@ -25,7 +25,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
 import android.util.Log;
 
-import com.securityfirstdesigns.mydigitalsafe.app.security.SecurityManager;
+import com.securityfirstdesigns.mydigitalsafe.app.security.SecurityService;
 
 import org.json.JSONException;
 
@@ -351,14 +351,14 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     public long addFile(File file) throws ParseException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException {
         SQLiteDatabase writeDatabase = this.getWritableDatabase();
-        SecurityManager securityManager = SecurityManager.getInstance();
+        SecurityService securityService = SecurityService.getInstance();
 
-        file = securityManager.setFileHash(file);
+        file = securityService.setFileHash(file);
 
         ContentValues values = new ContentValues();
-        values.put(File.KEY_ACCESS_DATE, securityManager.encrypt(file.getAccessDate()));
-        values.put(File.KEY_FILE_NAME, securityManager.encrypt(file.getFileName()));
-        values.put(File.KEY_DATA, Base64.encode(securityManager.encrypt(file.getData()), Base64.DEFAULT));
+        values.put(File.KEY_ACCESS_DATE, securityService.encrypt(file.getAccessDate()));
+        values.put(File.KEY_FILE_NAME, securityService.encrypt(file.getFileName()));
+        values.put(File.KEY_DATA, Base64.encode(securityService.encrypt(file.getData()), Base64.DEFAULT));
         values.put(File.KEY_HASH, file.getHash());
 
         // Inserting Row
@@ -369,17 +369,17 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     public long updateFile(File file) throws NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException {
         SQLiteDatabase writeDatabase = this.getWritableDatabase();
-        SecurityManager securityManager = SecurityManager.getInstance();
+        SecurityService securityService = SecurityService.getInstance();
 
         ContentValues values = new ContentValues();
 
-        byte[] fileNameCipher = securityManager.encrypt(file.getFileName());
+        byte[] fileNameCipher = securityService.encrypt(file.getFileName());
         String dataString = new String(file.getData());
-        byte[] dataCipher = securityManager.encrypt(dataString);
+        byte[] dataCipher = securityService.encrypt(dataString);
 
-        file = securityManager.setFileHash(file);
+        file = securityService.setFileHash(file);
 
-        values.put(File.KEY_ACCESS_DATE, securityManager.encrypt(file.getAccessDate()));
+        values.put(File.KEY_ACCESS_DATE, securityService.encrypt(file.getAccessDate()));
         values.put(File.KEY_FILE_NAME, fileNameCipher);
         values.put(File.KEY_DATA, Base64.encodeToString(dataCipher, Base64.DEFAULT));
         values.put(File.KEY_HASH, file.getHash());
@@ -392,7 +392,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     public ArrayList<File> getAllFiles() throws ParseException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
         SQLiteDatabase writeDatabase = this.getWritableDatabase();
-        SecurityManager securityManager = SecurityManager.getInstance();
+        SecurityService securityService = SecurityService.getInstance();
 
         ArrayList<File> fileList = new ArrayList<File>();
         // Select All Query
@@ -409,12 +409,12 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 file.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(File.KEY_ID))));
                 byte[] accessDate = cursor.getBlob(cursor.getColumnIndex(File.KEY_ACCESS_DATE));
 
-                file.setAccessDate(securityManager.decrypt(accessDate));
+                file.setAccessDate(securityService.decrypt(accessDate));
 
-                file.setFileName(securityManager.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_FILE_NAME))));
+                file.setFileName(securityService.decrypt(cursor.getBlob(cursor.getColumnIndex(File.KEY_FILE_NAME))));
 
                 try{
-                    file.setData(securityManager.decrypt(Base64.decode(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)), Base64.DEFAULT)));
+                    file.setData(securityService.decrypt(Base64.decode(cursor.getString(cursor.getColumnIndex(File.KEY_DATA)), Base64.DEFAULT)));
                 }catch(Exception e){
                     e.printStackTrace();
                     file.setData("");
@@ -422,7 +422,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
                 file.setHash(cursor.getString(cursor.getColumnIndex(File.KEY_HASH)));
 
-//                boolean fileStatus = securityManager.validateFileHash(file);
+//                boolean fileStatus = securityService.validateFileHash(file);
 
 //                if(!fileStatus){
 //                    file = null;

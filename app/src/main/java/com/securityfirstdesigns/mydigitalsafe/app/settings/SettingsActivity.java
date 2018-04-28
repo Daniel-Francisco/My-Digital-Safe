@@ -30,8 +30,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.securityfirstdesigns.mydigitalsafe.app.ListActivity;
-import com.securityfirstdesigns.mydigitalsafe.app.MainActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.core.HomeActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.core.MainActivity;
 import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
 import com.securityfirstdesigns.mydigitalsafe.app.model.SecurityQuestion;
@@ -170,7 +170,7 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public void onClick(View v) {
                 //save stuff
-                Intent listIntent = new Intent(applicationContext, ListActivity.class);
+                Intent listIntent = new Intent(applicationContext, HomeActivity.class);
                 startActivity(listIntent);
                 finish();
             }
@@ -210,7 +210,7 @@ public class SettingsActivity extends PreferenceActivity {
 
     @Override
     public void onBackPressed() {
-        Intent listIntent = new Intent(applicationContext, ListActivity.class);
+        Intent listIntent = new Intent(applicationContext, HomeActivity.class);
         startActivity(listIntent);
         finish();
     }
@@ -218,7 +218,7 @@ public class SettingsActivity extends PreferenceActivity {
 //    @Override
 //    public void onBackPressed() {
 //        // your code.
-//        Intent listIntent = new Intent(applicationContext, ListActivity.class);
+//        Intent listIntent = new Intent(applicationContext, HomeActivity.class);
 //        startActivity(listIntent);
 //        finish();
 //    }
