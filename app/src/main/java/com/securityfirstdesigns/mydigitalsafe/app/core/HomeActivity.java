@@ -117,7 +117,7 @@ public class HomeActivity extends MenuActivity {
         @Override
         protected Boolean doInBackground(String... strings) {
             MobileAds.initialize(applicationContext,
-                    "ca-app-pub-4110180846755816/8049816693");
+                    "pub-4110180846755816");
 
             mAdView = findViewById(R.id.adView);
             adRequest = new AdRequest.Builder().build();
