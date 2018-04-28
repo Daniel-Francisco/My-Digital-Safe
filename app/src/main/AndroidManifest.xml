@@ -32,7 +32,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustResize">
-        <activity android:name="com.securityfirstdesigns.mydigitalsafe.app.MainActivity">
+        <activity android:name="com.securityfirstdesigns.mydigitalsafe.app.core.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,23 +40,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.securityfirstdesigns.mydigitalsafe.app.EditNoteActivity"
+            android:name="com.securityfirstdesigns.mydigitalsafe.app.notes.EditNoteActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="com.securityfirstdesigns.mydigitalsafe.app.StartupActivity" />
+        <activity android:name="com.securityfirstdesigns.mydigitalsafe.app.core.StartupActivity" />
         <activity
             android:name="com.securityfirstdesigns.mydigitalsafe.app.security.LoginActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.securityfirstdesigns.mydigitalsafe.app.ListActivity"
+            android:name="com.securityfirstdesigns.mydigitalsafe.app.core.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowFullscreen="true" />
         <activity
             android:name="com.securityfirstdesigns.mydigitalsafe.app.settings.ChangePasswordActivity"
             android:parentActivityName="com.securityfirstdesigns.mydigitalsafe.app.settings.SettingsActivity" />
         <activity
-            android:name="com.securityfirstdesigns.mydigitalsafe.app.AboutActivity"
+            android:name="com.securityfirstdesigns.mydigitalsafe.app.core.AboutActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="com.securityfirstdesigns.mydigitalsafe.app.FolderListActivity" />
+        <activity android:name="com.securityfirstdesigns.mydigitalsafe.app.experimental.FolderListActivity" />
         <activity
             android:name="com.securityfirstdesigns.mydigitalsafe.app.settings.SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -68,12 +68,12 @@
             android:name="com.securityfirstdesigns.mydigitalsafe.app.security.ConfigureSecurityQuestionsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.securityfirstdesigns.mydigitalsafe.app.QuickNoteEdit"
+            android:name="com.securityfirstdesigns.mydigitalsafe.app.notes.QuickNoteEdit"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="com.securityfirstdesigns.mydigitalsafe.app.security.AdjustSecurityLevel"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="com.securityfirstdesigns.mydigitalsafe.app.PrivacyPolicyActivity"
+        <activity android:name="com.securityfirstdesigns.mydigitalsafe.app.core.PrivacyPolicyActivity"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

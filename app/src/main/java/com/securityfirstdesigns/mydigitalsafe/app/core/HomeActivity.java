@@ -15,7 +15,7 @@
  * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
  */
 
-package com.securityfirstdesigns.mydigitalsafe.app;
+package com.securityfirstdesigns.mydigitalsafe.app.core;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,10 +33,11 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
 import com.securityfirstdesigns.mydigitalsafe.app.model.File;
 import com.securityfirstdesigns.mydigitalsafe.app.model.QuickNoteFile;
-import com.securityfirstdesigns.mydigitalsafe.app.security.SecurityManager;
+import com.securityfirstdesigns.mydigitalsafe.app.notes.EditNoteActivity;
 import com.securityfirstdesigns.mydigitalsafe.app.settings.ChangePasswordActivity;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -56,7 +57,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class ListActivity extends MenuActivity {
+public class HomeActivity extends MenuActivity {
     ArrayList<File> list;
     WebView browser;
     private AdView mAdView;
@@ -65,25 +66,22 @@ public class ListActivity extends MenuActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("stuff", "1.1");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         applicationContext = this.getBaseContext();
 
-        new AsyncInitalizeAds().execute();
-
+        new AsyncInitializeAds().execute();
         list = new ArrayList<>();
-        Log.d("stuff", "1.2");
         checkForQuickNotes();
 
 
         browser = (WebView) findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
-        browser.addJavascriptInterface(new ListActivity.WebAppInterface(this), "Android");
+        browser.addJavascriptInterface(new HomeActivity.WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/ListPage.html");
-        Log.d("stuff", "1.3");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -100,22 +98,22 @@ public class ListActivity extends MenuActivity {
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        Log.d("stuff", "1.4");
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        Log.d("stuff", "1.4.1");
-
-
-        Log.d("stuff", "1.5");
 
 
         setTitle("Home");
-        Log.d("stuff", "1.6");
 
     }
 
-    private class AsyncInitalizeAds extends AsyncTask<String, String, Boolean> {
+    /*
+        Due to issues that occurred on some Emulators, the ad initialization process would occasionally crash the UI thread.
+        The issue appeared localized to emulators but for fear of it existing in production without ability to recreate on
+        limited test devices, running in separate thread sorted out issue on problematic emulators
+     */
+    private class AsyncInitializeAds extends AsyncTask<String, String, Boolean> {
         AdRequest adRequest;
+
         @Override
         protected Boolean doInBackground(String... strings) {
             MobileAds.initialize(applicationContext,
@@ -141,23 +139,17 @@ public class ListActivity extends MenuActivity {
             DatabaseManager databaseManager = new DatabaseManager(applicationContext);
             ArrayList<QuickNoteFile> quickNoteFiles = databaseManager.getAllQuickNoteFiles();
             for (int i = 0; i < quickNoteFiles.size(); i++) {
-//                File file = new File();
                 File newFile = createEmptyFile(quickNoteFiles.get(i).getQuickNoteFileName());
-
                 long id = databaseManager.addFile(newFile);
                 newFile.setID(id);
                 list.add(newFile);
-
-
                 try {
-
-                    if(newFile.getFileName().equals("") || newFile.getFileName() == null){
+                    if (newFile.getFileName().equals("") || newFile.getFileName() == null) {
                         newFile.setFileName("My Quick Note");
                     }
-                    if(newFile.getData().equals("") || newFile.getData().equals(null)){
+                    if (newFile.getData().equals("") || newFile.getData().equals(null)) {
                         newFile.setData(" ");
                     }
-
                     Date date = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                     String dateString = sdf.format(date);
@@ -293,21 +285,13 @@ public class ListActivity extends MenuActivity {
 
     protected void androidListClickOccurred(File file) {
         selectedFile = file;
-
         try {
             Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
             landingIntent.putExtra("newNoteFlag", false);
-
-//            landingIntent.putExtra("fileName", name);
-
             Gson gson = new Gson();
             String json = gson.toJson(selectedFile);
-
             landingIntent.putExtra("fileObject", json);
-
             startActivity(landingIntent);
-
-//            finish();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -318,7 +302,7 @@ public class ListActivity extends MenuActivity {
         startActivity(landingIntent);
     }
 
-    private File createEmptyFile(String name){
+    private File createEmptyFile(String name) {
         File newFile = new File();
         Date date = new Date();
         newFile.setFileName(name);
@@ -330,33 +314,22 @@ public class ListActivity extends MenuActivity {
 
     protected void androidAddNote(String name) {
         try {
-
             DatabaseManager databaseManager = new DatabaseManager(applicationContext);
-
             File newFile = createEmptyFile(name);
-
             long id = databaseManager.addFile(newFile);
             newFile.setID(id);
             list.add(newFile);
-
             try {
                 Intent landingIntent = new Intent(applicationContext, EditNoteActivity.class);
-
-                String realFilename = SecurityManager.getInstance().SHA256Hash(name);
-
                 landingIntent.putExtra("fileName", name);
-
                 Gson gson = new Gson();
                 String json = gson.toJson(newFile);
-
                 landingIntent.putExtra("fileObject", json);
                 landingIntent.putExtra("newNoteFlag", true);
-
                 startActivity(landingIntent);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -366,12 +339,10 @@ public class ListActivity extends MenuActivity {
     private void androidDelete(File file) {
         try {
             DatabaseManager databaseManager = new DatabaseManager(applicationContext);
-
             file.setFileName("redacted");
             file.setAccessDate("redacted");
             file.setData("redacted");
             databaseManager.updateFile(file);
-
             databaseManager.deleteFile(file);
 
             CharSequence failedAuthenticationString = getString(R.string.deleteFileSuccess);

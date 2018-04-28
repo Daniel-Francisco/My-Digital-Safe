@@ -21,6 +21,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.securityfirstdesigns.mydigitalsafe.app.FolderListActivity">
+    tools:context="com.securityfirstdesigns.mydigitalsafe.app.experimental.FolderListActivity">
 
 </android.support.constraint.ConstraintLayout>

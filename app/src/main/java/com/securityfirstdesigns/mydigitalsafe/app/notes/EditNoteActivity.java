@@ -15,7 +15,7 @@
  * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
  */
 
-package com.securityfirstdesigns.mydigitalsafe.app;
+package com.securityfirstdesigns.mydigitalsafe.app.notes;
 
 import android.content.Context;
 import android.content.Intent;
@@ -30,8 +30,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.content.DialogInterface;
 
+import com.securityfirstdesigns.mydigitalsafe.app.core.HomeActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.core.MainActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
-import com.securityfirstdesigns.mydigitalsafe.app.security.SecurityManager;
+import com.securityfirstdesigns.mydigitalsafe.app.security.SecurityService;
 import com.google.android.gms.ads.AdView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -43,13 +46,11 @@ import java.util.Date;
 public class EditNoteActivity extends AppCompatActivity {
     Context applicationContext;
     EditText userInput = null;
-    SecurityManager securityManager;
+    SecurityService securityService;
     String fileName;
     String hashedFilename = "";
     DatabaseManager databaseManager;
     private AdView mAdView;
-
-    String noteValue = "";
 
     com.securityfirstdesigns.mydigitalsafe.app.model.File file;
     WebView browser;
@@ -73,8 +74,6 @@ public class EditNoteActivity extends AppCompatActivity {
 
 
         if (savedInstanceState != null){
-//            onOrientChange.putString("dataBeforeRotation", file.getData());
-//            onOrientChange.putString("titleBeforeRotation", file.getFileName());
             if(savedInstanceState.getString("dataBeforeRotation") != null){
                 file.setData(savedInstanceState.getString("dataBeforeRotation"));
             }
@@ -84,7 +83,7 @@ public class EditNoteActivity extends AppCompatActivity {
         }
 
 
-        securityManager = SecurityManager.getInstance();
+        securityService = SecurityService.getInstance();
         applicationContext = this;
         databaseManager = new DatabaseManager(applicationContext);
         hashedFilename = fileName;
@@ -110,7 +109,7 @@ public class EditNoteActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent listIntent = new Intent(applicationContext, ListActivity.class);
+                Intent listIntent = new Intent(applicationContext, HomeActivity.class);
                 startActivity(listIntent);
                 finish();
             }
@@ -193,7 +192,7 @@ public class EditNoteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // your code.
-        Intent listIntent = new Intent(applicationContext, ListActivity.class);
+        Intent listIntent = new Intent(applicationContext, HomeActivity.class);
         startActivity(listIntent);
         finish();
     }
@@ -213,7 +212,7 @@ public class EditNoteActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
             toast.show();
 
-            Intent listIntent = new Intent(applicationContext, ListActivity.class);
+            Intent listIntent = new Intent(applicationContext, HomeActivity.class);
             startActivity(listIntent);
             finish();
 

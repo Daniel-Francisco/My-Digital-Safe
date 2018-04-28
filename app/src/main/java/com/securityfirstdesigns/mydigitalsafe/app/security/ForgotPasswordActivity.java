@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -71,14 +70,14 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(String... strings) {
             try {
-                SecurityManager securityManager = new SecurityManager();
+                SecurityService securityService = new SecurityService();
                 ArrayList<String> responses = new ArrayList<>();
                 responses.add(r1);
                 responses.add(r2);
                 responses.add(r3);
                 responses.add(r4);
                 responses.add(r5);
-                return securityManager.compareSecurityQuestionResponse(responses, applicationContext);
+                return securityService.compareSecurityQuestionResponse(responses, applicationContext);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -90,7 +89,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         protected void onPostExecute(Boolean status) {
             if (status) {
-                Log.d("status", "good");
                 browser.post(new Runnable() {
                     @Override
                     public void run() {
@@ -98,7 +96,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     }
                 });
             } else {
-                Log.d("status", "bad");
                 browser.post(new Runnable() {
                     @Override
                     public void run() {
@@ -110,13 +107,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(applicationContext, successToast, Toast.LENGTH_LONG);
                 toast.show();
 
-                SecurityManager securityManager = new SecurityManager();
+                SecurityService securityService = new SecurityService();
                 DatabaseManager databaseManager = new DatabaseManager(applicationContext);
                 UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
                 if (userConfiguration.getLockoutFlag() == 1) {
                     int failedCount = userConfiguration.getFailedLoginCount() + 1;
                     userConfiguration.setFailedLoginCount(failedCount);
-                    userConfiguration = securityManager.generateUnlockString(userConfiguration, failedCount);
+                    userConfiguration = securityService.generateUnlockString(userConfiguration, failedCount);
                     databaseManager.updateUserConfiguration(userConfiguration);
 
                     displayLockoutCountdown();
@@ -135,7 +132,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         int failsLeft = allowedFails - currentFails;
 
         if(currentFails >= allowedFails){
-//            failsLeft = (1 - ((currentFails - allowedFails) % 1));
             browser.post(new Runnable() {
                 @Override
                 public void run() {
@@ -153,14 +149,14 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(String... strings) {
             try {
-                SecurityManager securityManager = new SecurityManager();
+                SecurityService securityService = new SecurityService();
                 ArrayList<String> responses = new ArrayList<>();
                 responses.add(r1);
                 responses.add(r2);
                 responses.add(r3);
                 responses.add(r4);
                 responses.add(r5);
-                securityManager.resetPasswordWithSecurityQuestion(responses, newPassword, applicationContext);
+                securityService.resetPasswordWithSecurityQuestion(responses, newPassword, applicationContext);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -366,8 +362,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 DatabaseManager databaseManager = new DatabaseManager(applicationContext);
                 UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
                 String lockoutDate = userConfiguration.getLockoutTime();
-                SecurityManager securityManager = new SecurityManager();
-                boolean dateFlag = securityManager.checkIfPastDate(lockoutDate);
+                SecurityService securityService = new SecurityService();
+                boolean dateFlag = securityService.checkIfPastDate(lockoutDate);
                 if (!dateFlag)
                     return beautifyLockoutDateString();
             } catch (ParseException e) {
