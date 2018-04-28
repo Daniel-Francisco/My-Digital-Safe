@@ -1,5 +1,7 @@
 package com.securityfirstdesigns.mydigitalsafe.app;
 
+import com.securityfirstdesigns.mydigitalsafe.app.core.StartupActivity;
+
 import org.junit.Test;
 
 import java.util.Random;

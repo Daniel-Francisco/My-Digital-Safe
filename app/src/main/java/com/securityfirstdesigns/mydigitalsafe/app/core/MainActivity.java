@@ -15,7 +15,7 @@
  * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
  */
 
-package com.securityfirstdesigns.mydigitalsafe.app;
+package com.securityfirstdesigns.mydigitalsafe.app.core;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,9 +23,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.webkit.WebView;
 
+import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
 import com.securityfirstdesigns.mydigitalsafe.app.security.LoginActivity;
 
+/*
+    MainActivity runs first every time, and will either direct user to startup or login depending
+    on whether or not this is the first run
+ */
 public class MainActivity extends AppCompatActivity {
     WebView webView;
     SharedPreferences prefs = null;

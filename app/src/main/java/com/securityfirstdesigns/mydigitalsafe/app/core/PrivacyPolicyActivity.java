@@ -15,7 +15,7 @@
  * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
  */
 
-package com.securityfirstdesigns.mydigitalsafe.app;
+package com.securityfirstdesigns.mydigitalsafe.app.core;
 
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +24,8 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.ImageView;
+
+import com.securityfirstdesigns.mydigitalsafe.app.R;
 
 public class PrivacyPolicyActivity extends AppCompatActivity {
     Context applicationContext;

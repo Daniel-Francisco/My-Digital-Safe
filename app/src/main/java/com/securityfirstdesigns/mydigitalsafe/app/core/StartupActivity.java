@@ -15,7 +15,7 @@
  * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
  */
 
-package com.securityfirstdesigns.mydigitalsafe.app;
+package com.securityfirstdesigns.mydigitalsafe.app.core;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,21 +25,21 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
 import com.securityfirstdesigns.mydigitalsafe.app.model.QuickNoteFile;
 import com.securityfirstdesigns.mydigitalsafe.app.model.UserConfiguration;
 import com.securityfirstdesigns.mydigitalsafe.app.security.LoginActivity;
-import com.securityfirstdesigns.mydigitalsafe.app.security.SecurityManager;
+import com.securityfirstdesigns.mydigitalsafe.app.security.SecurityService;
 
 public class StartupActivity extends AppCompatActivity {
     Context applicationContext;
     WebView browser;
-    final SecurityManager securityManager = SecurityManager.getInstance();
+    final SecurityService securityService = SecurityService.getInstance();
 
     String firstPassword = null;
     String secondPassword = null;
@@ -68,7 +68,7 @@ public class StartupActivity extends AppCompatActivity {
                         "\n" +
                         "My Digital Safe commits to striking the perfect balance between securing your data and allowing you to customize your own experience to suit your needs.\n" +
                         "\n" +
-                        "We recommend you visit the Setting's page to browse configure the app to your likings. By default, the app does not have a Forget Password method in place. By visiting the Settings page, you can enable the password reset feature and configure as few as one and as many as five security questions. My Digital Safe will require the correct response of all security questions to allow you to reset your password.\n" +
+                        "We recommend you visit the Setting's page to configure the app to your likings. By default, the app does not have a Forget Password method in place. By visiting the Settings page, you can enable the password reset feature and configure as few as one and as many as five security questions. My Digital Safe will require the correct response of all security questions to allow you to reset your password.\n" +
                         "\n" +
                         "You can also configure your Digital Safe to lock itself after too many failed login attempts. If you are concerned about friends, family or other people trying to guess your My Digital Safe password, this feature can help protect you.\n" +
                         "\n" +
@@ -89,40 +89,33 @@ public class StartupActivity extends AppCompatActivity {
     private class AsyncAccountCreation extends AsyncTask<String, String, Boolean> {
         @Override
         protected Boolean doInBackground(String... strings) {
-            Log.d("stuff", "1");
             try {
                 if (firstPassword.equals(secondPassword) && lastScore > 3) {
                     long start_time = System.nanoTime();
                     int iterations = 100000;
 
-                    String salt = securityManager.generateSalt();
-                    Log.d("stuff", "2");
-                    DataStructures.UserConfiguration userConfiguration = new DataStructures.UserConfiguration();
-                    userConfiguration.setPasswordHash("");
+                    String salt = securityService.generateSalt();
+                    UserConfiguration userConfiguration = new UserConfiguration();
+                    userConfiguration.setPassword_hash("");
                     userConfiguration.setSalt(salt);
                     userConfiguration.setIterations(iterations);
                     DatabaseManager databaseManager = new DatabaseManager(applicationContext);
-                    databaseManager.addUserConfiguration(new UserConfiguration(userConfiguration.getIterations(), userConfiguration.getPasswordHash(), userConfiguration.getSalt()));
-                    Log.d("stuff", "3");
+                    databaseManager.addUserConfiguration(userConfiguration);
                     String saltFromFile = databaseManager.getUserConfiguration().getSalt();
 
-                    byte[] newHash = securityManager.hashPassword(firstPassword, saltFromFile.getBytes(), iterations);
-                    Log.d("stuff", "4");
+                    byte[] newHash = securityService.hashPassword(firstPassword, saltFromFile.getBytes(), iterations);
                     databaseManager.checkConfigDirectory(applicationContext);
                     databaseManager.writeToDataFile(applicationContext, "started".getBytes(), "startup", true);
-                    Log.d("stuff", "5");
 
                     UserConfiguration currentUserConfig = databaseManager.getUserConfiguration();
                     String hash = Base64.encodeToString(newHash, Base64.DEFAULT);
                     currentUserConfig.setPassword_hash(hash);
                     databaseManager.addUserConfiguration(currentUserConfig);
-                    Log.d("stuff", "6");
                     long end_time = System.nanoTime();
                     double difference = (end_time - start_time) / 1e6;
                     int loginTime = (int) difference;
                     writeLoginTime(loginTime);
 
-                    Log.d("stuff", "7");
                     return true;
                 }
             }catch(Exception e){
@@ -136,38 +129,30 @@ public class StartupActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(Boolean status) {
-            Log.d("stuff", "8");
             if(status){
                 boolean authenticate = false;
                 try{
-                    Log.d("stuff", "9");
-                    authenticate = securityManager.authenticateUser(firstPassword, applicationContext);
-                    securityManager.generateKey(applicationContext);
-                    Log.d("stuff", "10");
+                    authenticate = securityService.authenticateUser(firstPassword, applicationContext);
+                    securityService.generateKey(applicationContext);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
                 if(authenticate){
-                    Log.d("stuff", "11");
-                    Intent landingIntent = new Intent(applicationContext, ListActivity.class);
+                    Intent landingIntent = new Intent(applicationContext, HomeActivity.class);
                     startActivity(landingIntent);
                     finish();
                 }else{
-                    Log.d("stuff", "12");
                     Intent loginIntent = new Intent(applicationContext, LoginActivity.class);
                     startActivity(loginIntent);
                     finish();
                 }
             }else{
-                Log.d("stuff", "13");
                 if(firstPassword.equals(secondPassword)){
-                    Log.d("stuff", "14");
                     CharSequence failedAuthenticationString = getString(R.string.passwordTooShort);
 
                     Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);
                     toast.show();
                 }else{
-                    Log.d("stuff", "15");
                     CharSequence failedAuthenticationString = getString(R.string.passwordsDoNotMatch);
 
                     Toast toast = Toast.makeText(applicationContext, failedAuthenticationString, Toast.LENGTH_LONG);

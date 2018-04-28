@@ -15,10 +15,12 @@
  * along with this program.  If not, see <a href="www.gnu.org/licenses/">here</a>.
  */
 
-package com.securityfirstdesigns.mydigitalsafe.app;
+package com.securityfirstdesigns.mydigitalsafe.app.experimental;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.securityfirstdesigns.mydigitalsafe.app.R;
 
 public class FolderListActivity extends AppCompatActivity {
 
