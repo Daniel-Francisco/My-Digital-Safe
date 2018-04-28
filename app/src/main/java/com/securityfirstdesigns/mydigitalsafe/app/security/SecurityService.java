@@ -60,10 +60,10 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Created by dfrancisco on 11/2/2016.
  */
-public class SecurityManager {
-    private static SecurityManager singletonInstance = new SecurityManager();
+public class SecurityService {
+    private static SecurityService singletonInstance = new SecurityService();
 
-    public static SecurityManager getInstance() {
+    public static SecurityService getInstance() {
         return singletonInstance;
     }
 

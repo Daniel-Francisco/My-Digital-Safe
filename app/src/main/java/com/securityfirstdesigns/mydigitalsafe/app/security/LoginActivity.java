@@ -30,9 +30,9 @@ import android.webkit.WebView;
 import android.widget.Toast;
 import android.webkit.JavascriptInterface;
 
-import com.securityfirstdesigns.mydigitalsafe.app.ListActivity;
-import com.securityfirstdesigns.mydigitalsafe.app.PrivacyPolicyActivity;
-import com.securityfirstdesigns.mydigitalsafe.app.QuickNoteEdit;
+import com.securityfirstdesigns.mydigitalsafe.app.core.HomeActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.core.PrivacyPolicyActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.notes.QuickNoteEdit;
 import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.UIHelper;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
@@ -52,7 +52,7 @@ public class LoginActivity extends Activity {
     private AdView mAdView;
 
 
-    final SecurityManager securityManager = SecurityManager.getInstance();
+    final SecurityService securityService = SecurityService.getInstance();
     WebView browser = null;
 
 
@@ -102,8 +102,8 @@ public class LoginActivity extends Activity {
                 Boolean authentication = null;
                 String password = strings[0];
 
-                authentication = securityManager.authenticateUser(password, applicationContext);
-                securityManager.generateKey(applicationContext);
+                authentication = securityService.authenticateUser(password, applicationContext);
+                securityService.generateKey(applicationContext);
                 long end_time = System.nanoTime();
                 double difference = (end_time - start_time) / 1e6;
                 loginTime = (int) difference;
@@ -135,7 +135,7 @@ public class LoginActivity extends Activity {
             if (userConfigurationCheck.getLockoutFlag() == 1) {
                 try {
                     String lockoutDate = userConfigurationCheck.getLockoutTime();
-                    boolean dateFlag = securityManager.checkIfPastDate(lockoutDate);
+                    boolean dateFlag = securityService.checkIfPastDate(lockoutDate);
                     if (!dateFlag) {
                         //locked out
 
@@ -172,7 +172,7 @@ public class LoginActivity extends Activity {
                     if (userConfiguration.getLockoutFlag() == 1) {
                         int failedCount = userConfiguration.getFailedLoginCount() + 1;
                         userConfiguration.setFailedLoginCount(failedCount);
-                        userConfiguration = securityManager.generateUnlockString(userConfiguration, failedCount);
+                        userConfiguration = securityService.generateUnlockString(userConfiguration, failedCount);
                         databaseManager.updateUserConfiguration(userConfiguration);
 
                         displayLockoutCountdown();
@@ -189,7 +189,7 @@ public class LoginActivity extends Activity {
                     userConfiguration.setFailedLoginCount(0);
                     databaseManager.updateUserConfiguration(userConfiguration);
 
-                    Intent landingIntent = new Intent(applicationContext, ListActivity.class);
+                    Intent landingIntent = new Intent(applicationContext, HomeActivity.class);
                     startActivity(landingIntent);
                     finish();
                 }

@@ -56,8 +56,8 @@ public class AdjustSecurityLevel extends AppCompatActivity {
     }
 
     protected boolean updatePassword(String password, int iterations){
-        SecurityManager securityManager = SecurityManager.getInstance();
-        return securityManager.changePasswordSecurityLevel(applicationContext, password, iterations);
+        SecurityService securityService = SecurityService.getInstance();
+        return securityService.changePasswordSecurityLevel(applicationContext, password, iterations);
     }
     String userPassword = "";
     int userIterations = 100000;

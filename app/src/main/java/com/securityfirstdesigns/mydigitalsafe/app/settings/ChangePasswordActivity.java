@@ -30,17 +30,17 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import com.securityfirstdesigns.mydigitalsafe.app.ListActivity;
-import com.securityfirstdesigns.mydigitalsafe.app.MainActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.core.HomeActivity;
+import com.securityfirstdesigns.mydigitalsafe.app.core.MainActivity;
 import com.securityfirstdesigns.mydigitalsafe.app.R;
 import com.securityfirstdesigns.mydigitalsafe.app.model.DatabaseManager;
 import com.securityfirstdesigns.mydigitalsafe.app.model.UserConfiguration;
-import com.securityfirstdesigns.mydigitalsafe.app.security.SecurityManager;
+import com.securityfirstdesigns.mydigitalsafe.app.security.SecurityService;
 
 public class ChangePasswordActivity extends AppCompatActivity {
     Context context;
     WebView browser;
-    final SecurityManager securityManager = SecurityManager.getInstance();
+    final SecurityService securityService = SecurityService.getInstance();
 
     String passwordCurrent = null;
     String passwordOne = null;
@@ -112,9 +112,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... strings) {
             try {
                 if (passwordOne.equals(passwordTwo) && lastScore > 3) {
-                    SecurityManager securityManager = SecurityManager.getInstance();
+                    SecurityService securityService = SecurityService.getInstance();
 //                FileManager fileManager = new FileManager();
-                    if (securityManager.authenticateUser(passwordCurrent, context)) {
+                    if (securityService.authenticateUser(passwordCurrent, context)) {
 
                         DatabaseManager databaseManager = new DatabaseManager(context);
 
@@ -128,7 +128,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
                         String saltFromFile = databaseManager.getUserConfiguration().getSalt();
 
-                        byte[] newHash = securityManager.hashPassword(passwordOne, saltFromFile.getBytes(), iterations);
+                        byte[] newHash = securityService.hashPassword(passwordOne, saltFromFile.getBytes(), iterations);
                         String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);
 
                         userConfiguration.setPassword_hash(newHashString);
@@ -140,7 +140,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                         writeLoginTime(loginTime);
 
 
-                        securityManager.changePassword(context, passwordCurrent, passwordOne);
+                        securityService.changePassword(context, passwordCurrent, passwordOne);
 
                         return true;
                     }else{
@@ -167,7 +167,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         protected void onPostExecute(Boolean status) {
             if (status) {
-                Intent listActivity = new Intent(context, ListActivity.class);
+                Intent listActivity = new Intent(context, HomeActivity.class);
                 startActivity(listActivity);
                 finish();
             } else {
