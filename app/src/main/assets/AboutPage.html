@@ -22,14 +22,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     </html>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
     <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="./javascript/jquery-offline.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="./css/bootstrap-offline.css">
 
     <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="./javascript/bootstrap-offline.js"></script>
 
     <script src="./javascript/AboutPage.js"></script>
 
@@ -61,7 +62,7 @@
             used to derive the hash to validate your password and ultimately
             derive the symmetric encryption key to protect your data. Simple version? We take your password and turn it
             into a irreversible garbled mess of characters using a 'hashing' function.
-            Some very smart Mathematicians create and validate the effectiveness of this hashing function and we use it in our application. This 'hash'
+            Some very smart mathematicians create and validate the effectiveness of this hashing function and we use it in our application. This 'hash'
             is impossible to convert back into your password, and we can re-calculate the hash each time you log in. If
             the hash we calculate matches the stored hash, your login is successful.
 
