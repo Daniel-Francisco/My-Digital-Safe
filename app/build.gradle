@@ -37,7 +37,7 @@ android {
         applicationId "com.securityfirstdesigns.mydigitalsafe.app"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 32
+        versionCode 36
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -56,6 +56,8 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.android.support:support-vector-drawable:26.1.0'
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

@@ -100,6 +100,20 @@ $(document).ready(function () {
 
 
     });
+
+
+    var inAsyncFlag = Android.checkForAsync();
+    if(inAsyncFlag == true || inAsyncFlag == "true" || inAsyncFlag == 'true' || inAsyncFlag === true){
+        document.getElementById("welcomeSection").classList.add("hide");
+        document.getElementById("startUpSection").classList.remove("hide");
+        document.getElementById("privacyPolicyBlurb").classList.remove("hide");
+
+        document.getElementById("loader").classList.remove("displayNone");
+        document.getElementById("privacyPolicyBlurb").classList.add("displayNone");
+        document.getElementById("startUpSection").classList.add("displayNone");
+        document.getElementById("createPassword").classList.add("displayNone");
+    }
+
 });
 // <li id="badLength">Your password is too short! It should be a minimum of 6 characters!</li>
 // <li id="badUpperCase">Add a upper-case letter to improve your password strength!</li>

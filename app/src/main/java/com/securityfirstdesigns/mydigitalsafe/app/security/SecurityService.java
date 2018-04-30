@@ -471,7 +471,7 @@ public class SecurityService {
         }
         if (failCount >= allowedFails) {
             int difference = failCount - allowedFails;
-            int checkInt = (difference % 3);
+            int checkInt = (difference % 1);
             if (difference == 0) {
                 Calendar c = Calendar.getInstance();
                 c.setTime(new Date()); // Now use today date.
@@ -480,7 +480,7 @@ public class SecurityService {
                 userConfiguration.setKeyLockoutTime(sdf.format(date));
                 return userConfiguration;
             } else if (checkInt == 0) {
-                int failLevel = difference / 3;
+                int failLevel = difference;
                 double lockoutMinutes = Math.pow(2, failLevel);
                 int lockoutMinutesInt = (int) lockoutMinutes;
                 Calendar c = Calendar.getInstance();
