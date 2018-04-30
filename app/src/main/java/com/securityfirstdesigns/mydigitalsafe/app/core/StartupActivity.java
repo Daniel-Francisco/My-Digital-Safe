@@ -41,6 +41,8 @@ public class StartupActivity extends AppCompatActivity {
     WebView browser;
     final SecurityService securityService = SecurityService.getInstance();
 
+    private boolean creatingPasswordFlag = false;
+
     String firstPassword = null;
     String secondPassword = null;
 
@@ -81,6 +83,10 @@ public class StartupActivity extends AppCompatActivity {
             }catch(Exception e){
                 e.printStackTrace();
             }
+        }
+
+        if (savedInstanceState != null){
+            creatingPasswordFlag = savedInstanceState.getBoolean("inAsyncFlag", false);
         }
 
     }
@@ -165,11 +171,17 @@ public class StartupActivity extends AppCompatActivity {
                     browser.loadUrl("javascript:clearFields()");
                 }
             });
+
+            creatingPasswordFlag = false;
         }
     }
 
 
-
+    @Override
+    protected void onSaveInstanceState(Bundle bundle){
+        super.onSaveInstanceState(bundle);
+        bundle.putBoolean("inAsyncFlag", creatingPasswordFlag);
+    }
 
     protected void androidCreatePassword(String passwordOne, String passwordTwo){
        firstPassword = passwordOne;
@@ -264,6 +276,7 @@ public class StartupActivity extends AppCompatActivity {
         }
         @JavascriptInterface
         public void createPassword(String passwordOne, String passwordTwo) {
+            creatingPasswordFlag = true;
             androidCreatePassword(passwordOne, passwordTwo);
         }
 
@@ -276,6 +289,11 @@ public class StartupActivity extends AppCompatActivity {
         public void goToPrivacyPolicy() {
             Intent privacyPolicyIntent = new Intent(applicationContext, PrivacyPolicyActivity.class);
             startActivity(privacyPolicyIntent);
+        }
+
+        @JavascriptInterface
+        public boolean checkForAsync(){
+            return creatingPasswordFlag;
         }
 
     }
