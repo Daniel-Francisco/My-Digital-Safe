@@ -50,6 +50,7 @@ public class LoginActivity extends Activity {
     SharedPreferences prefs = null;
     int loginTime = -1;
     private AdView mAdView;
+    private int loginProgress = -1;
 
 
     final SecurityService securityService = SecurityService.getInstance();
@@ -69,14 +70,26 @@ public class LoginActivity extends Activity {
         browser.addJavascriptInterface(new WebAppInterface(this), "Android");
         browser.loadUrl("file:///android_asset/loginPage.html");
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent quickNoteEditIntent = new Intent(applicationContext, QuickNoteEdit.class);
-                startActivity(quickNoteEditIntent);
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent quickNoteEditIntent = new Intent(applicationContext, QuickNoteEdit.class);
+//                startActivity(quickNoteEditIntent);
+//            }
+//        });
+
+        if (savedInstanceState != null){
+            loginProgress = savedInstanceState.getInt("loginProgress");
+        }
+//        if(loginProgress >= 0){
+//            browser.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    browser.loadUrl("javascript:setProgress()");
+//                }
+//            });
+//        }
 
     }
 
@@ -200,6 +213,12 @@ public class LoginActivity extends Activity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle bundle){
+        super.onSaveInstanceState(bundle);
+        bundle.putInt("loginProgress", loginProgress);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (browser != null) {
@@ -293,8 +312,19 @@ public class LoginActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void setLoginProgress(int progress){
+            loginProgress = progress;
+        }
+
+        @JavascriptInterface
         public int getloginTime() {
             return readLoginTime();
+        }
+
+        @JavascriptInterface
+        public void addQuickNote(){
+            Intent quickNoteEditIntent = new Intent(applicationContext, QuickNoteEdit.class);
+            startActivity(quickNoteEditIntent);
         }
 
         @JavascriptInterface
@@ -306,6 +336,11 @@ public class LoginActivity extends Activity {
         @JavascriptInterface
         public void forgotPassword() {
             androidForgotPassword();
+        }
+
+        @JavascriptInterface
+        public int getProgress() {
+            return loginProgress;
         }
 
         @JavascriptInterface
