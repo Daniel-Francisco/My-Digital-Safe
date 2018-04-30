@@ -92,7 +92,7 @@ public class StartupActivity extends AppCompatActivity {
             try {
                 if (firstPassword.equals(secondPassword) && lastScore > 3) {
                     long start_time = System.nanoTime();
-                    int iterations = 100000;
+                    int iterations = 120000;
 
                     String salt = securityService.generateSalt();
                     UserConfiguration userConfiguration = new UserConfiguration();
