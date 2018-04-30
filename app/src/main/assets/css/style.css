@@ -56,13 +56,22 @@
 }
 
 .primaryButton {
-    display: inline-block;
+     display: inline-block;
 
+     font-size: 16px;
+     color: #fff;
+     background-color: #952422;
+     border:none;
+ }
+
+.secondaryButton {
+    display: inline-block;
     font-size: 16px;
     color: #fff;
-    background-color: #952422;
+    background-color: black;
     border:none;
 }
+
 #logo{
     width: 250px;
     height: 200px;

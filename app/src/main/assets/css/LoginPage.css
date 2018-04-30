@@ -10,7 +10,7 @@
 
 #loginForm {
     text-align: center !important;
-    margin-top: 30% !important;
+    margin-top: 50px !important;
 }
 
 #loginProgressBar{
@@ -39,11 +39,16 @@
 }
 
 
-#signIn{
+#signIn, #quickNote{
     height: 30px !important;
     width: 75% !important;
-    margin: 10px auto 10px auto !important;
+    margin: 10px auto 10px auto;
 }
+
+/*#quickNote{*/
+    /*margin-top: 40px !important;*/
+/*}*/
+
 #percentageText{
     font-size:16px;
 }
