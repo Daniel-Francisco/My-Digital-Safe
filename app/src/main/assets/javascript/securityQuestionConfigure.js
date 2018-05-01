@@ -181,3 +181,4 @@ function questionsExist(){
     document.getElementById("confirmReplacingSecurityQuestionPage").classList.remove("hide");
     document.getElementById("page").classList.add("hide");
 }
+

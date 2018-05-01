@@ -207,3 +207,22 @@ function clearList(){
     document.getElementById("badSymbol").classList.remove("hide");
 }
 
+function lockedOutLogin(){
+    var lockoutMessage = Android.getLockoutString();
+
+    document.getElementById("forgotPasswordPage").classList.add("hide");
+    var lockoutArea = document.getElementById("lockoutSection");
+    lockoutArea.classList.remove("hide");
+    lockoutArea.innerText = lockoutMessage;
+}
+
+
+function userLockedOut(){
+    var lockoutMessage = Android.getLockoutString();
+    if(lockoutMessage != ""){
+        var lockoutArea = document.getElementById("lockoutSection");
+        document.getElementById("forgotPasswordPage").classList.add("hide");
+        lockoutArea.classList.remove("hide");
+        lockoutArea.innerText = lockoutMessage;
+    }
+}

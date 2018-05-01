@@ -23,7 +23,7 @@
     android:layout_height="match_parent"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.development.security.ciphernote.ListActivity"
+    tools:context="com.securityfirstdesigns.mydigitalsafe.app.core.HomeActivity"
     tools:showIn="@layout/activity_list_bar">
 
     <WebView
@@ -52,5 +52,5 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
+        ads:adUnitId="ca-app-pub-4110180846755816/8049816693"/>
 </RelativeLayout>

@@ -35,6 +35,7 @@ $(document).ready(function () {
                 attemptingLogin = true;
                 if (loginTime != -1) {
                     $("#loginInfoArea").addClass("hideLoginInfoArea");
+                    $("#quickNote").addClass("hideLoginInfoArea");
                     $("#forgotPasswordLink").addClass("hide");
                     $("#loginProgressArea").addClass("showProgressBar");
                     setTimeout(updateProgressBar, (loginTime / 100));
@@ -43,11 +44,13 @@ $(document).ready(function () {
             }
         }
 
-        function danielTestPleaseDontJudge() {
-        }
     });
     $("#forgotPasswordLink").on("click", function (event) {
         Android.forgotPassword();
+    });
+
+    $("#quickNote").on("click", function (event) {
+        Android.addQuickNote();
     });
 
     $("#privacyPolicyLink").on("click", function (event) {
@@ -66,21 +69,35 @@ $(document).ready(function () {
         $("#signIn").click();
     });
 
+    getProgressUpdate();
+
 });
 
 function updateProgressBar() {
-    var foregedPercentProgress = percentProgress;
-    if(foregedPercentProgress > 99){
-        foregedPercentProgress = 99;
+    var currentPercentProgress = percentProgress;
+    Android.setLoginProgress(currentPercentProgress);
+    if(currentPercentProgress > 99){
+        currentPercentProgress = 99;
     }
-    $("#loginProgressBar").val(foregedPercentProgress);
-    document.getElementById("percentageText").innerText = (foregedPercentProgress.toString() + " %");
+    $("#loginProgressBar").val(currentPercentProgress);
+    document.getElementById("percentageText").innerText = (currentPercentProgress.toString() + " %");
 
     percentProgress++;
     if (percentProgress != 101) {
         currentTimer = setTimeout(updateProgressBar, (loginTime / 100));
     } else {
         currentTimer = null;
+    }
+}
+
+function getProgressUpdate(){
+    percentProgress = Android.getProgress();
+    if(percentProgress > -1){
+        $("#loginInfoArea").addClass("hideLoginInfoArea");
+        $("#quickNote").addClass("hideLoginInfoArea");
+        $("#forgotPasswordLink").addClass("hide");
+        $("#loginProgressArea").addClass("showProgressBar");
+        updateProgressBar();
     }
 }
 
@@ -91,6 +108,7 @@ function failedLogin() {
     }
     $("#loginProgressBar").val(0);
     $("#loginInfoArea").removeClass("hideLoginInfoArea");
+    $("#quickNote").removeClass("hideLoginInfoArea");
     $("#forgotPasswordLink").removeClass("hide");
     $("#loginProgressArea").removeClass("showProgressBar");
     $("#password").val("");
