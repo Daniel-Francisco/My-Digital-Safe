@@ -281,36 +281,55 @@ public class SecurityService {
 
             databaseManager.updateUserConfiguration(userConfiguration);
 
-            changePassword(context, password, password);
-            return true;
+            boolean flag = changePassword(context, password, password);
+            return flag;
         }
         return false;
     }
 
-    public void changePassword(Context context, String userPassword, String newPassword) {
-        try {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+    public boolean changePassword(Context context, String userPassword, String newPassword) {
+        DatabaseManager databaseManager = new DatabaseManager(context);
+        UserConfiguration configuration = databaseManager.getUserConfiguration();
 
-            DatabaseManager databaseManager = new DatabaseManager(context);
-            UserConfiguration config = databaseManager.getUserConfiguration();
+        try{
+            boolean authentication = authenticateUser(userPassword, context);
+            if(!authentication){
+                return authentication;
+            }
 
+            SecretKey secretBackup = secret;
 
-            byte[] passwordBytes = config.getDevicePassword();
+            generateUserBasedSecretKey();
+
+            byte[] passwordBytes = configuration.getDevicePassword();
             if (passwordBytes == null) {
                 passwordBytes = new byte[0];
             }
-            byte[] decryptedDevicePassword = encryptWithAlternatePassword(userPassword, passwordBytes, config.getSalt().getBytes(), config.getIterations(), false);
 
 
-            byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(newPassword, decryptedDevicePassword, config.getSalt().getBytes(), config.getIterations(), true);
+            String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
+            String passwordValue = decrypt(passwordBytes);
+            byte[] passwordValueBytes = Base64.decode(passwordValue, Base64.DEFAULT);
 
-            config.setDevicePassword(reEncryptedDevicePassword);
 
-            databaseManager.addUserConfiguration(config);
+            byte[] reEncryptedDevicePassword = encryptWithAlternatePassword(newPassword, passwordValueBytes, configuration.getSalt().getBytes(), configuration.getIterations(), true);
 
-        } catch (Exception e) {
+            configuration.setDevicePassword(reEncryptedDevicePassword);
+
+            byte[] newHash = hashPassword(newPassword, configuration.getSalt().getBytes(), configuration.getIterations());
+            String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);
+
+            configuration.setPassword_hash(newHashString);
+
+            databaseManager.updateUserConfiguration(configuration);
+
+            secret = secretBackup;
+        }catch (Exception e){
             e.printStackTrace();
+            return false;
         }
+        return true;
+
     }
 
 
@@ -319,9 +338,8 @@ public class SecurityService {
      */
     public void generateKey(Context context) {
         try {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
-            secret = new SecretKeySpec(userKey.getEncoded(), "AES");
+            generateUserBasedSecretKey();
 
             DatabaseManager databaseManager = new DatabaseManager(context);
             UserConfiguration config = databaseManager.getUserConfiguration();
@@ -331,6 +349,8 @@ public class SecurityService {
             if (passwordBytes == null) {
                 passwordBytes = new byte[0];
             }
+
+
             String dataString = Base64.encodeToString(passwordBytes, Base64.DEFAULT);
             String passwordValue;
             if (dataString.isEmpty() || dataString == null || dataString.equals("")) {
@@ -343,14 +363,23 @@ public class SecurityService {
             }
 
 
-            KeySpec spec2 = new PBEKeySpec(passwordValue.toCharArray(), salt.getBytes(), 1, 256);
-            SecretKey tmp2 = factory.generateSecret(spec2);
-
-            secret = new SecretKeySpec(tmp2.getEncoded(), "AES");
+            generateDeviceKeyBasedSecretKey(passwordValue);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void generateDeviceKeyBasedSecretKey(String passwordValue) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        KeySpec spec2 = new PBEKeySpec(passwordValue.toCharArray(), salt.getBytes(), 1, 256);
+        SecretKey tmp2 = factory.generateSecret(spec2);
+
+        secret = new SecretKeySpec(tmp2.getEncoded(), "AES");
+    }
+
+    private void generateUserBasedSecretKey() throws NoSuchAlgorithmException {
+        secret = new SecretKeySpec(userKey.getEncoded(), "AES");
     }
 
     public Boolean authenticateUser(String password, Context context) throws JSONException {
@@ -426,9 +455,11 @@ public class SecurityService {
         int keyLength = 256;
         SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, hashingIterations, keyLength);
-        userKey = skf.generateSecret(spec);
+
         SecretKey userKeyBackup = userKey;
         SecretKey secretBackup = secret;
+
+        userKey = skf.generateSecret(spec);
         secret = new SecretKeySpec(userKey.getEncoded(), "AES");
 
         byte[] cryptoData = null;
@@ -465,7 +496,6 @@ public class SecurityService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         int allowedFails = userConfiguration.getAllowedFailedLoginCount();
-        Log.d("allowedFails", String.valueOf(allowedFails));
         if (allowedFails == 0) {
             allowedFails = 5;
         }

@@ -74,7 +74,6 @@ public class SettingsActivity extends PreferenceActivity {
         final Preference configureSecurityQuestionsButton = findPreference(getString(R.string.preferenceConfigureSecurityQuestions));
 
         configureSecurityQuestionsButton.setEnabled(prefs.getBoolean("passwordResetToggle", false));
-        Log.d("valueThing", "From thing = " + prefs.getBoolean("passwordResetToggle", false));
 
         configureSecurityQuestionsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -194,7 +193,6 @@ public class SettingsActivity extends PreferenceActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
         if (securityQuestionsEnableFlag != null) {
             prefs.edit().putBoolean("passwordResetToggle", securityQuestionsEnableFlag).commit();
-            Log.d("valueThing", String.valueOf(securityQuestionsEnableFlag));
 
             if (!securityQuestionsEnableFlag) {
                 DatabaseManager databaseManager = new DatabaseManager(applicationContext);
