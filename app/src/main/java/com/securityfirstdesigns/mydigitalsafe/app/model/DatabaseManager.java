@@ -291,7 +291,6 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public long addQuickNoteFile(QuickNoteFile quickNoteFile) throws ParseException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException {
         SQLiteDatabase writeDatabase = this.getWritableDatabase();
 
-
         ContentValues values = new ContentValues();
         values.put(QuickNoteFile.KEY_QUICK_NOTE_DATA, quickNoteFile.getQuickNoteData());
         values.put(QuickNoteFile.KEY_QUICK_NOTE_FILE_NAME, quickNoteFile.getQuickNoteFileName());
@@ -421,12 +420,6 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 }
 
                 file.setHash(cursor.getString(cursor.getColumnIndex(File.KEY_HASH)));
-
-//                boolean fileStatus = securityService.validateFileHash(file);
-
-//                if(!fileStatus){
-//                    file = null;
-//                }
 
                 fileList.add(file);
             } while (cursor.moveToNext());
