@@ -116,33 +116,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
 //                FileManager fileManager = new FileManager();
                     if (securityService.authenticateUser(passwordCurrent, context)) {
 
-                        DatabaseManager databaseManager = new DatabaseManager(context);
+                        boolean changePasswordSuccessFlag = securityService.changePassword(context, passwordCurrent, passwordOne);
 
-                        long start_time = System.nanoTime();
-                        int iterations = 100000;
-
-                        UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
-                        userConfiguration.setIterations(iterations);
-                        userConfiguration.setPassword_hash("");
-                        databaseManager.addUserConfiguration(userConfiguration);
-
-                        String saltFromFile = databaseManager.getUserConfiguration().getSalt();
-
-                        byte[] newHash = securityService.hashPassword(passwordOne, saltFromFile.getBytes(), iterations);
-                        String newHashString = Base64.encodeToString(newHash, Base64.DEFAULT);
-
-                        userConfiguration.setPassword_hash(newHashString);
-                        databaseManager.addUserConfiguration(userConfiguration);
-
-                        long end_time = System.nanoTime();
-                        double difference = (end_time - start_time) / 1e6;
-                        int loginTime = (int) difference;
-                        writeLoginTime(loginTime);
-
-
-                        securityService.changePassword(context, passwordCurrent, passwordOne);
-
-                        return true;
+                        return changePasswordSuccessFlag;
                     }else{
                         failCode = 2;
                     }

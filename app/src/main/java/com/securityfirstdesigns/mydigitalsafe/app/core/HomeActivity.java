@@ -129,7 +129,6 @@ public class HomeActivity extends MenuActivity {
         }
 
         protected void onPostExecute(Boolean status) {
-            Log.d("stuff", "8");
             mAdView.loadAd(adRequest);
         }
     }
