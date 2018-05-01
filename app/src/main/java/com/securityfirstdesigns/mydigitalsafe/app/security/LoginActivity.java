@@ -255,7 +255,13 @@ public class LoginActivity extends Activity {
         UserConfiguration userConfiguration = databaseManager.getUserConfiguration();
         int currentFails = userConfiguration.getFailedLoginCount();
         int allowedFails = userConfiguration.getAllowedFailedLoginCount();
+
+        if(allowedFails == 0){
+            allowedFails = 5;
+        }
+
         int failsLeft = allowedFails - currentFails;
+
 
         if (currentFails >= allowedFails) {
             browser.post(new Runnable() {
