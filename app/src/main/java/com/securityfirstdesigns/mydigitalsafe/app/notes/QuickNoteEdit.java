@@ -56,6 +56,14 @@ public class QuickNoteEdit extends AppCompatActivity {
 
         setContentView(R.layout.activity_landing);
 
+        if (savedInstanceState != null){
+            if(savedInstanceState.getString("dataBeforeRotation") != null){
+                quickNoteFile.setQuickNoteData(savedInstanceState.getString("dataBeforeRotation"));
+            }
+            if(savedInstanceState.getString("titleBeforeRotation") != null){
+                quickNoteFile.setQuickNoteFileName(savedInstanceState.getString("titleBeforeRotation"));
+            }
+        }
 
         browser = (WebView) findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
@@ -96,6 +104,14 @@ public class QuickNoteEdit extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle onOrientChange){
+        super.onSaveInstanceState(onOrientChange);
+        onOrientChange.putString("dataBeforeRotation", quickNoteFile.getQuickNoteData());
+        onOrientChange.putString("titleBeforeRotation", quickNoteFile.getQuickNoteFileName());
+    }
+
+
+    @Override
     public void onBackPressed() {
         try{
             DatabaseManager databaseManager = new DatabaseManager(applicationContext);
@@ -124,6 +140,7 @@ public class QuickNoteEdit extends AppCompatActivity {
         @JavascriptInterface
         public String getFile() {
             Gson gson = new Gson();
+            
             String fileJson = gson.toJson(quickNoteFile);
             return fileJson;
         }
