@@ -37,8 +37,8 @@ android {
         applicationId "com.securityfirstdesigns.mydigitalsafe.app"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 37
-        versionName "0.0.1"
+        versionCode 38
+        versionName "1.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
