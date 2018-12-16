@@ -140,7 +140,7 @@ public class QuickNoteEdit extends AppCompatActivity {
         @JavascriptInterface
         public String getFile() {
             Gson gson = new Gson();
-            
+
             String fileJson = gson.toJson(quickNoteFile);
             return fileJson;
         }
